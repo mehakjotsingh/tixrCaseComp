@@ -1,0 +1,20 @@
+country,gdp_per_capita_usd,internet_users_pct,mobile_subscriptions_per_100,tourism_arrivals,region,source
+Japan,33836.2,87.0,178.4,4115799,APAC,World Bank
+Australia,65058.4,97.1,112.5,1828000,APAC,World Bank
+Germany,54776.8,92.5,124.7,12449000,EMEA,World Bank
+United Kingdom,49944.5,96.3,122.8,11101000,EMEA,World Bank
+Netherlands,63515.6,97.0,117.4,7265000,EMEA,World Bank
+Spain,33493.2,95.4,127.7,36410000,EMEA,World Bank
+France,44700.1,86.8,116.7,117109000,EMEA,World Bank
+Italy,39277.1,87.0,131.9,38419000,EMEA,World Bank
+United Arab Emirates,49850.7,100.0,199.4,8084000,EMEA_Gulf,World Bank
+Saudi Arabia,36156.8,100.0,157.8,20292000,EMEA_Gulf,World Bank
+Argentina,14261.8,89.2,137.7,7399000,LATAM,World Bank
+Mexico,13861.0,81.2,111.6,51128000,LATAM,World Bank
+Brazil,10377.6,84.2,101.0,6353000,LATAM,World Bank
+Colombia,7000.8,77.3,167.0,1396000,LATAM,World Bank
+Indonesia,4876.3,69.2,125.2,4053000,SEA,World Bank
+Singapore,85412.2,94.3,173.2,2742000,SEA,World Bank
+Malaysia,11386.0,97.7,142.7,4333000,SEA,World Bank
+Philippines,3804.1,83.8,117.3,1483000,SEA,World Bank
+Thailand,7195.1,89.5,168.6,39916000,SEA,World Bank
