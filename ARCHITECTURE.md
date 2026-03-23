@@ -1200,56 +1200,214 @@ Ranges from 0–100. High values mean the venue is: (a) well-scored, (b) winnabl
 
 ### 9.6 Market Recommendation Ranking
 
-The dashboard's **Recommendations tab** ranks countries using a composite formula that balances quality, readiness, scale, and earning potential:
+The dashboard's **Recommendations tab** ranks countries using a composite formula that balances five dimensions: venue quality, market fundamentals, sales readiness, pipeline depth, and earning potential.
+
+#### 9.6.1 Final Composite Formula
 
 ```
-# Per-market ROI model
-venue_annual_value = max(avg_capacity, 1500) × 12 events × $45 avg ticket × 2.5% fee
-annual_revenue    = winnable_venues (T1+T2) × venue_annual_value
-total_investment  = $50K market entry + winnable_venues × $8K per venue
-roi_multiple      = annual_revenue / total_investment
-
-# Earning potential factor (log-scaled to reward scale without mega-markets dominating)
-roi_factor = clamp((log10(annual_revenue) − 5.0) / 3.5, 0, 1) × 100
-# log10($100K)=5 → 0%,  log10($1M)=6 → 29%,  log10($10M)=7 → 57%,  log10($100M)=8 → 86%
-
-# Final composite ranking
-market_rank = 0.25 × avg_recommendation_score          # venue quality
-            + 0.20 × market_score                       # market fundamentals
-            + 0.20 × min(tier_1_count / 30, 1) × 100   # T1 readiness (saturates at 30)
-            + 0.15 × min(tier_1_2_count / 200, 1) × 100 # pipeline depth (saturates at 200)
-            + 0.20 × roi_factor                          # earning potential (annual revenue)
+market_rank = 0.25 × Q  +  0.20 × M  +  0.20 × R  +  0.15 × D  +  0.20 × E
 ```
 
-| Weight | Component | Normalization | Why |
-|--------|-----------|--------------|-----|
-| **25%** | Avg Recommendation Score | Raw 0–100 | Overall venue quality in the market |
-| **20%** | Market Score | Raw 0–100 | GDP, digital infrastructure, tourism potential |
-| **20%** | Tier 1 Absolute Count | Saturates at 30 | Immediate outreach targets — the core sales pipeline |
-| **15%** | Tier 1+2 Pipeline Depth | Saturates at 200 | Scale potential — how big can Tixr get in this market |
-| **20%** | Earning Potential | Log-scaled annual revenue | How much Tixr earns from partnering with venues in this market |
+Where **Q** = Quality, **M** = Market, **R** = Readiness, **D** = Depth, **E** = Earnings. Each component is normalized to a 0–100 scale before weighting.
 
-**Why log-scale for earnings?** Raw annual revenue spans 4 orders of magnitude ($300K–$450M). Linear normalization would let the UK ($449M) completely dominate. Log-scale compresses the range so that a $46M market (Australia) scores 76% while a $5.6M market (Singapore) still scores 50% — meaningful differentiation without extreme domination.
+---
 
-**Revenue Model Assumptions:**
+#### 9.6.2 Component 1 — Venue Quality (Q) · 25%
+
+**What it measures:** How good are the venues in this market on average?
+
+```
+Q = avg_recommendation_score   (already 0–100)
+```
+
+The recommendation score itself is a blended metric (see §9.4):
+
+```
+recommendation_score = 0.50 × priority_score    ← venue-level quality (VWP, premium fit, data completeness)
+                     + 0.30 × market_score       ← macro environment (GDP, digital readiness, tourism)
+                     + 0.20 × activity_bonus     ← recent event activity (signals bookable, active venue)
+```
+
+**Example values:** Singapore Q=72.0, Australia Q=63.9, Germany Q=61.6
+
+**Why 25%:** Quality is the single most important signal — a market full of low-quality venues is not worth pursuing regardless of size. But it shouldn't dominate because a small market of excellent venues (e.g., Singapore, 68 venues) can't match the business impact of a large market with good-but-not-great venues (e.g., Germany, 1,996 venues).
+
+---
+
+#### 9.6.3 Component 2 — Market Fundamentals (M) · 20%
+
+**What it measures:** Is this country's economy and infrastructure suitable for Tixr's premium model?
+
+```
+M = market_score   (already 0–100)
+```
+
+The market score is computed by the Market Intelligence Agent (§6) using World Bank indicators:
+
+| Sub-indicator | Weight | Data Source | Why |
+|---------------|--------|-------------|-----|
+| GDP per capita | 30% | World Bank `NY.GDP.PCAP.CD` | Willingness to pay premium ticket prices |
+| Internet penetration | 20% | World Bank `IT.NET.USER.ZS` | Digital ticketing adoption readiness |
+| Tourism receipts | 20% | World Bank `ST.INT.RCPT.CD` | Inbound tourism = event demand driver |
+| Ease of business | 15% | World Bank `IC.BUS.EASE.XQ` | Operational feasibility for Tixr |
+| Urban population % | 15% | World Bank `SP.URB.TOTL.IN.ZS` | Concentration of venues in reachable cities |
+
+**Example values:** Singapore M=67.3, Australia M=57.2, Germany M=53.3
+
+**Why 20%:** Strong fundamentals indicate sustainable revenue. A venue in a high-GDP, digitally mature market will generate more ticket revenue per event than an identical venue in a low-GDP market. However, fundamentals alone don't make a market — you also need venues to sell to.
+
+---
+
+#### 9.6.4 Component 3 — T1 Readiness (R) · 20%
+
+**What it measures:** How many venues are ready for immediate sales outreach right now?
+
+```
+R = min(tier_1_count / 30, 1) × 100
+```
+
+- **Tier 1** = venues scoring ≥ 70 (see §9.4) — these are "Immediate Outreach" targets
+- **Saturation at 30:** Once a market has 30+ Tier 1 venues, it's maxed out on this dimension. This prevents mega-markets from getting unfair advantage purely from T1 volume.
+- **Linear scaling below 30:** A market with 15 T1 venues scores 50%, one with 6 scores 20%
+
+| T1 Count | R Score | Interpretation |
+|----------|---------|----------------|
+| 0 | 0 | No immediate targets — market needs nurturing |
+| 5 | 17 | Small but actionable pipeline |
+| 15 | 50 | Solid outreach list for one sales rep |
+| 30+ | 100 | Full pipeline — can support a dedicated market team |
+
+**Example values:** Germany R=100 (50 T1), Australia R=100 (30 T1), Netherlands R=60 (18 T1), Singapore R=100 (43 T1), Qatar R=0 (0 T1)
+
+**Why 20%:** T1 readiness is the most *actionable* metric. A high R means the sales team can start booking meetings immediately. Markets with R=0 (like Qatar) require months of pipeline development before generating revenue.
+
+---
+
+#### 9.6.5 Component 4 — Pipeline Depth (D) · 15%
+
+**What it measures:** How large is the total addressable opportunity in this market?
+
+```
+D = min(tier_1_2_count / 200, 1) × 100
+```
+
+- **Tier 1 + Tier 2** = venues scoring ≥ 50 — the "winnable" pipeline
+- **Saturation at 200:** Markets with 200+ winnable venues are treated equally on this dimension
+- Captures *scale potential* beyond just the top-tier targets
+
+| T1+T2 Count | D Score | Interpretation |
+|-------------|---------|----------------|
+| 10 | 5 | Niche market — limited growth ceiling |
+| 50 | 25 | Small but viable regional market |
+| 200+ | 100 | Major market — can sustain multi-year growth |
+
+**Example values:** Germany D=100 (1,597 T1+T2), Netherlands D=100 (928), Australia D=100 (318), Singapore D=34 (68)
+
+**Why 15%:** Pipeline depth indicates long-term growth potential. A market with 1,000 winnable venues can sustain years of sales activity, while a market with 30 will be exhausted quickly. Weighted lower than readiness because depth is a future indicator — you can't sell to T2 venues as easily as T1.
+
+---
+
+#### 9.6.6 Component 5 — Earning Potential (E) · 20%
+
+**What it measures:** How much annual revenue will Tixr earn from this market?
+
+This is a **three-step calculation:**
+
+**Step 1 — Per-venue annual value:**
+```
+venue_annual_value = max(avg_capacity, 1500) × 12 events × $45 ticket × 2.5% fee
+```
 
 | Parameter | Value | Rationale |
 |-----------|-------|-----------|
+| `avg_capacity` | Varies by market | Average venue capacity from pipeline data; floored at 1,500 |
 | Events/year | 12 | Conservative: ~1 event/month per venue |
-| Avg ticket price | $45 | Blended across premium and general admission |
-| Tixr fee rate | 2.5% | Service fee on gross ticket revenue |
-| Sales cost/venue | $8,000 | Outreach, negotiation, onboarding |
-| Market entry base | $50,000 | Local presence, legal, initial marketing |
+| Avg ticket price | $45 | Blended across premium ($80+) and general admission ($25) |
+| Tixr fee rate | 2.5% | Platform service fee on gross ticket revenue |
 
-These are directional estimates. Actual figures depend on negotiated fee rates, event frequency, and ticket prices.
+*Example:* A 5,000-seat venue → 5,000 × 12 × $45 × 0.025 = **$67,500/year**
 
-**Example Rankings (as of pipeline run):**
+**Step 2 — Market-level economics:**
+```
+annual_revenue   = winnable_venues (T1+T2) × venue_annual_value
+total_investment = $50,000 (market entry) + winnable_venues × $8,000 (per venue)
+roi_multiple     = annual_revenue / total_investment
+```
 
-| Rank | Market | T1 | T1+T2 | Avg Score | Mkt Score | Annual Rev | ROI | Rank Score |
-|------|--------|----|-------|-----------|----------|------------|-----|-----------|
-| #1 | Germany | 50 | 1,597 | 61.6 | 53.3 | $314M | 24.5x | 81.1 |
-| #2 | Australia | 30 | 318 | 63.9 | 57.2 | $46M | 17.6x | 77.6 |
-| #3 | Netherlands | 18 | 928 | 62.2 | 55.5 | $271M | 36.2x | 73.3 |
+| Parameter | Value | Rationale |
+|-----------|-------|-----------|
+| Market entry base | $50,000 | Local presence, legal setup, initial marketing |
+| Sales cost/venue | $8,000 | Outreach, negotiation, onboarding per venue |
+
+*Example (Germany):* 1,597 winnable × $196K/venue = **$314M/year** revenue, $12.8M investment → **24.5x ROI**
+
+**Step 3 — Log-scale normalization:**
+```
+E = clamp((log10(annual_revenue) − 5.0) / 3.5, 0, 1) × 100
+```
+
+| Annual Revenue | log10 | E Score | Meaning |
+|----------------|-------|---------|---------|
+| $100K | 5.0 | 0 | Negligible market |
+| $1M | 6.0 | 29 | Small niche |
+| $5.6M (Singapore) | 6.75 | 50 | Meaningful but modest |
+| $10M | 7.0 | 57 | Mid-size opportunity |
+| $46M (Australia) | 7.66 | 76 | Large market |
+| $100M | 8.0 | 86 | Major market |
+| $314M (Germany) | 8.50 | 100 | Maximum (capped) |
+
+**Why log-scale?** Annual revenue spans 4 orders of magnitude ($100K–$450M). Linear normalization would let a $314M market score 700x higher than a $450K market, completely drowning out all other signals. Log-scale compresses the range: Germany ($314M) scores 100 while Singapore ($5.6M) still scores 50 — meaningful differentiation without extreme domination.
+
+---
+
+#### 9.6.7 Putting It All Together — Worked Example
+
+**Germany (Rank #1, score 81.1):**
+
+| Component | Raw Value | Normalized (0–100) | × Weight | Contribution |
+|-----------|-----------|-------------------|----------|-------------|
+| Q (Quality) | Avg score 61.6 | 61.6 | × 0.25 | 15.4 |
+| M (Market) | Market score 53.3 | 53.3 | × 0.20 | 10.7 |
+| R (Readiness) | 50 Tier 1 venues | 100.0 (50/30 → capped) | × 0.20 | 20.0 |
+| D (Depth) | 1,597 T1+T2 | 100.0 (1597/200 → capped) | × 0.15 | 15.0 |
+| E (Earnings) | $314M/year | 100.0 (log10=8.50) | × 0.20 | 20.0 |
+| **Total** | | | | **81.1** |
+
+**Singapore (Rank ~5, score 66.6):**
+
+| Component | Raw Value | Normalized (0–100) | × Weight | Contribution |
+|-----------|-----------|-------------------|----------|-------------|
+| Q (Quality) | Avg score 72.0 | 72.0 | × 0.25 | 18.0 |
+| M (Market) | Market score 67.3 | 67.3 | × 0.20 | 13.5 |
+| R (Readiness) | 43 Tier 1 venues | 100.0 (43/30 → capped) | × 0.20 | 20.0 |
+| D (Depth) | 68 T1+T2 | 34.0 (68/200) | × 0.15 | 5.1 |
+| E (Earnings) | $5.6M/year | 50.0 (log10=6.75) | × 0.20 | 10.0 |
+| **Total** | | | | **66.6** |
+
+**Why Germany > Singapore despite lower quality:** Germany has 23× more winnable venues, 56× more annual revenue, and full pipeline saturation. Singapore wins on quality (+10 pts) and fundamentals (+14 pts), but can't overcome Germany's scale and earning potential advantages. This accurately reflects business reality: Germany is a larger revenue opportunity even though Singapore's venues are individually higher-quality.
+
+**Qatar (Rank ~20, score ~37):**
+
+| Component | Raw Value | Normalized (0–100) | × Weight | Contribution |
+|-----------|-----------|-------------------|----------|-------------|
+| Q (Quality) | Avg score 55.2 | 55.2 | × 0.25 | 13.8 |
+| M (Market) | Market score 67.1 | 67.1 | × 0.20 | 13.4 |
+| R (Readiness) | 0 Tier 1 venues | 0.0 | × 0.20 | 0.0 |
+| D (Depth) | 15 T1+T2 | 7.5 (15/200) | × 0.15 | 1.1 |
+| E (Earnings) | $2.6M/year | 41.0 (log10=6.41) | × 0.20 | 8.2 |
+| **Total** | | | | **36.5** |
+
+**Why Qatar ranks low:** Zero Tier 1 venues (R=0) means no immediate sales targets. Small pipeline (15 venues) and modest earnings ($2.6M) further penalize. Strong market score (67.1) isn't enough to overcome the lack of actionable leads.
+
+---
+
+#### 9.6.8 Summary Rankings (as of pipeline run)
+
+| Rank | Market | Q | M | R | D | E | Total |
+|------|--------|---|---|---|---|---|-------|
+| #1 | **Germany** | 15.4 | 10.7 | 20.0 | 15.0 | 20.0 | **81.1** |
+| #2 | **Australia** | 16.0 | 11.4 | 20.0 | 15.0 | 15.2 | **77.6** |
+| #3 | **Netherlands** | 15.6 | 11.1 | 12.0 | 15.0 | 19.6 | **73.3** |
 
 ---
 
