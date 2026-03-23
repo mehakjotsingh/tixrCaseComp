@@ -1,0 +1,270 @@
+<style>
+.ttip{background:rgba(8,11,18,0.97)!important;border:1px solid rgba(255,255,255,0.13)!important;border-radius:6px!important;color:#E2E8F0!important;font-size:12px!important;padding:6px 10px!important;box-shadow:none!important;line-height:1.5!important;}
+.leaflet-tooltip.ttip::before{display:none!important;}
+.leaflet-container{background:#0A0C12!important;font-family:-apple-system,'Helvetica Neue',Arial,sans-serif!important;}
+.leaflet-control-zoom a{background:#0D1018!important;color:#4B5563!important;border-color:rgba(255,255,255,0.08)!important;}
+.leaflet-control-zoom a:hover{background:#161B2A!important;color:#E2E8F0!important;}
+select option{background:#0D1018;color:#9CA3AF;}
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+
+<div style="border-radius:10px;overflow:hidden;">
+<div id="tixr" style="background:#080B12;border-radius:10px;overflow:hidden;font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;color:#C8CDD8;">
+
+<div style="background:#0C0F18;padding:13px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.06);">
+  <div style="display:flex;align-items:center;gap:11px;">
+    <div style="background:#F0A500;border-radius:4px;padding:3px 9px;font-size:12px;font-weight:800;color:#0C0F18;letter-spacing:0.04em;">TIXR</div>
+    <span style="color:rgba(255,255,255,0.12);font-size:20px;font-weight:200;line-height:1;">|</span>
+    <span style="font-size:14px;font-weight:500;color:#E2E8F0;letter-spacing:0.01em;">Global Venue Intelligence System</span>
+    <span style="font-size:10px;padding:2px 7px;border-radius:10px;background:rgba(240,165,0,0.12);color:#F0A500;border:1px solid rgba(240,165,0,0.2);">BETA</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:13px;">
+    <span style="font-size:10px;color:#1F2937;font-family:'Courier New',monospace;">Mar 14 2026</span>
+    <span style="font-size:11px;color:#374151;display:flex;align-items:center;gap:5px;"><span style="width:5px;height:5px;border-radius:50%;background:#10B981;display:inline-block;"></span>Live · 20 venues · 5 markets</span>
+  </div>
+</div>
+
+<div style="display:flex;background:#0C0F18;border-bottom:1px solid rgba(255,255,255,0.06);">
+  <button id="btn-m" onclick="tTab('m')" style="background:transparent;border:none;border-bottom:2px solid #F0A500;padding:10px 20px;font-size:13px;font-weight:500;color:#F0A500;cursor:pointer;font-family:inherit;">Map Intelligence</button>
+  <button id="btn-t" onclick="tTab('t')" style="background:transparent;border:none;border-bottom:2px solid transparent;padding:10px 20px;font-size:13px;font-weight:500;color:#374151;cursor:pointer;font-family:inherit;">Venue Table</button>
+</div>
+
+<div id="vm" style="display:flex;height:615px;">
+  <div id="sb" style="width:182px;min-width:182px;background:#0C0F18;overflow-y:auto;border-right:1px solid rgba(255,255,255,0.06);padding:10px;height:615px;box-sizing:border-box;"></div>
+  <div style="flex:1;position:relative;min-width:0;">
+    <div id="lmap" style="height:615px;width:100%;"></div>
+    <div style="position:absolute;bottom:14px;left:10px;background:rgba(8,11,18,0.93);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:10px 13px;z-index:999;pointer-events:none;">
+      <div style="font-size:9px;letter-spacing:0.16em;color:#1F2937;text-transform:uppercase;margin-bottom:7px;">Exclusivity Risk</div>
+      <div style="font-size:11px;color:#4B5563;display:flex;flex-direction:column;gap:5px;">
+        <div style="display:flex;align-items:center;gap:7px;"><span style="width:8px;height:8px;border-radius:50%;background:#10B981;flex-shrink:0;display:inline-block;"></span>Low &lt;30 · Target now</div>
+        <div style="display:flex;align-items:center;gap:7px;"><span style="width:8px;height:8px;border-radius:50%;background:#F0A500;flex-shrink:0;display:inline-block;"></span>Medium 30–60 · Investigate</div>
+        <div style="display:flex;align-items:center;gap:7px;"><span style="width:8px;height:8px;border-radius:50%;background:#EF4444;flex-shrink:0;display:inline-block;"></span>High &gt;60 · Likely locked</div>
+      </div>
+    </div>
+    <div style="position:absolute;top:10px;right:10px;background:rgba(8,11,18,0.93);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:8px 12px;z-index:999;pointer-events:none;">
+      <div style="font-size:9px;letter-spacing:0.13em;color:#1F2937;text-transform:uppercase;margin-bottom:5px;">Marker Size</div>
+      <div style="font-size:11px;color:#374151;">= Capacity</div>
+    </div>
+  </div>
+  <div id="dp" style="width:0;overflow:hidden;background:#0C0F18;border-left:1px solid rgba(255,255,255,0.06);transition:width 0.25s ease;height:615px;flex-shrink:0;">
+    <div id="dc" style="min-width:262px;height:100%;overflow-y:auto;padding:15px;box-sizing:border-box;"></div>
+  </div>
+</div>
+
+<div id="vt" style="display:none;padding:14px;background:#080B12;min-height:615px;">
+  <div style="display:flex;gap:7px;margin-bottom:13px;flex-wrap:wrap;align-items:center;">
+    <select id="fm" onchange="tF()" style="background:#0C0F18;border:1px solid rgba(255,255,255,0.09);color:#6B7280;padding:6px 10px;border-radius:6px;font-size:12px;font-family:inherit;outline:none;cursor:pointer;">
+      <option value="">All Markets</option><option>UK</option><option>Brazil</option><option>Singapore</option><option>Indonesia</option><option>India</option>
+    </select>
+    <select id="ft" onchange="tF()" style="background:#0C0F18;border:1px solid rgba(255,255,255,0.09);color:#6B7280;padding:6px 10px;border-radius:6px;font-size:12px;font-family:inherit;outline:none;cursor:pointer;">
+      <option value="">All Types</option><option>Arena</option><option>Concert Hall</option><option>Club/Venue</option><option>Theatre</option><option>Intimate</option><option>Outdoor</option><option>Unique Venue</option>
+    </select>
+    <select id="fe" onchange="tF()" style="background:#0C0F18;border:1px solid rgba(255,255,255,0.09);color:#6B7280;padding:6px 10px;border-radius:6px;font-size:12px;font-family:inherit;outline:none;cursor:pointer;">
+      <option value="">All Excl. Risk</option><option value="lo">Low &lt;30</option><option value="md">Medium 30–60</option><option value="hi">High &gt;60</option>
+    </select>
+    <select id="fs" onchange="tF()" style="background:#0C0F18;border:1px solid rgba(255,255,255,0.09);color:#6B7280;padding:6px 10px;border-radius:6px;font-size:12px;font-family:inherit;outline:none;cursor:pointer;">
+      <option value="opp">Sort: Opportunity ↓</option><option value="excl">Sort: Excl. Risk ↑</option><option value="cap">Sort: Capacity ↓</option><option value="ev">Sort: Activity ↓</option><option value="fit">Sort: Premium Fit ↓</option>
+    </select>
+    <span id="cnt" style="margin-left:auto;font-size:10px;color:#1F2937;font-family:'Courier New',monospace;"></span>
+  </div>
+  <div style="border:1px solid rgba(255,255,255,0.06);border-radius:8px;overflow:hidden;">
+    <table style="width:100%;border-collapse:collapse;font-size:12px;">
+      <thead><tr style="background:rgba(255,255,255,0.02);border-bottom:1px solid rgba(255,255,255,0.07);">
+        <th style="text-align:left;padding:9px 11px;font-size:9px;letter-spacing:0.14em;color:#1F2937;font-weight:400;text-transform:uppercase;width:28px;">#</th>
+        <th style="text-align:left;padding:9px 11px;font-size:9px;letter-spacing:0.14em;color:#1F2937;font-weight:400;text-transform:uppercase;">Venue</th>
+        <th style="text-align:left;padding:9px 11px;font-size:9px;letter-spacing:0.14em;color:#1F2937;font-weight:400;text-transform:uppercase;">Market</th>
+        <th style="text-align:left;padding:9px 11px;font-size:9px;letter-spacing:0.14em;color:#1F2937;font-weight:400;text-transform:uppercase;">Type</th>
+        <th style="text-align:right;padding:9px 11px;font-size:9px;letter-spacing:0.14em;color:#1F2937;font-weight:400;text-transform:uppercase;">Capacity</th>
+        <th style="text-align:right;padding:9px 11px;font-size:9px;letter-spacing:0.14em;color:#1F2937;font-weight:400;text-transform:uppercase;">Events/yr</th>
+        <th style="text-align:left;padding:9px 11px;font-size:9px;letter-spacing:0.14em;color:#1F2937;font-weight:400;text-transform:uppercase;">Vendor Signal</th>
+        <th style="text-align:center;padding:9px 11px;font-size:9px;letter-spacing:0.14em;color:#1F2937;font-weight:400;text-transform:uppercase;">Excl. Risk</th>
+        <th style="text-align:center;padding:9px 11px;font-size:9px;letter-spacing:0.14em;color:#1F2937;font-weight:400;text-transform:uppercase;">Fit</th>
+        <th style="text-align:center;padding:9px 11px;font-size:9px;letter-spacing:0.14em;color:#1F2937;font-weight:400;text-transform:uppercase;">Opp.</th>
+      </tr></thead>
+      <tbody id="tb"></tbody>
+    </table>
+  </div>
+</div>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+var TM=null;
+var VD=[
+  {n:"The Roundhouse",c:"London",mk:"UK",la:51.543,lo:-0.152,t:"Concert Hall",cap:3300,ev:45,vd:"Ticketmaster",ex:72,cf:"High",pf:88,evi:"Website uses Ticketmaster embed; consistently appeared in Live Nation press releases since 2018."},
+  {n:"Electric Ballroom",c:"London",mk:"UK",la:51.540,lo:-0.143,t:"Club/Venue",cap:1500,ev:78,vd:"Unknown",ex:28,cf:"Medium",pf:76,evi:"No clear national vendor detected; mixed ticket sources observed across online listings. Independent-owned."},
+  {n:"Jazz Cafe",c:"London",mk:"UK",la:51.539,lo:-0.144,t:"Intimate",cap:440,ev:120,vd:"Dice FM",ex:15,cf:"High",pf:82,evi:"Dice FM integration confirmed on website. No Live Nation affiliation found in any public data or press coverage."},
+  {n:"O2 Academy Brixton",c:"London",mk:"UK",la:51.463,lo:-0.114,t:"Arena",cap:4921,ev:38,vd:"Live Nation",ex:91,cf:"Very High",pf:65,evi:"O2 Academy chain is 100% owned and operated by Live Nation. Not winnable under current structure."},
+  {n:"EartH Theatre",c:"London",mk:"UK",la:51.563,lo:-0.071,t:"Theatre",cap:750,ev:56,vd:"Resident Advisor",ex:22,cf:"Medium",pf:91,evi:"Arts venue; Resident Advisor listings indicate fully independent operation with no exclusivity clause found."},
+  {n:"Lafayette",c:"London",mk:"UK",la:51.531,lo:-0.118,t:"Club/Venue",cap:700,ev:89,vd:"Unknown",ex:18,cf:"High",pf:85,evi:"Opened 2019 under independent ownership. No exclusivity signals in press or LinkedIn. Multiple ticketing vendors observed."},
+  {n:"Audio Club",c:"São Paulo",mk:"Brazil",la:-23.591,lo:-46.649,t:"Club/Venue",cap:3000,ev:65,vd:"Ingresso.com",ex:35,cf:"Medium",pf:79,evi:"Uses Ingresso.com, a regional platform. No Live Nation São Paulo affiliation confirmed. T4F presence not detected."},
+  {n:"Carioca Club",c:"São Paulo",mk:"Brazil",la:-23.550,lo:-46.640,t:"Club/Venue",cap:2000,ev:48,vd:"Sympla",ex:25,cf:"Medium",pf:72,evi:"Sympla-listed; driven by independent regional promoters. No global exclusivity contract evidence found."},
+  {n:"Ibirapuera Amphitheater",c:"São Paulo",mk:"Brazil",la:-23.587,lo:-46.655,t:"Outdoor",cap:4000,ev:22,vd:"Unknown",ex:20,cf:"Low",pf:86,evi:"City-owned public venue. Tickets sold through multiple channels historically. No exclusivity clause in public records."},
+  {n:"Vibra São Paulo",c:"São Paulo",mk:"Brazil",la:-23.595,lo:-46.685,t:"Concert Hall",cap:5500,ev:32,vd:"Live Nation",ex:88,cf:"High",pf:70,evi:"Operated by T4F, Live Nation's official Brazilian partner. Very high exclusivity risk — avoid near-term."},
+  {n:"Beco 203",c:"São Paulo",mk:"Brazil",la:-23.558,lo:-46.658,t:"Intimate",cap:600,ev:95,vd:"Unknown",ex:12,cf:"Medium",pf:88,evi:"Boutique independent venue. No digital ticketing vendor signal found in any listing. Word-of-mouth programming model."},
+  {n:"Esplanade Theatres",c:"Singapore",mk:"Singapore",la:1.290,lo:103.856,t:"Theatre",cap:1800,ev:52,vd:"SISTIC",ex:30,cf:"Medium",pf:94,evi:"Government-linked entity; uses SISTIC as default. Some flexibility observed for co-productions with external platforms."},
+  {n:"Zouk Singapore",c:"Singapore",mk:"Singapore",la:1.281,lo:103.859,t:"Club/Venue",cap:2000,ev:104,vd:"Resident Advisor",ex:22,cf:"High",pf:90,evi:"Reopened 2019 under new ownership. RA presence signals independent tech stack. No exclusivity contract in filings."},
+  {n:"The Star Theatre",c:"Singapore",mk:"Singapore",la:1.332,lo:103.745,t:"Concert Hall",cap:5000,ev:28,vd:"SISTIC",ex:45,cf:"Medium",pf:80,evi:"SISTIC preferred but multi-vendor events observed over 24 months. Not fully exclusive — worth testing."},
+  {n:"Marquee Singapore",c:"Singapore",mk:"Singapore",la:1.284,lo:103.861,t:"Club/Venue",cap:1700,ev:88,vd:"Unknown",ex:20,cf:"High",pf:92,evi:"US brand (MGM Resorts); local ops show no exclusive ticketing contract in public filings or LinkedIn history."},
+  {n:"ZEPP @ Big Box",c:"Singapore",mk:"Singapore",la:1.329,lo:103.750,t:"Concert Hall",cap:3000,ev:35,vd:"Ticketmaster Asia",ex:55,cf:"Medium",pf:78,evi:"Ticketmaster Asia contract suspected but unconfirmed. ZEPP brand has known global-level deals — verify directly."},
+  {n:"JIExpo Kemayoran",c:"Jakarta",mk:"Indonesia",la:-6.161,lo:106.849,t:"Arena",cap:20000,ev:18,vd:"Loket.com",ex:25,cf:"Low",pf:75,evi:"State-owned venue. Loket.com (Go-Jek ecosystem) is regional only — no exclusivity. Low event cadence limits near-term value."},
+  {n:"Ciputra Artpreneur",c:"Jakarta",mk:"Indonesia",la:-6.219,lo:106.822,t:"Theatre",cap:1200,ev:42,vd:"Unknown",ex:18,cf:"Medium",pf:89,evi:"Private arts foundation. Multiple vendors used across event types. No public ticketing contract found in any source."},
+  {n:"Mehboob Studios",c:"Mumbai",mk:"India",la:19.060,lo:72.837,t:"Unique Venue",cap:1000,ev:25,vd:"BookMyShow",ex:20,cf:"Medium",pf:85,evi:"BookMyShow dominant in India but not venue-exclusive per contract. Film studio events model creates premium audience fit."},
+  {n:"Dome NSCI",c:"Mumbai",mk:"India",la:19.071,lo:72.866,t:"Arena",cap:6000,ev:30,vd:"BookMyShow",ex:30,cf:"Low",pf:77,evi:"NSCI is a government body. BookMyShow is listed as preferred but no exclusivity clause confirmed in public data."}
+];
+var MKT={
+  UK:{ctr:[51.5,-0.12],z:11,p:1,sz:"$2.1B",col:"#F0A500"},
+  Brazil:{ctr:[-23.57,-46.66],z:11,p:2,sz:"$890M",col:"#10B981"},
+  Singapore:{ctr:[1.30,103.82],z:12,p:2,sz:"$620M",col:"#38BDF8"},
+  Indonesia:{ctr:[-6.19,106.83],z:11,p:3,sz:"$445M",col:"#A78BFA"},
+  India:{ctr:[19.07,72.85],z:12,p:3,sz:"$1.3B",col:"#FB923C"}
+};
+function ec(e){return e<30?'#10B981':e<60?'#F0A500':'#EF4444';}
+function el(e){return e<30?'Low':e<60?'Med':'High';}
+function opp(v){return Math.round(((100-v.ex)/100*45)+(v.pf/100*35)+(Math.min(v.ev/120,1)*20));}
+function oc(o){return o>=75?'#10B981':o>=55?'#F0A500':'#EF4444';}
+
+function tTab(tab){
+  var m=tab==='m';
+  document.getElementById('vm').style.display=m?'flex':'none';
+  document.getElementById('vt').style.display=m?'none':'block';
+  var bm=document.getElementById('btn-m'),bt=document.getElementById('btn-t');
+  bm.style.borderBottomColor=m?'#F0A500':'transparent';bm.style.color=m?'#F0A500':'#374151';
+  bt.style.borderBottomColor=m?'transparent':'#F0A500';bt.style.color=m?'#374151':'#F0A500';
+  if(!m)tF();
+  if(m&&TM)setTimeout(function(){TM.invalidateSize();},100);
+}
+
+function initMap(){
+  TM=L.map('lmap',{zoomControl:true,attributionControl:false}).setView([20,10],2);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19,subdomains:'abcd'}).addTo(TM);
+  VD.forEach(function(v){
+    var r=Math.max(6,Math.min(17,Math.sqrt(v.cap/3300)*11));
+    var mk=L.circleMarker([v.la,v.lo],{radius:r,fillColor:ec(v.ex),color:'rgba(0,0,0,0.4)',weight:1.5,fillOpacity:0.82}).addTo(TM);
+    mk.on('click',function(){showD(v);});
+    mk.bindTooltip('<strong>'+v.n+'</strong><br>'+v.c+' · '+v.t+'<br>Cap: '+v.cap.toLocaleString()+' &nbsp;|&nbsp; Excl: '+v.ex+'&nbsp;('+el(v.ex)+')',{className:'ttip',direction:'top',offset:[0,-(r+5)]});
+  });
+  renderSB();
+}
+
+function renderSB(){
+  var sb=document.getElementById('sb');
+  var h='<div style="font-size:9px;letter-spacing:0.16em;color:#1F2937;text-transform:uppercase;margin-bottom:8px;padding-left:2px;">Target Markets</div>';
+  Object.keys(MKT).forEach(function(mk){
+    var m=MKT[mk];
+    var vs=VD.filter(function(v){return v.mk===mk;});
+    var ae=Math.round(vs.reduce(function(a,v){return a+v.ex;},0)/vs.length);
+    var top=vs.slice().sort(function(a,b){return opp(b)-opp(a);})[0];
+    var winnable=vs.filter(function(v){return v.ex<30;}).length;
+    h+='<div onclick="flyTo(\''+mk+'\')" style="background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.055);border-radius:7px;padding:9px;margin-bottom:7px;cursor:pointer;" onmouseover="this.style.background=\'rgba(255,255,255,0.05)\'" onmouseout="this.style.background=\'rgba(255,255,255,0.025)\'">';
+    h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">';
+    h+='<span style="font-size:12px;font-weight:600;color:#E2E8F0;">'+mk+'</span>';
+    h+='<span style="font-size:9px;padding:2px 5px;border-radius:3px;background:rgba(255,255,255,0.05);color:'+m.col+';">P'+m.p+'</span>';
+    h+='</div>';
+    h+='<div style="font-size:10px;color:#374151;margin-bottom:2px;">'+vs.length+' venues · '+m.sz+' mkt</div>';
+    h+='<div style="font-size:10px;color:#374151;margin-bottom:2px;">Avg excl: <span style="color:'+ec(ae)+';">'+ae+'</span> &nbsp;·&nbsp; <span style="color:#10B981;">'+winnable+' winnable</span></div>';
+    h+='<div style="font-size:9px;color:#1F2937;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Top: '+top.n+'</div>';
+    h+='</div>';
+  });
+  sb.innerHTML=h;
+}
+
+function flyTo(mk){
+  var m=MKT[mk];
+  TM.flyTo(m.ctr,m.z,{duration:1.3,easeLinearity:0.5});
+}
+
+function showD(v){
+  var dp=document.getElementById('dp');
+  dp.style.width='265px';
+  setTimeout(function(){TM.invalidateSize();},280);
+  var o=opp(v),ecv=ec(v.ex),ocv=oc(o);
+  var h='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:11px;">';
+  h+='<div style="font-size:14px;font-weight:600;color:#E2E8F0;line-height:1.3;padding-right:8px;">'+v.n+'</div>';
+  h+='<button onclick="closeD()" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:4px;color:#4B5563;font-size:14px;cursor:pointer;padding:1px 7px;line-height:1.4;flex-shrink:0;">×</button>';
+  h+='</div>';
+  h+='<div style="font-size:11px;color:#374151;margin-bottom:13px;">'+v.c+', '+v.mk+' &nbsp;·&nbsp; '+v.t+'</div>';
+  h+='<div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.055);border-radius:8px;padding:12px;margin-bottom:11px;text-align:center;">';
+  h+='<div style="font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:#1F2937;margin-bottom:3px;">Opportunity Score</div>';
+  h+='<div style="font-size:36px;font-weight:700;color:'+ocv+';font-family:\'Courier New\',monospace;line-height:1.1;">'+o+'</div>';
+  h+='<div style="font-size:10px;color:#1F2937;">/100 · weighted composite</div>';
+  h+='</div>';
+  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:11px;">';
+  h+=sc('Capacity',v.cap.toLocaleString());h+=sc('Events/yr',v.ev);
+  h+=sc('Vendor',v.vd);h+=sc('Confidence',v.cf);
+  h+='</div>';
+  h+='<div style="margin-bottom:9px;">';
+  h+='<div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:4px;"><span style="color:#374151;">Exclusivity Risk</span><span style="color:'+ecv+';">'+v.ex+' · '+el(v.ex)+'</span></div>';
+  h+='<div style="height:4px;background:rgba(255,255,255,0.06);border-radius:2px;"><div style="height:4px;width:'+v.ex+'%;background:'+ecv+';border-radius:2px;transition:width 0.4s;"></div></div>';
+  h+='</div>';
+  h+='<div style="margin-bottom:12px;">';
+  h+='<div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:4px;"><span style="color:#374151;">Premium Fit</span><span style="color:#C8CDD8;">'+v.pf+'%</span></div>';
+  h+='<div style="height:4px;background:rgba(255,255,255,0.06);border-radius:2px;"><div style="height:4px;width:'+v.pf+'%;background:#7C8EF7;border-radius:2px;transition:width 0.4s;"></div></div>';
+  h+='</div>';
+  h+='<div style="border-left:2px solid rgba(255,255,255,0.055);padding:8px 10px;">';
+  h+='<div style="font-size:9px;letter-spacing:0.13em;text-transform:uppercase;color:#1F2937;margin-bottom:5px;">Evidence</div>';
+  h+='<div style="font-size:11px;color:#374151;line-height:1.6;">'+v.evi+'</div>';
+  h+='</div>';
+  document.getElementById('dc').innerHTML=h;
+}
+function sc(l,v){
+  return '<div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:6px;padding:7px 9px;">' +
+    '<div style="font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#1F2937;margin-bottom:2px;">'+l+'</div>' +
+    '<div style="font-size:11px;font-weight:500;color:#9CA3AF;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">'+v+'</div>' +
+    '</div>';
+}
+function closeD(){
+  document.getElementById('dp').style.width='0';
+  setTimeout(function(){TM.invalidateSize();},280);
+}
+
+function tF(){
+  var mk=document.getElementById('fm').value,tp=document.getElementById('ft').value,
+      ex=document.getElementById('fe').value,so=document.getElementById('fs').value;
+  var r=VD.filter(function(v){
+    if(mk&&v.mk!==mk)return false;
+    if(tp&&v.t!==tp)return false;
+    if(ex==='lo'&&v.ex>=30)return false;
+    if(ex==='md'&&(v.ex<30||v.ex>=60))return false;
+    if(ex==='hi'&&v.ex<60)return false;
+    return true;
+  });
+  r.sort(function(a,b){
+    if(so==='opp')return opp(b)-opp(a);
+    if(so==='excl')return a.ex-b.ex;
+    if(so==='cap')return b.cap-a.cap;
+    if(so==='ev')return b.ev-a.ev;
+    if(so==='fit')return b.pf-a.pf;
+    return 0;
+  });
+  renderTbl(r);
+  document.getElementById('cnt').textContent=r.length+' / 20 venues';
+}
+
+function renderTbl(data){
+  var tb=document.getElementById('tb');
+  if(!data.length){
+    tb.innerHTML='<tr><td colspan="10" style="text-align:center;padding:30px;color:#1F2937;font-size:12px;">No venues match selected filters</td></tr>';
+    return;
+  }
+  tb.innerHTML=data.map(function(v,i){
+    var o=opp(v),ecv=ec(v.ex),ocv=oc(o);
+    return '<tr style="border-bottom:1px solid rgba(255,255,255,0.03);" onmouseover="this.style.background=\'rgba(255,255,255,0.025)\'" onmouseout="this.style.background=\'transparent\'">' +
+      '<td style="padding:9px 11px;color:#1F2937;font-family:\'Courier New\',monospace;font-size:11px;">'+(i+1)+'</td>' +
+      '<td style="padding:9px 11px;font-weight:500;color:#E2E8F0;max-width:135px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+v.n+'</td>' +
+      '<td style="padding:9px 11px;"><span style="font-size:10px;padding:2px 7px;border-radius:4px;background:rgba(255,255,255,0.05);color:#6B7280;white-space:nowrap;">'+v.mk+'</span></td>' +
+      '<td style="padding:9px 11px;color:#374151;white-space:nowrap;font-size:11px;">'+v.t+'</td>' +
+      '<td style="padding:9px 11px;text-align:right;color:#4B5563;font-family:\'Courier New\',monospace;">'+v.cap.toLocaleString()+'</td>' +
+      '<td style="padding:9px 11px;text-align:right;color:#4B5563;font-family:\'Courier New\',monospace;">'+v.ev+'</td>' +
+      '<td style="padding:9px 11px;color:#374151;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:105px;font-size:11px;">'+v.vd+'</td>' +
+      '<td style="padding:9px 11px;text-align:center;"><span style="font-family:\'Courier New\',monospace;font-size:12px;color:'+ecv+';">'+v.ex+'</span><span style="font-size:9px;margin-left:4px;color:'+ecv+';">'+el(v.ex)+'</span></td>' +
+      '<td style="padding:9px 11px;text-align:center;"><div style="display:flex;align-items:center;gap:4px;justify-content:center;"><div style="width:34px;height:3px;background:rgba(255,255,255,0.06);border-radius:2px;"><div style="width:'+v.pf+'%;height:3px;background:#7C8EF7;border-radius:2px;"></div></div><span style="font-size:11px;color:#4B5563;">'+v.pf+'</span></div></td>' +
+      '<td style="padding:9px 11px;text-align:center;"><span style="font-size:13px;font-weight:700;color:'+ocv+';font-family:\'Courier New\',monospace;">'+o+'</span></td>' +
+      '</tr>';
+  }).join('');
+}
+
+initMap();
+tF();
+</script>

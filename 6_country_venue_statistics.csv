@@ -1,0 +1,61 @@
+region,country,total_venues,venues_with_capacity,venues_with_website
+APAC,Australia,437,182,75
+APAC,China,1,0,0
+APAC,India,337,123,54
+APAC,Japan,940,259,180
+APAC,New Zealand,219,47,12
+APAC,People's Republic of China,775,86,19
+APAC,South Korea,111,32,7
+EMEA,Austria,318,39,30
+EMEA,Belgium,628,132,94
+EMEA,Czech Republic,572,61,53
+EMEA,Denmark,253,22,52
+EMEA,Finland,258,109,41
+EMEA,France,2065,554,236
+EMEA,Germany,1862,231,220
+EMEA,Greece,313,89,20
+EMEA,Ireland,314,75,21
+EMEA,Italy,1788,473,304
+EMEA,Netherlands,931,123,123
+EMEA,Norway,196,28,14
+EMEA,Poland,540,162,44
+EMEA,Portugal,259,65,26
+EMEA,Spain,1170,303,110
+EMEA,Sweden,444,94,49
+EMEA,Switzerland,361,52,43
+EMEA,Turkey,250,105,29
+EMEA,United Kingdom,7171,880,540
+EMEA_Africa,Egypt,68,16,1
+EMEA_Africa,Kenya,26,9,0
+EMEA_Africa,Morocco,87,34,1
+EMEA_Africa,Nigeria,41,24,3
+EMEA_Africa,South Africa,181,53,12
+EMEA_Gulf,Bahrain,5,2,0
+EMEA_Gulf,Israel,304,74,25
+EMEA_Gulf,Kuwait,10,4,0
+EMEA_Gulf,Oman,6,5,0
+EMEA_Gulf,Qatar,19,11,2
+EMEA_Gulf,Saudi Arabia,46,17,0
+EMEA_Gulf,United Arab Emirates,31,15,4
+LATAM,Argentina,363,72,27
+LATAM,Brazil,853,325,46
+LATAM,Chile,151,69,6
+LATAM,Colombia,89,38,3
+LATAM,Costa Rica,15,8,4
+LATAM,Dominican Republic,13,6,1
+LATAM,Ecuador,68,53,1
+LATAM,Guatemala,31,24,1
+LATAM,Mexico,290,75,13
+LATAM,Panama,17,10,0
+LATAM,Peru,65,26,1
+LATAM,Puerto Rico,1,1,0
+LATAM,Uruguay,64,27,4
+LATAM,Venezuela,106,17,1
+SEA,Cambodia,22,6,0
+SEA,Indonesia,190,71,5
+SEA,Malaysia,63,13,2
+SEA,Myanmar,14,6,0
+SEA,Philippines,130,32,3
+SEA,Singapore,58,21,7
+SEA,Thailand,103,66,6
+SEA,Vietnam,53,10,2
