@@ -1148,7 +1148,7 @@ function computeTopRecs(aVD){
     var roiMult=annualRev>0?r2(annualRev/Math.max(totalInvest,1)):0;
     var logRev=annualRev>0?Math.log10(Math.max(annualRev,1)):0;
     var roiFactor=Math.max(0,Math.min((logRev-5.0)/3.5,1))*100;
-    var rankScore=avgScore*0.25+ms*0.20+Math.min(t1/30,1)*100*0.20+Math.min(nWin/200,1)*100*0.15+roiFactor*0.20;
+    var rankScore=avgScore*0.40+ms*0.25+Math.min(t1/30,1)*100*0.15+Math.min(nWin/200,1)*100*0.10+roiFactor*0.10;
     function fmtM(v){if(v>=1e6)return'$'+r2(v/1e6)+'M';if(v>=1000)return'$'+Math.round(v/1000)+'K';return'$'+Math.round(v);}
     var why=[];
     if(ms>=50)why.push('Strong market fundamentals (score: '+ms+') \u2014 high GDP & digital readiness');
