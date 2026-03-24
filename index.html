@@ -305,6 +305,36 @@ select option{background:#0D1018;color:#9CA3AF;}
 .scoring-weight-pct{font-family:var(--mono);font-weight:700;min-width:36px;font-size:13px;}
 .scoring-weight-label{font-size:12px;color:#9CA3AF;}
 .scoring-weight-desc{font-size:11px;color:#4B5563;}
+.mi-hero{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:24px;}
+.mi-hero-card{background:linear-gradient(135deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:16px;text-align:center;position:relative;overflow:hidden;transition:transform 0.2s,border-color 0.2s;}
+.mi-hero-card:hover{transform:translateY(-2px);border-color:rgba(255,255,255,0.12);}
+.mi-hero-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:10px 10px 0 0;}
+.mi-hero-card.gold::before{background:linear-gradient(90deg,#F0A500,#F7C948);}
+.mi-hero-card.green::before{background:linear-gradient(90deg,#10B981,#34D399);}
+.mi-hero-card.blue::before{background:linear-gradient(90deg,#38BDF8,#818CF8);}
+.mi-hero-card.purple::before{background:linear-gradient(90deg,#A78BFA,#C084FC);}
+.mi-hero-card.pink::before{background:linear-gradient(90deg,#F472B6,#FB7185);}
+.mi-hero-card.cyan::before{background:linear-gradient(90deg,#22D3EE,#06B6D4);}
+.mi-hv{font-size:26px;font-weight:800;font-family:'Courier New',monospace;line-height:1.1;}
+.mi-hl{font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:#4B5563;margin-top:4px;}
+.mi-section{margin-bottom:28px;}
+.mi-stitle{font-size:15px;font-weight:600;color:#E2E8F0;margin-bottom:4px;}
+.mi-sdesc{font-size:11px;color:#4B5563;margin-bottom:14px;}
+.mi-chart-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+.mi-chart-box{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:16px;position:relative;}
+.mi-chart-box canvas{max-height:300px;}
+.mi-tbl{width:100%;border-collapse:collapse;}
+.mi-tbl thead tr{background:rgba(255,255,255,0.03);border-bottom:1px solid rgba(255,255,255,0.08);}
+.mi-tbl th{text-align:left;padding:10px 12px;font-size:9px;letter-spacing:0.14em;color:#4B5563;font-weight:500;text-transform:uppercase;white-space:nowrap;cursor:pointer;user-select:none;transition:color 0.15s;}
+.mi-tbl th:hover{color:#9CA3AF;}
+.mi-tbl td{padding:10px 12px;font-size:12px;white-space:nowrap;border-bottom:1px solid rgba(255,255,255,0.03);color:#9CA3AF;}
+.mi-tbl tbody tr{transition:background 0.1s;cursor:pointer;}
+.mi-tbl tbody tr:hover{background:rgba(255,255,255,0.025);}
+.mi-pill{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;}
+.mi-bar-wrap{display:flex;align-items:center;gap:6px;}
+.mi-bar-track{width:60px;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;}
+.mi-bar-fill{height:4px;border-radius:2px;transition:width 0.6s ease;}
+@media(max-width:900px){.mi-chart-row{grid-template-columns:1fr;}.mi-hero{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));}}
 </style>
 </head>
 <body>
@@ -356,6 +386,12 @@ select option{background:#0D1018;color:#9CA3AF;}
         <rect x="11.5" y="1.5" width="3" height="13" rx="1"/>
       </svg>
       Market Scorecard<span class="nav-badge" id="nb-4"></span>
+    </div>
+    <div class="nav-item" id="nav-10" onclick="switchTab(10)">
+      <svg class="nav-ico" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M8 1.5l1.76 3.57 3.94.57-2.85 2.78.67 3.93L8 10.5l-3.52 1.85.67-3.93L2.3 5.64l3.94-.57z"/>
+      </svg>
+      Market Intelligence<span class="nav-badge" id="nb-10" style="background:rgba(244,114,182,0.12);color:#F472B6;"></span>
     </div>
     <div class="nav-sec">Focus Areas</div>
     <div class="nav-item" id="nav-5" onclick="switchTab(5)">
@@ -557,6 +593,31 @@ select option{background:#0D1018;color:#9CA3AF;}
       <span id="mkt-count" style="margin-left:auto;font-size:10px;color:#374151;font-family:'Courier New',monospace;"></span>
     </div>
     <div id="mkt-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;"></div>
+  </div>
+
+  <!-- TAB 10: Market Intelligence -->
+  <div id="tab-10" class="tab-pane fade-in" style="display:none;">
+    <div style="margin-bottom:6px;">
+      <div style="font-size:20px;font-weight:600;color:#E2E8F0;margin-bottom:4px;">Market Intelligence</div>
+      <div style="font-size:12px;color:#4B5563;margin-bottom:16px;">Comprehensive economic &amp; venue data across all target markets &mdash; powered by World Bank, Wikidata &amp; OSM intelligence</div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;align-items:center;">
+      <select id="mi-region" class="fsel" onchange="renderMI()"><option value="">All Regions</option></select>
+      <select id="mi-metric" class="fsel" onchange="renderMI()">
+        <option value="gdp">GDP per Capita</option><option value="internet">Internet Penetration</option><option value="mobile">Mobile Subscriptions</option><option value="tourism">Tourism Arrivals</option><option value="venues">Venue Count</option>
+      </select>
+      <span id="mi-count" style="margin-left:auto;font-size:10px;color:#374151;font-family:'Courier New',monospace;"></span>
+    </div>
+    <div id="mi-hero-bar"></div>
+    <div class="mi-chart-row"><div class="mi-chart-box"><canvas id="mi-chart-gdp"></canvas></div><div class="mi-chart-box"><canvas id="mi-chart-venue"></canvas></div></div>
+    <div class="mi-chart-row"><div class="mi-chart-box"><canvas id="mi-chart-tier"></canvas></div><div class="mi-chart-box"><canvas id="mi-chart-digital"></canvas></div></div>
+    <div class="mi-section">
+      <div class="mi-stitle">Country Deep Dive</div>
+      <div class="mi-sdesc">Click any row to view venues in that market</div>
+      <div style="border:1px solid rgba(255,255,255,0.06);border-radius:10px;overflow-x:auto;"><table class="mi-tbl"><thead><tr>
+        <th>Country</th><th>Region</th><th>Venues</th><th>Tier 1</th><th>Tier 2</th><th>Avg Score</th><th>GDP/Cap</th><th>Internet %</th><th>Mobile/100</th><th>Tourism</th><th>Mkt Score</th>
+      </tr></thead><tbody id="mi-tbody"></tbody></table></div>
+    </div>
   </div>
 
   <!-- TAB 5: SEA Focus -->
@@ -845,7 +906,8 @@ var TAB_INFO=[
   ['Go-To-Market Strategy','Top 3 markets + sequence + 30/60/90 day plan'],
   ['System Architecture','Two-stage pipeline: Orchestrator \u2192 Recommendation Engine'],
   ['Vendor Landscape','Competitive ticketing platform analysis \u2014 openness to Tixr partnership'],
-  ['Scoring Models','VWP + Premium Fit + Priority Score \u2014 how we rank every venue']
+  ['Scoring Models','VWP + Premium Fit + Priority Score \u2014 how we rank every venue'],
+  ['Market Intelligence','Comprehensive economic & venue data across all target markets']
 ];
 
 // ── Init header ──
@@ -871,7 +933,7 @@ function destroyChart(id){if(charts[id]){charts[id].destroy();delete charts[id];
 function makeChart(id,ctx,cfg){destroyChart(id);charts[id]=new Chart(ctx,cfg);return charts[id];}
 
 function switchTab(idx){
-  for(var i=0;i<10;i++){
+  for(var i=0;i<11;i++){
     var tp=document.getElementById('tab-'+i);
     if(!tp)continue;
     if(i===idx){tp.style.display=(i===2)?'flex':'block';}else{tp.style.display='none';}
@@ -898,6 +960,7 @@ function switchTab(idx){
   if(idx===7)renderArchitecture();
   if(idx===8)renderVendors();
   if(idx===9)renderScoring();
+  if(idx===10)renderMI();
 }
 
 // ════════════════════════════════════════
@@ -1025,7 +1088,7 @@ function applyScope(){
   // Re-render active tab
   ovInited=false; seaInited=false;
   var curTab=0;
-  for(var i=0;i<10;i++){var el=document.getElementById('tab-'+i);if(el&&el.style.display!=='none'){curTab=i;break;}}
+  for(var i=0;i<11;i++){var el=document.getElementById('tab-'+i);if(el&&el.style.display!=='none'){curTab=i;break;}}
   if(curTab===0){renderOverview();ovInited=true;}
   if(curTab===1)renderRecs();
   if(curTab===2&&mapInited){renderMapSidebar();refreshMap();}
@@ -1036,6 +1099,7 @@ function applyScope(){
   if(curTab===7)renderArchitecture();
   if(curTab===8)renderVendors();
   if(curTab===9)renderScoring();
+  if(curTab===10)renderMI();
 }
 
 // ════════════════════════════════════════
@@ -1668,6 +1732,159 @@ function goMapCountry(co){mapFocusCountry=co;switchTab(2);}
 function goCountry(co){switchTab(3);document.getElementById('f-country').value=co;filterTable();}
 
 // ════════════════════════════════════════
+// TAB 10 — MARKET INTELLIGENCE
+// ════════════════════════════════════════
+var WB_DATA = {
+  "Japan":{gdp:33836,internet:87.0,mobile:178.4,tourism:4115799},
+  "Australia":{gdp:65058,internet:97.1,mobile:112.5,tourism:1828000},
+  "Germany":{gdp:54777,internet:92.5,mobile:124.7,tourism:12449000},
+  "Netherlands":{gdp:63516,internet:97.0,mobile:117.4,tourism:7265000},
+  "Spain":{gdp:33493,internet:95.4,mobile:127.7,tourism:36410000},
+  "France":{gdp:44700,internet:86.8,mobile:116.7,tourism:117109000},
+  "Italy":{gdp:39277,internet:87.0,mobile:131.9,tourism:38419000},
+  "United Arab Emirates":{gdp:49851,internet:100.0,mobile:199.4,tourism:8084000},
+  "Saudi Arabia":{gdp:36157,internet:100.0,mobile:157.8,tourism:20292000},
+  "Argentina":{gdp:14262,internet:89.2,mobile:137.7,tourism:7399000},
+  "Mexico":{gdp:13861,internet:81.2,mobile:111.6,tourism:51128000},
+  "Brazil":{gdp:10378,internet:84.2,mobile:101.0,tourism:6353000},
+  "Colombia":{gdp:7001,internet:77.3,mobile:167.0,tourism:1396000},
+  "Indonesia":{gdp:4876,internet:69.2,mobile:125.2,tourism:4053000},
+  "Singapore":{gdp:85412,internet:94.3,mobile:173.2,tourism:2742000},
+  "Malaysia":{gdp:11386,internet:97.7,mobile:142.7,tourism:4333000},
+  "Philippines":{gdp:3804,internet:83.8,mobile:117.3,tourism:1483000},
+  "Thailand":{gdp:7195,internet:89.5,mobile:168.6,tourism:39916000},
+  "Norway":{gdp:82000,internet:98.0,mobile:108.0,tourism:3800000},
+  "Sweden":{gdp:56000,internet:97.0,mobile:127.0,tourism:7200000},
+  "Denmark":{gdp:68000,internet:98.0,mobile:122.0,tourism:5600000},
+  "Switzerland":{gdp:93000,internet:96.0,mobile:130.0,tourism:3900000},
+  "Belgium":{gdp:51000,internet:93.0,mobile:98.0,tourism:4100000},
+  "Austria":{gdp:53000,internet:93.0,mobile:121.0,tourism:15000000},
+  "Finland":{gdp:53000,internet:96.0,mobile:132.0,tourism:3200000},
+  "Ireland":{gdp:100000,internet:92.0,mobile:104.0,tourism:4500000},
+  "Portugal":{gdp:25000,internet:85.0,mobile:117.0,tourism:17000000},
+  "Czech Republic":{gdp:27000,internet:83.0,mobile:122.0,tourism:6500000},
+  "Greece":{gdp:20000,internet:82.0,mobile:116.0,tourism:7700000},
+  "Poland":{gdp:18000,internet:85.0,mobile:131.0,tourism:5000000},
+  "Turkey":{gdp:10000,internet:83.0,mobile:93.0,tourism:24700000},
+  "Israel":{gdp:52000,internet:90.0,mobile:135.0,tourism:2700000},
+  "Qatar":{gdp:83000,internet:99.0,mobile:152.0,tourism:2500000},
+  "South Korea":{gdp:33000,internet:97.0,mobile:137.0,tourism:4700000},
+  "New Zealand":{gdp:48000,internet:95.0,mobile:133.0,tourism:1500000},
+  "India":{gdp:2500,internet:47.0,mobile:83.0,tourism:6000000},
+  "United Kingdom":{gdp:46510,internet:95.0,mobile:118.0,tourism:37900000},
+  "China":{gdp:12556,internet:73.0,mobile:120.0,tourism:65700000}
+};
+var miCharts={};
+var chartPalette=['#F0A500','#38BDF8','#10B981','#A78BFA','#FB923C','#F472B6','#22D3EE','#FBBF24','#818CF8','#34D399','#F87171','#E879F9','#2DD4BF','#FCD34D','#93C5FD','#86EFAC','#FCA5A5','#D8B4FE'];
+
+function fmtK(n){if(n>=1e9)return(n/1e9).toFixed(1)+'B';if(n>=1e6)return(n/1e6).toFixed(1)+'M';if(n>=1e3)return(n/1e3).toFixed(1)+'K';return n.toString();}
+function fmtUSD(n){return '$'+n.toLocaleString();}
+
+function getMICountries(region){
+  var keys=Object.keys(MKT);
+  if(region)keys=keys.filter(function(k){return MKT[k].r===region;});
+  return keys.sort(function(a,b){return(MKT[b].n||0)-(MKT[a].n||0);});
+}
+
+function renderMI(){
+  var rg=document.getElementById('mi-region').value;
+  var metric=document.getElementById('mi-metric').value;
+  var countries=getMICountries(rg);
+  document.getElementById('mi-count').textContent=countries.length+' markets analyzed';
+
+  var totalVenues=0,totalT1=0,totalT2=0,sumScore=0,cnt=0;
+  var totalGDP=0,gdpCnt=0,totalInternet=0,intCnt=0,totalTourism=0;
+  countries.forEach(function(co){
+    var m=MKT[co];
+    totalVenues+=m.n;totalT1+=m.t1;totalT2+=m.t2;
+    sumScore+=m.rs*m.n;cnt+=m.n;
+    if(WB_DATA[co]){totalGDP+=WB_DATA[co].gdp;gdpCnt++;totalInternet+=WB_DATA[co].internet;intCnt++;totalTourism+=WB_DATA[co].tourism;}
+  });
+
+  var heroH='<div class="mi-hero">';
+  heroH+='<div class="mi-hero-card gold"><div class="mi-hv" style="color:#F0A500;">'+countries.length+'</div><div class="mi-hl">Markets</div></div>';
+  heroH+='<div class="mi-hero-card green"><div class="mi-hv" style="color:#10B981;">'+fmtK(totalVenues)+'</div><div class="mi-hl">Total Venues</div></div>';
+  heroH+='<div class="mi-hero-card blue"><div class="mi-hv" style="color:#38BDF8;">'+totalT1+'</div><div class="mi-hl">Tier 1 Venues</div></div>';
+  heroH+='<div class="mi-hero-card purple"><div class="mi-hv" style="color:#A78BFA;">'+fmtK(totalT1+totalT2)+'</div><div class="mi-hl">Tier 1+2 Pipeline</div></div>';
+  heroH+='<div class="mi-hero-card pink"><div class="mi-hv" style="color:#F472B6;">'+(cnt?((sumScore/cnt).toFixed(1)):'--')+'</div><div class="mi-hl">Avg Rec Score</div></div>';
+  heroH+='<div class="mi-hero-card cyan"><div class="mi-hv" style="color:#22D3EE;">'+(gdpCnt?fmtUSD(Math.round(totalGDP/gdpCnt)):'--')+'</div><div class="mi-hl">Avg GDP/Capita</div></div>';
+  heroH+='</div>';
+  document.getElementById('mi-hero-bar').innerHTML=heroH;
+
+  var top=countries.slice(0,15);
+  var labels=top.map(function(c){return c.length>14?c.substring(0,12)+'..':c;});
+  var metricData,metricLabel,metricColor;
+  if(metric==='gdp'){metricLabel='GDP per Capita (USD)';metricColor='rgba(240,165,0,0.8)';metricData=top.map(function(c){return WB_DATA[c]?WB_DATA[c].gdp:0;});}
+  else if(metric==='internet'){metricLabel='Internet Users (%)';metricColor='rgba(56,189,248,0.8)';metricData=top.map(function(c){return WB_DATA[c]?WB_DATA[c].internet:0;});}
+  else if(metric==='mobile'){metricLabel='Mobile Subs per 100';metricColor='rgba(167,139,250,0.8)';metricData=top.map(function(c){return WB_DATA[c]?WB_DATA[c].mobile:0;});}
+  else if(metric==='tourism'){metricLabel='International Tourism Arrivals';metricColor='rgba(244,114,182,0.8)';metricData=top.map(function(c){return WB_DATA[c]?WB_DATA[c].tourism:0;});}
+  else{metricLabel='Venue Count';metricColor='rgba(16,185,129,0.8)';metricData=top.map(function(c){return MKT[c]?MKT[c].n:0;});}
+
+  if(miCharts.gdp)miCharts.gdp.destroy();
+  miCharts.gdp=new Chart(document.getElementById('mi-chart-gdp'),{
+    type:'bar',
+    data:{labels:labels,datasets:[{label:metricLabel,data:metricData,backgroundColor:top.map(function(c,i){return chartPalette[i%chartPalette.length];}),borderRadius:4,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},title:{display:true,text:metricLabel+' by Country',color:'#9CA3AF',font:{size:12,weight:600}}},scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#4B5563',font:{size:10}}},y:{grid:{display:false},ticks:{color:'#9CA3AF',font:{size:10}}}}}
+  });
+  document.getElementById('mi-chart-gdp').parentElement.style.height='360px';
+
+  var regAgg={};
+  countries.forEach(function(co){var m=MKT[co];var r=m.r;if(!regAgg[r])regAgg[r]={n:0,t1:0,t2:0};regAgg[r].n+=m.n;regAgg[r].t1+=m.t1;regAgg[r].t2+=m.t2;});
+  var regKeys=Object.keys(regAgg).sort(function(a,b){return regAgg[b].n-regAgg[a].n;});
+  if(miCharts.venue)miCharts.venue.destroy();
+  miCharts.venue=new Chart(document.getElementById('mi-chart-venue'),{
+    type:'doughnut',
+    data:{labels:regKeys,datasets:[{data:regKeys.map(function(r){return regAgg[r].n;}),backgroundColor:regKeys.map(function(r){return rColors[r]||'#6B7280';}),borderWidth:0,hoverOffset:8}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:'bottom',labels:{color:'#9CA3AF',padding:12,font:{size:10},usePointStyle:true,pointStyleWidth:8}},title:{display:true,text:'Venue Distribution by Region',color:'#9CA3AF',font:{size:12,weight:600}}}}
+  });
+  document.getElementById('mi-chart-venue').parentElement.style.height='340px';
+
+  var topByTier=countries.filter(function(c){return MKT[c].n>=20;}).slice(0,12);
+  if(miCharts.tier)miCharts.tier.destroy();
+  miCharts.tier=new Chart(document.getElementById('mi-chart-tier'),{
+    type:'bar',
+    data:{labels:topByTier.map(function(c){return c.length>12?c.substring(0,10)+'..':c;}),datasets:[
+      {label:'Tier 1',data:topByTier.map(function(c){return MKT[c].t1;}),backgroundColor:'rgba(16,185,129,0.8)',borderRadius:2},
+      {label:'Tier 2',data:topByTier.map(function(c){return MKT[c].t2;}),backgroundColor:'rgba(240,165,0,0.7)',borderRadius:2},
+      {label:'Tier 3+',data:topByTier.map(function(c){var m=MKT[c];return Math.max(0,m.n-m.t1-m.t2);}),backgroundColor:'rgba(107,114,128,0.4)',borderRadius:2}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#9CA3AF',font:{size:10},usePointStyle:true,pointStyleWidth:8}},title:{display:true,text:'Venue Tier Breakdown by Country',color:'#9CA3AF',font:{size:12,weight:600}}},scales:{x:{stacked:true,grid:{display:false},ticks:{color:'#9CA3AF',font:{size:10}}},y:{stacked:true,grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#4B5563',font:{size:10}}}}}
+  });
+  document.getElementById('mi-chart-tier').parentElement.style.height='340px';
+
+  var scatterData=countries.filter(function(c){return WB_DATA[c]&&MKT[c];}).map(function(c){
+    return{x:WB_DATA[c].internet,y:MKT[c].rs,r:Math.max(4,Math.sqrt(MKT[c].n)*1.5),label:c};
+  });
+  if(miCharts.digital)miCharts.digital.destroy();
+  miCharts.digital=new Chart(document.getElementById('mi-chart-digital'),{
+    type:'bubble',
+    data:{datasets:[{label:'Markets',data:scatterData,backgroundColor:'rgba(56,189,248,0.35)',borderColor:'rgba(56,189,248,0.7)',borderWidth:1}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},title:{display:true,text:'Digital Readiness vs Venue Score (bubble = venue count)',color:'#9CA3AF',font:{size:12,weight:600}},tooltip:{callbacks:{label:function(ctx){var d=ctx.raw;return d.label+': '+d.x+'% internet, Score '+d.y.toFixed(1);}}}},scales:{x:{title:{display:true,text:'Internet Penetration %',color:'#4B5563',font:{size:10}},grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#4B5563',font:{size:10}},min:40,max:105},y:{title:{display:true,text:'Avg Recommendation Score',color:'#4B5563',font:{size:10}},grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#4B5563',font:{size:10}}}}}
+  });
+  document.getElementById('mi-chart-digital').parentElement.style.height='340px';
+
+  var sortedCountries=countries.slice().sort(function(a,b){return(MKT[b].rs||0)-(MKT[a].rs||0);});
+  document.getElementById('mi-tbody').innerHTML=sortedCountries.map(function(co){
+    var m=MKT[co],wb=WB_DATA[co]||{};
+    var rc=rColors[m.r]||'#6B7280';
+    var sc=m.rs>=65?'#10B981':m.rs>=60?'#F0A500':'#4B5563';
+    return '<tr onclick="goCountry(\''+co.replace(/'/g,"\\'")+'\')">' +
+      '<td style="font-weight:600;color:#E2E8F0;">'+co+'</td>' +
+      '<td><span class="mi-pill" style="background:'+rc+'22;color:'+rc+';border:1px solid '+rc+'44;">'+m.r+'</span></td>' +
+      '<td style="font-family:\'Courier New\',monospace;color:#E2E8F0;">'+m.n.toLocaleString()+'</td>' +
+      '<td style="color:#10B981;font-family:\'Courier New\',monospace;">'+m.t1+'</td>' +
+      '<td style="color:#F0A500;font-family:\'Courier New\',monospace;">'+m.t2+'</td>' +
+      '<td><span style="color:'+sc+';font-weight:700;font-family:\'Courier New\',monospace;">'+m.rs.toFixed(1)+'</span></td>' +
+      '<td style="color:#9CA3AF;font-family:\'Courier New\',monospace;">'+(wb.gdp?'$'+wb.gdp.toLocaleString():'\u2014')+'</td>' +
+      '<td>'+(wb.internet?'<div class="mi-bar-wrap"><div class="mi-bar-track"><div class="mi-bar-fill" style="width:'+wb.internet+'%;background:#38BDF8;"></div></div><span style="font-size:11px;color:#38BDF8;font-family:\'Courier New\',monospace;">'+wb.internet+'%</span></div>':'\u2014')+'</td>' +
+      '<td style="color:#A78BFA;font-family:\'Courier New\',monospace;">'+(wb.mobile||'\u2014')+'</td>' +
+      '<td style="color:#F472B6;font-family:\'Courier New\',monospace;">'+(wb.tourism?fmtK(wb.tourism):'\u2014')+'</td>' +
+      '<td style="font-weight:700;color:'+(m.ms>=50?'#10B981':m.ms>=40?'#F0A500':'#4B5563')+';font-family:\'Courier New\',monospace;">'+(m.ms?m.ms.toFixed(1):'\u2014')+'</td>' +
+      '</tr>';
+  }).join('');
+}
+
+// ════════════════════════════════════════
 // TAB 6 — GTM STRATEGY
 // ════════════════════════════════════════
 function renderGTM(){
@@ -1926,10 +2143,12 @@ function renderScoring(){
   var ro=regions.map(function(r){return '<option value="'+esc(r)+'">'+esc(r)+'</option>';}).join('');
   document.getElementById('f-region').innerHTML='<option value="">All Regions</option>'+ro;
   document.getElementById('m-region').innerHTML='<option value="">All Regions</option>'+ro;
+  document.getElementById('mi-region').innerHTML='<option value="">All Regions</option>'+ro;
   var co=countries.map(function(c){return '<option value="'+esc(c)+'">'+esc(c)+'</option>';}).join('');
   document.getElementById('f-country').innerHTML='<option value="">All Countries</option>'+co;
   var to=types.map(function(t){return '<option value="'+esc(t)+'">'+esc(t)+'</option>';}).join('');
   document.getElementById('f-type').innerHTML='<option value="">All Types</option>'+to;
+  document.getElementById('nb-10').textContent=Object.keys(WB_DATA).length;
 })();
 
 // ── Initial render ──
