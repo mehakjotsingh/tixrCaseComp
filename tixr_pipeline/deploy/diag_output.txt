@@ -1,0 +1,16 @@
+tab-btn-4: True
+market-intelligence.js: True
+market-intelligence.css: True
+chart.umd: True
+tab-4 div: True
+loop i<5: False
+loop i<4: True
+renderMI in html: True
+mi-hero-bar: True
+
+switchTab context:
+switchTab(0)">Recommendations</button>
+  <button class="tab-btn" id="tab-btn-1" onclick="switchTab(1)">Map Intelligence</button>
+  <button class="tab-btn" id="tab-btn-2" onclick="switchTab(2)">Venue Pipeline</button>
+  <button class="tab-btn" id="tab-btn-3" onclick="switchTab(3)">Market Scorecard</button>
+  <button class="tab-btn" id="tab-btn-4" onclick="switchTab(4)">Market Intelligence</button>

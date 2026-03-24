@@ -1,0 +1,53 @@
+=== FUNCTION DEF at 4111652 ===
+function switchTab(idx){
+  for(var i=0;i<5;i++){
+    document.getElementById('tab-'+i).style.display=(i===idx)?((i===1)?'block':'block'):'none';
+    var btn=document.getElementById('tab-btn-'+i);
+    if(i===idx){btn.classList.add('active');}else{btn.classList.remove('active');}
+  }
+  if(idx===1){
+    if(!mapInited){initMap();mapInited=true;}
+    else{setTimeout(function(){MAP.invalidateSize();},100);}
+  }
+  if(idx===2)filterTable();
+  if(idx===3)renderMarkets();
+}
+=== END ===
+
+=== FUNCTION DEF at 4118677 ===
+function goRegion(r){
+  switchTab(2);
+  document.getElementById('f-region').value=r;
+  filterTable();
+}
+=== END ===
+
+=== FUNCTION DEF at 4118787 ===
+function goMapCountry(co){
+  switchTab(1);
+  var m=MKT[co];
+  if(m&&m.la&&m.lo){
+    setTimeout(function(){MAP.flyTo([m.la,m.lo],6,{duration:1.2});},300);
+  }
+}
+=== END ===
+
+=== FUNCTION DEF at 4118948 ===
+function goMarketTab(co){
+  switchTab(3);
+}
+=== END ===
+
+=== FUNCTION DEF at 4125599 ===
+function goCountry(co){
+  switchTab(2);
+  document.getElementById('f-country').value=co;
+  filterTable();
+}
+=== END ===
+
+renderMI at 16451: '    <select id="mi-region" class="fsel" onchange="renderMI()"><option value="">All Regions</option><'
+renderMI at 16560: '    <select id="mi-metric" class="fsel" onchange="renderMI()">\n      <option value="gdp">GDP per Cap'
+renderMI at 4115509: 'unction(){MAP.invalidateSize();},200);\n  if(n===4)renderMI();\n  refreshMap();\n  renderSidebar();\n}\n\n'
+
+Total renderMI occurrences in index.html: 3
