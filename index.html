@@ -1113,9 +1113,7 @@ function renderOverview(){
     {v:fmt(ak.total),l:'Venues Discovered',c:'#E2E8F0',sub:ak.total+' across '+ak.countries+' countries'},
     {v:ak.countries,l:'Countries',c:'#A78BFA',sub:ak.regions+' regions'},
     {v:'19',l:'Data Sources',c:'#38BDF8',sub:'19 APIs integrated'},
-    {v:ak.t2,l:'Tier 2 Targets',c:'#F0A500',sub:'Immediate outreach'},
-    {v:sgT2,l:'SEA Opportunities',c:'#A78BFA',sub:'Singapore Tier 2 venues'},
-    {v:'$5/mo',l:'Pipeline Cost',c:'#10B981',sub:'~170K API calls'}
+    {v:ak.t2,l:'Tier 2 Targets',c:'#F0A500',sub:'Immediate outreach'}
   ];
   document.getElementById('kpi-grid-ov').innerHTML=kpiData.map(function(it){
     return '<div class="kpi-card"><div class="kpi-val" style="color:'+it.c+';">'+it.v+'</div>'+
