@@ -805,7 +805,7 @@ function computeTopRecs(aVD){
     var roiMult=annualRev>0?r2(annualRev/Math.max(totalInvest,1)):0;
     var logRev=annualRev>0?Math.log10(Math.max(annualRev,1)):0;
     var roiFactor=Math.max(0,Math.min((logRev-5.0)/3.5,1))*100;
-    var rankScore=avgScore*0.25+ms*0.20+Math.min(t1/30,1)*100*0.20+Math.min(nWin/200,1)*100*0.15+roiFactor*0.20;
+    var rankScore=avgScore*0.35+avgRoi*0.25+ms*0.20+Math.min(t1/20,1)*100*0.10+Math.min(nWin/100,1)*100*0.10;
     function fmtM(v){if(v>=1e6)return'$'+r2(v/1e6)+'M';if(v>=1000)return'$'+Math.round(v/1000)+'K';return'$'+Math.round(v);}
     var why=[];
     if(ms>=50)why.push('Strong market fundamentals (score: '+ms+') \u2014 high GDP & digital readiness');
@@ -816,6 +816,7 @@ function computeTopRecs(aVD){
     if(avgPf>=55)why.push('Strong premium fit ('+Math.round(avgPf)+'%) \u2014 aligns with Tixr positioning');
     if(avgEx<=45)why.push('Low exclusivity risk \u2014 limited platform lock-in');
     if(n>=200)why.push('Deep venue pipeline ('+n+' venues) \u2014 significant scale');
+    if(avgRoi>=25)why.push('High avg ROI index ('+r2(avgRoi)+') \u2014 winnable, premium-fit venues');
     if(annualRev>=1e6)why.push('Est. '+fmtM(annualRev)+'/yr earning potential ('+roiMult+'x ROI)');
     if(!why.length)why.push(n+' venues with avg score '+r2(avgScore));
     var risks=[];
@@ -1665,6 +1666,258 @@ function flyTo(la,lo){closeDetail();switchTab(2);setTimeout(function(){MAP.flyTo
 function goRegion(r){switchTab(3);document.getElementById('f-region').value=r;filterTable();}
 function goMapCountry(co){mapFocusCountry=co;switchTab(2);}
 function goCountry(co){switchTab(3);document.getElementById('f-country').value=co;filterTable();}
+
+// ════════════════════════════════════════
+// TAB 6 — GTM STRATEGY
+// ════════════════════════════════════════
+function renderGTM(){
+  var top3=computeTopRecs(getActiveVD());
+  var gc=document.getElementById('gtm-cards');
+  if(!top3.length){gc.innerHTML='<div style="color:#374151;padding:40px;text-align:center;">No recommendations available for current scope.</div>';return;}
+  var rankColors=['#10B981','#F0A500','#38BDF8'];
+  var rankLabels=['PRIORITY 1','PRIORITY 2','PRIORITY 3'];
+  var h='';
+  top3.forEach(function(rec,i){
+    var col=rankColors[i];
+    h+='<div class="gtm-market-card">';
+    h+='<div class="gtm-rank" style="background:'+col+';color:#0C0F18;">'+rankLabels[i]+'</div>';
+    h+='<div class="gtm-header"><div><div class="gtm-title">'+esc(rec.co)+'</div>';
+    h+='<div class="gtm-sub">'+esc(rec.r)+' \u00b7 '+fmt(rec.n)+' venues \u00b7 '+rec.t1+' Tier 1 \u00b7 '+rec.t2+' Tier 2</div></div>';
+    h+='<div class="gtm-score-box"><div class="gtm-score-val" style="color:'+col+';">'+rec.rank+'</div><div class="gtm-score-lbl">Rank Score</div></div></div>';
+    h+='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;">';
+    function gs(l,v,c){return '<div class="rec-stat"><div class="rec-stat-val" style="color:'+c+';">'+v+'</div><div class="rec-stat-lbl">'+l+'</div></div>';}
+    h+=gs('Avg Score',rec.avg,oc(rec.avg))+gs('Market Score',rec.ms,oc(rec.ms))+gs('Opportunity',rec.opp,'#10B981')+gs('ROI',rec.roix+'x','#10B981');
+    h+='</div>';
+    h+='<div class="gtm-why-risks">';
+    h+='<div><div class="gtm-section-title" style="color:#10B981;">Why This Market</div>';
+    rec.why.forEach(function(w){h+='<div class="gtm-item gtm-why-item">'+esc(w)+'</div>';});
+    h+='</div><div><div class="gtm-section-title" style="color:#F0A500;">Key Risks</div>';
+    rec.risks.forEach(function(r){h+='<div class="gtm-item gtm-risk-item">'+esc(r)+'</div>';});
+    h+='</div></div></div>';
+  });
+  gc.innerHTML=h;
+
+  // Execution plan
+  var c1=top3[0]?top3[0].co:'Market 1',c2=top3[1]?top3[1].co:'Market 2',c3=top3[2]?top3[2].co:'Market 3';
+  var plans=[
+    {days:'30',color:'#10B981',items:['Finalize '+c1+' venue target list (Tier 1)','Establish local banking + payment integration','Hire 1 BDR ('+c1+'-based, bilingual)','Begin partner outreach \u2014 top '+((top3[0]&&top3[0].t1)||8)+' Tier 1 venues']},
+    {days:'60',color:'#F0A500',items:['Sign first 2\u20133 venue partners in '+c1,'Launch pilot event on Tixr platform','Begin '+c2+' market assessment + outreach','Build local-language support playbook']},
+    {days:'90',color:'#38BDF8',items:['Expand to 5+ '+c1+' venue partners','First '+c2+' venue signed',c3+' market research complete','Present expansion metrics to board']}
+  ];
+  var eh='<div class="exec-plan"><div class="exec-title">30 / 60 / 90 Day Execution Plan</div><div class="exec-grid">';
+  plans.forEach(function(p){
+    eh+='<div class="exec-col"><div class="exec-col-head" style="color:'+p.color+';">'+p.days+'</div><div class="exec-col-sub">days</div>';
+    p.items.forEach(function(item){eh+='<div class="exec-item"><span style="position:absolute;left:0;top:10px;width:8px;height:8px;border-radius:2px;border:1.5px solid '+p.color+';"></span>'+esc(item)+'</div>';});
+    eh+='</div>';
+  });
+  eh+='</div></div>';
+  document.getElementById('gtm-execution').innerHTML=eh;
+
+  // RACI matrix
+  var rh='<div style="background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:22px;">';
+  rh+='<div style="font-size:16px;font-weight:700;color:#E2E8F0;margin-bottom:16px;">RACI Matrix</div>';
+  rh+='<table class="raci-table"><thead><tr><th style="text-align:left;">Task</th><th>VP Intl</th><th>BDR Lead</th><th>Product</th><th>Legal</th><th>Marketing</th></tr></thead><tbody>';
+  var raci=[
+    ['Market selection & prioritization','R','C','I','I','I'],
+    ['Venue outreach & negotiation','A','R','I','C','I'],
+    ['Payment / banking setup','A','I','C','R','I'],
+    ['Platform localization','I','C','R','I','A'],
+    ['Partner onboarding','A','R','C','I','I'],
+    ['Launch event execution','A','R','C','I','R'],
+    ['Performance reporting','R','C','I','I','C']
+  ];
+  raci.forEach(function(row){
+    rh+='<tr><td>'+esc(row[0])+'</td>';
+    for(var i=1;i<row.length;i++){
+      var cls=row[i]==='R'?'raci-r':row[i]==='A'?'raci-a':row[i]==='C'?'raci-c':'raci-i';
+      rh+='<td class="'+cls+'">'+row[i]+'</td>';
+    }
+    rh+='</tr>';
+  });
+  rh+='</tbody></table></div>';
+  document.getElementById('gtm-raci').innerHTML=rh;
+}
+
+// ════════════════════════════════════════
+// TAB 7 — ARCHITECTURE
+// ════════════════════════════════════════
+function renderArchitecture(){
+  var badges=[
+    {label:'Python 3.10+',color:'#38BDF8'},{label:'Pandas',color:'#10B981'},{label:'19 API Sources',color:'#F0A500'},
+    {label:'Disk Cache (7-day TTL)',color:'#A78BFA'},{label:'Rate-limited',color:'#FB923C'},{label:'~$5/mo total',color:'#10B981'}
+  ];
+  document.getElementById('arch-badges').innerHTML=badges.map(function(b){
+    return '<div class="arch-badge"><span class="arch-badge-dot" style="background:'+b.color+';"></span>'+esc(b.label)+'</div>';
+  }).join('');
+
+  // Stage 1
+  var agents=[
+    {name:'Venue Discovery Agent',sub:'7 data sources \u2014 foundation layer',sources:[
+      {n:'Wikidata SPARQL',v:'42 countries, 92K+ venues'},{n:'OSM Overpass',v:'50+ cities, 6 tags'},
+      {n:'Google Places (opt)',v:'5 cities \u00d7 3 types'},{n:'Bandsintown',v:'Artist-driven discovery'},
+      {n:'MusicBrainz',v:'80K+ place entities'},{n:'PredictHQ',v:'Demand signals'},{n:'Foursquare',v:'Check-in popularity'}
+    ]},
+    {name:'Ticketing Intel Agent',sub:'5-step fallback hierarchy',sources:[
+      {n:'Step 1: BuyButtonChecker',v:'95% accuracy'},{n:'Step 2: Ticketmaster API',v:'85% confidence'},
+      {n:'Step 3: AXS Directory',v:'90% accuracy, O(1)'},{n:'Step 4: Regional Platforms',v:'Eventim, Ticketek, DICE, BMS, Platinumlist'},
+      {n:'Step 5: Unresolved',v:'Manual review flag'}
+    ]},
+    {name:'Event Enrichment Agent',sub:'7 sources \u2014 activity & cadence signals',sources:[
+      {n:'Songkick',v:'Upcoming events (60%)'},{n:'Setlist.fm',v:'Historical depth (40%)'},
+      {n:'Eventbrite',v:'International + capacity'},{n:'Bandsintown Events',v:'Artist-driven'},
+      {n:'PredictHQ Events',v:'Demand rank'},{n:'Skiddle',v:'UK regional'},{n:'Resident Advisor',v:'Electronic/clubs (GraphQL)'}
+    ]}
+  ];
+  var s1='<div class="arch-stage"><div class="arch-stage-label">Stage 1</div><div class="arch-stage-title">Orchestrator (3 Agents)</div>';
+  s1+='<div class="arch-agent-grid">';
+  agents.forEach(function(a){
+    s1+='<div class="arch-agent"><div class="arch-agent-name">'+esc(a.name)+'</div><div class="arch-agent-sub">'+esc(a.sub)+'</div>';
+    a.sources.forEach(function(s){s1+='<div class="arch-source"><span class="arch-source-name">'+esc(s.n)+'</span><span class="arch-source-val">'+esc(s.v)+'</span></div>';});
+    s1+='</div>';
+  });
+  s1+='</div>';
+  s1+='<div class="arch-df"><div class="arch-df-title">Unified Schema Output</div><div class="arch-df-cols">venue_name, city, country, region, venue_type, capacity, lat, lon, ticketing_platform, exclusivity_strength, VWP, premium_fit, priority_score + 30 more columns</div></div>';
+  s1+='</div>';
+  document.getElementById('arch-stage1').innerHTML=s1;
+
+  // Stage 2
+  var s2='<div class="arch-stage"><div class="arch-stage-label">Stage 2</div><div class="arch-stage-title">Recommendation Engine</div>';
+  s2+='<div class="arch-agent-grid">';
+  s2+='<div class="arch-agent"><div class="arch-agent-name">Market Intel Agent</div><div class="arch-agent-sub">World Bank + Foursquare</div>';
+  [{n:'GDP per capita',v:'25% weight'},{n:'Internet users %',v:'20% weight'},{n:'Mobile subs/100',v:'15% weight'},{n:'Tourism arrivals',v:'20% weight'},{n:'Urban population %',v:'10% weight'},{n:'Total population',v:'10% weight'}].forEach(function(s){s2+='<div class="arch-source"><span class="arch-source-name">'+s.n+'</span><span class="arch-source-val">'+s.v+'</span></div>';});
+  s2+='</div>';
+  s2+='<div class="arch-agent"><div class="arch-agent-name">Recommendation Scoring</div><div class="arch-agent-sub">Blended venue + market score</div>';
+  [{n:'Priority Score',v:'50% weight'},{n:'Market Score',v:'30% weight'},{n:'Activity Bonus',v:'20% weight'},{n:'Tier 1 threshold',v:'\u2265 70'},{n:'Tier 2 threshold',v:'\u2265 50'},{n:'Tier 3 threshold',v:'\u2265 30'}].forEach(function(s){s2+='<div class="arch-source"><span class="arch-source-name">'+s.n+'</span><span class="arch-source-val">'+s.v+'</span></div>';});
+  s2+='</div>';
+  s2+='<div class="arch-agent"><div class="arch-agent-name">Tiered Export</div><div class="arch-agent-sub">Excel + HTML Dashboard</div>';
+  [{n:'All Recommendations',v:'Full dataset'},{n:'Tier 1 \u2014 Immediate',v:'Sales outreach now'},{n:'Tier 2 \u2014 High Priority',v:'Next sprint queue'},{n:'Market Intelligence',v:'Country-level data'},{n:'Manual Review',v:'Amber-highlighted rows'}].forEach(function(s){s2+='<div class="arch-source"><span class="arch-source-name">'+s.n+'</span><span class="arch-source-val">'+s.v+'</span></div>';});
+  s2+='</div></div></div>';
+  document.getElementById('arch-stage2').innerHTML=s2;
+
+  // Cost table
+  var costs=[
+    ['Wikidata','1','1,260','Free'],['OSM Overpass','1','1,500','Free'],['Google Places','1','~1,000','~$5'],
+    ['Bandsintown','1','~2,000','Free'],['MusicBrainz','1','~1,500','Free'],['PredictHQ','1','~2,000','Free'],
+    ['Ticketmaster','1','150,000','Free (5K/day)'],['Songkick','1','~3,000','Free'],['Setlist.fm','1','~3,000','Free'],
+    ['Eventbrite','1','~1,000','Free'],['World Bank','2','~180','Free'],['Foursquare','2','~500','Free']
+  ];
+  var ct='<div style="background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:22px;">';
+  ct+='<div style="font-size:16px;font-weight:700;color:#E2E8F0;margin-bottom:16px;">Estimated Monthly API Costs</div>';
+  ct+='<table class="arch-cost-table"><thead><tr><th>Source</th><th>Stage</th><th>Calls/Mo</th><th>Cost</th></tr></thead><tbody>';
+  costs.forEach(function(r){ct+='<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td></tr>';});
+  ct+='<tr class="arch-cost-total"><td>Total</td><td>1+2</td><td>~170K</td><td>~$5/month</td></tr>';
+  ct+='</tbody></table></div>';
+  document.getElementById('arch-costs').innerHTML=ct;
+}
+
+// ════════════════════════════════════════
+// TAB 8 — VENDOR LANDSCAPE
+// ════════════════════════════════════════
+function renderVendors(){
+  var ah='<div class="vendor-alert"><div class="vendor-alert-title">\u26A0 Strategic Insight</div>';
+  ah+='<div class="vendor-alert-text">The global ticketing market is dominated by Ticketmaster (Live Nation) and AXS (AEG) through exclusive, long-term venue deals. However, <strong>mid-tier and independent venues</strong> (Tixr\'s sweet spot) are increasingly open to modern, premium-positioned platforms. Regional players like Eventim (DACH), DICE (UK/EU electronic), and Platinumlist (Gulf) control specific geographies but rarely lock venues with the same exclusivity strength as TM/AXS.</div></div>';
+  document.getElementById('vendor-alert').innerHTML=ah;
+
+  var tiers=[
+    {title:'Tier 1 \u2014 Global Dominators (High Exclusivity)',vendors:[
+      {name:'Ticketmaster',tags:[{l:'Live Nation',c:'#EF4444'},{l:'Global',c:'#38BDF8'}],openness:'Low',openColor:'#EF4444',
+       grid:[{l:'Market Share',v:'~70% of major venues globally'},{l:'Exclusivity Model',v:'Long-term exclusive contracts (5\u201310 yr)'},{l:'Tixr Opportunity',v:'Avoid direct competition \u2014 target venues NOT in TM ecosystem'}]},
+      {name:'AXS',tags:[{l:'AEG',c:'#F0A500'},{l:'US/UK/AU',c:'#38BDF8'}],openness:'Low',openColor:'#EF4444',
+       grid:[{l:'Market Share',v:'~15% of major arenas (AEG-owned)'},{l:'Exclusivity Model',v:'Venue ownership + exclusive ticketing'},{l:'Tixr Opportunity',v:'AEG venues are off-limits; focus on independents nearby'}]}
+    ]},
+    {title:'Tier 2 \u2014 Regional Players (Medium Exclusivity)',vendors:[
+      {name:'Eventim',tags:[{l:'CTS Eventim',c:'#A78BFA'},{l:'DACH/Europe',c:'#38BDF8'}],openness:'Medium',openColor:'#F0A500',
+       grid:[{l:'Market Share',v:'Dominant in Germany, Austria, Switzerland'},{l:'Exclusivity Model',v:'Regional exclusive deals, less rigid than TM'},{l:'Tixr Opportunity',v:'Co-exist on non-exclusive venues; target indie venues in DACH'}]},
+      {name:'SeatGeek',tags:[{l:'Challenger',c:'#10B981'},{l:'US',c:'#38BDF8'}],openness:'Medium-High',openColor:'#10B981',
+       grid:[{l:'Market Share',v:'Growing US presence, NFL/MLS deals'},{l:'Exclusivity Model',v:'League-level deals, less venue-level lock-in'},{l:'Tixr Opportunity',v:'SeatGeek focuses on sports; Tixr targets music/nightlife'}]},
+      {name:'DICE',tags:[{l:'Electronic/Indie',c:'#A78BFA'},{l:'UK/EU/US',c:'#38BDF8'}],openness:'Medium',openColor:'#F0A500',
+       grid:[{l:'Market Share',v:'Strong in electronic music, clubs, indie'},{l:'Exclusivity Model',v:'Soft exclusivity \u2014 venue can often multi-platform'},{l:'Tixr Opportunity',v:'Direct competitor in premium nightlife segment; differentiate on UX + pricing'}]}
+    ]},
+    {title:'Tier 3 \u2014 Regional / Niche (Low Exclusivity)',vendors:[
+      {name:'Eventbrite',tags:[{l:'Self-Serve',c:'#10B981'},{l:'Global',c:'#38BDF8'}],openness:'High',openColor:'#10B981',
+       grid:[{l:'Market Share',v:'Largest for small/mid events globally'},{l:'Exclusivity Model',v:'Non-exclusive \u2014 venues use alongside other platforms'},{l:'Tixr Opportunity',v:'Upgrade path: venues outgrowing Eventbrite want premium features'}]},
+      {name:'Platinumlist',tags:[{l:'Gulf/MENA',c:'#FB923C'}],openness:'Medium-High',openColor:'#10B981',
+       grid:[{l:'Market Share',v:'Dominant in UAE, Saudi Arabia, Qatar'},{l:'Exclusivity Model',v:'Regional preference, not contractual lock-in'},{l:'Tixr Opportunity',v:'Partner or displace \u2014 Gulf venues are price-sensitive and open to premium'}]},
+      {name:'BookMyShow',tags:[{l:'India/SEA',c:'#A78BFA'}],openness:'Medium',openColor:'#F0A500',
+       grid:[{l:'Market Share',v:'Dominant in India, growing in SEA'},{l:'Exclusivity Model',v:'Soft exclusivity in India; weaker in SEA'},{l:'Tixr Opportunity',v:'Target premium/international venues in SEA where BMS is weaker'}]}
+    ]}
+  ];
+  var vh='';
+  tiers.forEach(function(tier){
+    vh+='<div class="vendor-tier-section"><div class="vendor-tier-title">'+esc(tier.title)+'</div>';
+    tier.vendors.forEach(function(v){
+      vh+='<div class="vendor-card"><div class="vendor-card-hdr"><div><div class="vendor-name">'+esc(v.name)+'</div>';
+      vh+='<div class="vendor-tags">';
+      v.tags.forEach(function(t){vh+='<span class="vendor-tag" style="background:'+t.c+'20;color:'+t.c+';border:1px solid '+t.c+'40;">'+esc(t.l)+'</span>';});
+      vh+='</div></div>';
+      vh+='<div class="vendor-openness" style="background:'+v.openColor+'15;color:'+v.openColor+';border:1px solid '+v.openColor+'30;">Openness: '+esc(v.openness)+'</div></div>';
+      vh+='<div class="vendor-grid">';
+      v.grid.forEach(function(g){vh+='<div><div class="vendor-grid-label">'+esc(g.l)+'</div><div class="vendor-grid-val">'+g.v+'</div></div>';});
+      vh+='</div></div>';
+    });
+    vh+='</div>';
+  });
+  document.getElementById('vendor-tiers').innerHTML=vh;
+}
+
+// ════════════════════════════════════════
+// TAB 9 — SCORING MODELS
+// ════════════════════════════════════════
+function renderScoring(){
+  var h='';
+
+  // VWP
+  h+='<div class="scoring-card"><div class="scoring-title">Venue Win Probability (VWP)</div>';
+  h+='<div class="scoring-sub">Likelihood Tixr can realistically win this venue</div>';
+  [{l:'Strong excl. (TM/AXS)',v:'0.05',c:'#EF4444'},{l:'Strong excl. (other)',v:'0.15',c:'#EF4444'},{l:'Medium exclusivity',v:'0.40',c:'#F0A500'},{l:'Weak exclusivity',v:'0.70',c:'#10B981'},{l:'Unknown + has platform',v:'0.30',c:'#F0A500'},{l:'No platform detected',v:'0.65',c:'#10B981'}].forEach(function(r){
+    h+='<div class="scoring-row"><div class="scoring-label">'+esc(r.l)+'</div><div class="scoring-value" style="color:'+r.c+';">'+r.v+'</div></div>';
+  });
+  h+='</div>';
+
+  // Premium Fit
+  h+='<div class="scoring-card"><div class="scoring-title">Premium Fit Score (0\u2013100)</div>';
+  h+='<div class="scoring-sub">How well a venue matches Tixr\'s premium positioning</div>';
+  [{l:'Base score',v:'+40',c:'#9CA3AF'},{l:'Capacity 1K\u20135K (sweet spot)',v:'+25',c:'#10B981'},{l:'Capacity 5K\u201320K',v:'+20',c:'#F0A500'},{l:'Capacity 20K+',v:'+10',c:'#38BDF8'},{l:'Has website',v:'+10',c:'#7C8EF7'},{l:'Premium venue type',v:'+10',c:'#7C8EF7'},{l:'Has coordinates',v:'+5',c:'#4B5563'},{l:'Has booking URL',v:'+5',c:'#4B5563'},{l:'Has operator data',v:'+5',c:'#4B5563'}].forEach(function(r){
+    h+='<div class="scoring-row"><div class="scoring-label">'+esc(r.l)+'</div><div class="scoring-value" style="color:'+r.c+';">'+r.v+'</div></div>';
+  });
+  h+='</div>';
+
+  // Priority Score
+  h+='<div class="scoring-card"><div class="scoring-title">Priority Score (0\u2013100)</div>';
+  h+='<div class="scoring-sub">Stage 1 composite venue ranking</div>';
+  h+='<div class="scoring-formula"><div class="scoring-formula-title">Formula</div><div class="scoring-formula-code">raw_priority = 0.40 \u00d7 (VWP \u00d7 100) + 0.40 \u00d7 premium_fit + 0.20 \u00d7 data_completeness</div></div>';
+  [{l:'VWP (winnability)',v:'40%',c:'#10B981'},{l:'Premium Fit',v:'40%',c:'#7C8EF7'},{l:'Data Completeness',v:'20%',c:'#A78BFA'}].forEach(function(r){
+    h+='<div class="scoring-weight-row"><div class="scoring-weight-pct" style="color:'+r.c+';">'+r.v+'</div><div class="scoring-weight-label">'+esc(r.l)+'</div></div>';
+  });
+  h+='</div>';
+
+  // Recommendation Score
+  h+='<div class="scoring-card"><div class="scoring-title">Recommendation Score (0\u2013100)</div>';
+  h+='<div class="scoring-sub">Stage 2 blended venue + market score</div>';
+  h+='<div class="scoring-formula"><div class="scoring-formula-title">Formula</div><div class="scoring-formula-code">recommendation_score = 0.50 \u00d7 priority_score + 0.30 \u00d7 market_score + 0.20 \u00d7 activity_bonus</div></div>';
+  [{l:'Priority Score (venue quality)',v:'50%',c:'#10B981'},{l:'Market Score (GDP, digital, tourism)',v:'30%',c:'#F0A500'},{l:'Activity Bonus (event cadence)',v:'20%',c:'#38BDF8'}].forEach(function(r){
+    h+='<div class="scoring-weight-row"><div class="scoring-weight-pct" style="color:'+r.c+';">'+r.v+'</div><div class="scoring-weight-label">'+esc(r.l)+'</div></div>';
+  });
+  h+='<div style="margin-top:12px;font-size:11px;color:#4B5563;">Tier 1 \u2265 70 \u00b7 Tier 2 \u2265 50 \u00b7 Tier 3 \u2265 30 \u00b7 Tier 4 &lt; 30</div>';
+  h+='</div>';
+
+  // ROI Index
+  h+='<div class="scoring-card"><div class="scoring-title">ROI Index (Per Venue)</div>';
+  h+='<div class="scoring-sub">Expected return combining score, winnability, and premium fit</div>';
+  h+='<div class="scoring-formula"><div class="scoring-formula-title">Formula</div><div class="scoring-formula-code">roi_index = recommendation_score \u00d7 win_probability \u00d7 (premium_fit / 100)</div></div>';
+  h+='</div>';
+
+  // Market Ranking
+  h+='<div class="scoring-card"><div class="scoring-title">Market Recommendation Ranking</div>';
+  h+='<div class="scoring-sub">Country-level ranking for the Recommendations tab</div>';
+  h+='<div class="scoring-formula"><div class="scoring-formula-title">Formula</div><div class="scoring-formula-code">rank = 0.35 \u00d7 avg_score + 0.25 \u00d7 avg_roi + 0.20 \u00d7 market_score + 0.10 \u00d7 T1_readiness + 0.10 \u00d7 pipeline_depth</div></div>';
+  [{l:'Avg Recommendation Score',v:'35%',c:'#10B981'},{l:'Avg ROI Index (per-venue)',v:'25%',c:'#F0A500'},{l:'Market Fundamentals',v:'20%',c:'#38BDF8'},{l:'T1 Readiness (saturates at 20)',v:'10%',c:'#A78BFA'},{l:'Pipeline Depth T1+T2 (saturates at 100)',v:'10%',c:'#7C8EF7'}].forEach(function(r){
+    h+='<div class="scoring-weight-row"><div class="scoring-weight-pct" style="color:'+r.c+';">'+r.v+'</div><div class="scoring-weight-label">'+esc(r.l)+'</div></div>';
+  });
+  h+='</div>';
+
+  document.getElementById('scoring-content').innerHTML=h;
+}
 
 // ── Init dropdowns ──
 (function(){

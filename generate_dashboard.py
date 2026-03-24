@@ -397,12 +397,12 @@ def prepare_top_recs(venues, markets):
         else:
             roi_factor = 0
 
-        # Final composite ranking with all factors
-        rank_score = (avg_score * 0.25 +                      # venue quality
-                      ms * 0.20 +                              # market fundamentals
-                      min(t1 / 30, 1) * 100 * 0.20 +          # T1 absolute count (saturates at 30)
-                      min(n_winnable / 200, 1) * 100 * 0.15 + # pipeline depth (T1+T2, saturates at 200)
-                      roi_factor * 0.20)                       # earning potential (annual revenue)
+        # Final composite ranking aligned with ARCHITECTURE_new.md
+        rank_score = (avg_score * 0.35 +                       # avg recommendation_score (§7.7)
+                      avg_roi * 0.25 +                         # avg ROI index (§9.5)
+                      ms * 0.20 +                              # market fundamentals (§7.5)
+                      min(t1 / 20, 1) * 100 * 0.10 +          # T1 readiness (saturates at 20)
+                      min(n_winnable / 100, 1) * 100 * 0.10)  # pipeline depth (saturates at 100)
 
         def fmt_money(val):
             if val >= 1_000_000:
