@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Tixr Scout \u2014 Global Venue Intelligence</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css">
@@ -210,6 +213,98 @@ select option{background:#0D1018;color:#9CA3AF;}
 .cs-venue-row:last-child{border-bottom:none;}
 .cs-venue-name{color:#C8CDD8;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:6px;}
 .cs-score{font-family:var(--mono);font-weight:700;font-size:11px;}
+
+/* GTM Strategy */
+.gtm-market-card{background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:22px;margin-bottom:16px;position:relative;overflow:hidden;}
+.gtm-rank{position:absolute;top:0;left:0;font-size:9px;font-weight:700;letter-spacing:0.12em;padding:4px 14px;border-radius:0 0 8px 0;text-transform:uppercase;}
+.gtm-header{display:flex;justify-content:space-between;align-items:flex-start;margin-top:18px;margin-bottom:16px;}
+.gtm-title{font-size:20px;font-weight:700;color:#E2E8F0;}
+.gtm-sub{font-size:12px;color:#4B5563;margin-top:3px;}
+.gtm-score-box{text-align:center;}
+.gtm-score-val{font-size:34px;font-weight:800;font-family:var(--mono);line-height:1;}
+.gtm-score-lbl{font-size:9px;color:#374151;text-transform:uppercase;letter-spacing:0.1em;margin-top:2px;}
+.gtm-why-risks{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:16px;}
+.gtm-section-title{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid rgba(255,255,255,0.06);}
+.gtm-item{font-size:12px;color:#9CA3AF;padding:5px 0 5px 14px;position:relative;line-height:1.5;}
+.gtm-item::before{content:'';position:absolute;left:0;top:11px;width:5px;height:5px;border-radius:50%;}
+.gtm-why-item::before{background:#10B981;}
+.gtm-risk-item{color:#9CA3AF;}
+.gtm-risk-item::before{background:#F0A500;}
+
+/* Execution plan */
+.exec-plan{background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:22px;}
+.exec-title{font-size:16px;font-weight:700;color:#E2E8F0;margin-bottom:16px;}
+.exec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.exec-col{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:16px;}
+.exec-col-head{font-size:28px;font-weight:800;font-family:var(--mono);margin-bottom:2px;}
+.exec-col-sub{font-size:10px;color:#374151;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.06);}
+.exec-item{font-size:12px;color:#9CA3AF;padding:5px 0;padding-left:18px;position:relative;line-height:1.4;}
+
+/* RACI Matrix */
+.raci-table{width:100%;border-collapse:collapse;font-size:12px;}
+.raci-table th{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#4B5563;padding:8px 10px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.08);font-weight:600;}
+.raci-table th:first-child{text-align:left;}
+.raci-table td{padding:8px 10px;text-align:center;color:#6B7280;border-bottom:1px solid rgba(255,255,255,0.04);}
+.raci-table td:first-child{text-align:left;color:#C8CDD8;font-weight:500;}
+.raci-r{color:#10B981!important;font-weight:700!important;}
+.raci-a{color:#F0A500!important;font-weight:700!important;}
+.raci-c{color:#38BDF8!important;}
+.raci-i{color:#374151!important;}
+
+/* Architecture */
+.arch-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);color:#9CA3AF;}
+.arch-badge-dot{width:6px;height:6px;border-radius:50%;}
+.arch-stage{background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:22px;margin-bottom:16px;}
+.arch-stage-label{font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#374151;margin-bottom:6px;}
+.arch-stage-title{font-size:18px;font-weight:700;color:#E2E8F0;margin-bottom:16px;}
+.arch-agent-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+.arch-agent{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:16px;}
+.arch-agent-name{font-size:14px;font-weight:600;color:#E2E8F0;margin-bottom:2px;}
+.arch-agent-sub{font-size:11px;color:#4B5563;margin-bottom:10px;}
+.arch-source{display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:11px;border-bottom:1px solid rgba(255,255,255,0.03);}
+.arch-source:last-child{border-bottom:none;}
+.arch-source-name{color:#9CA3AF;}
+.arch-source-val{font-family:var(--mono);color:#6B7280;font-size:10px;}
+.arch-df{background:rgba(124,142,247,0.05);border:1px solid rgba(124,142,247,0.2);border-radius:8px;padding:14px;margin-top:16px;}
+.arch-df-title{font-size:12px;font-weight:600;color:#7C8EF7;margin-bottom:6px;}
+.arch-df-cols{font-size:11px;color:#4B5563;font-family:var(--mono);}
+.arch-cost-table{width:100%;border-collapse:collapse;font-size:12px;}
+.arch-cost-table th{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#4B5563;padding:8px 10px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.08);font-weight:600;}
+.arch-cost-table td{padding:8px 10px;color:#9CA3AF;border-bottom:1px solid rgba(255,255,255,0.04);}
+.arch-cost-table td:last-child{text-align:right;font-family:var(--mono);}
+.arch-cost-total td{font-weight:700;color:#E2E8F0!important;border-top:1px solid rgba(255,255,255,0.1);}
+
+/* Vendor Landscape */
+.vendor-alert{background:rgba(240,165,0,0.06);border:1px solid rgba(240,165,0,0.25);border-radius:10px;padding:16px 20px;}
+.vendor-alert-title{font-size:13px;font-weight:700;color:#F0A500;margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+.vendor-alert-text{font-size:12px;color:#9CA3AF;line-height:1.6;}
+.vendor-tier-section{margin-bottom:24px;}
+.vendor-tier-title{font-size:14px;font-weight:700;color:#E2E8F0;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.06);}
+.vendor-card{background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:18px;margin-bottom:12px;}
+.vendor-card-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;}
+.vendor-name{font-size:16px;font-weight:700;color:#E2E8F0;}
+.vendor-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
+.vendor-tag{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500;}
+.vendor-openness{font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;}
+.vendor-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;font-size:12px;}
+.vendor-grid-label{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#374151;margin-bottom:4px;font-weight:600;}
+.vendor-grid-val{color:#9CA3AF;line-height:1.5;}
+
+/* Scoring Models */
+.scoring-card{background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:22px;margin-bottom:16px;}
+.scoring-title{font-size:16px;font-weight:700;color:#E2E8F0;margin-bottom:4px;}
+.scoring-sub{font-size:12px;color:#4B5563;margin-bottom:16px;}
+.scoring-row{display:flex;align-items:center;gap:12px;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}
+.scoring-row:last-child{border-bottom:none;}
+.scoring-label{flex:1;color:#9CA3AF;}
+.scoring-value{font-family:var(--mono);font-weight:700;min-width:50px;text-align:right;}
+.scoring-formula{background:rgba(124,142,247,0.05);border:1px solid rgba(124,142,247,0.2);border-radius:8px;padding:16px;margin-top:12px;}
+.scoring-formula-title{font-size:11px;font-weight:700;color:#7C8EF7;margin-bottom:10px;letter-spacing:0.08em;text-transform:uppercase;}
+.scoring-formula-code{font-family:var(--mono);font-size:12px;color:#C8CDD8;line-height:1.8;}
+.scoring-weight-row{display:flex;align-items:center;gap:10px;padding:5px 0;}
+.scoring-weight-pct{font-family:var(--mono);font-weight:700;min-width:36px;font-size:13px;}
+.scoring-weight-label{font-size:12px;color:#9CA3AF;}
+.scoring-weight-desc{font-size:11px;color:#4B5563;}
 </style>
 </head>
 <body>
@@ -270,6 +365,34 @@ select option{background:#0D1018;color:#9CA3AF;}
       </svg>
       SEA Focus<span class="nav-badge" id="nb-5" style="background:rgba(167,139,250,0.12);color:#A78BFA;"></span>
     </div>
+    <div class="nav-sec">Strategy</div>
+    <div class="nav-item" id="nav-6" onclick="switchTab(6)">
+      <svg class="nav-ico" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M2 2h5v5H2zM9 2h5v2H9zM9 5.5h5v2H9zM2 9h5v2H2zM9 9h5v5H9zM2 12.5h5v1.5H2z"/>
+      </svg>
+      GTM Strategy<span class="nav-badge" style="background:rgba(16,185,129,0.12);color:#10B981;">Plan</span>
+    </div>
+    <div class="nav-item" id="nav-7" onclick="switchTab(7)">
+      <svg class="nav-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
+        <rect x="1.5" y="1.5" width="5" height="4" rx="1"/><rect x="9.5" y="1.5" width="5" height="4" rx="1"/>
+        <rect x="5" y="10.5" width="6" height="4" rx="1"/><line x1="4" y1="5.5" x2="4" y2="8"/><line x1="12" y1="5.5" x2="12" y2="8"/>
+        <line x1="4" y1="8" x2="12" y2="8"/><line x1="8" y1="8" x2="8" y2="10.5"/>
+      </svg>
+      Architecture
+    </div>
+    <div class="nav-item" id="nav-8" onclick="switchTab(8)">
+      <svg class="nav-ico" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M8 1C4.7 1 2 3.1 2 5.8c0 1.5.9 2.8 2.3 3.7L4 15l4-2 4 2-.3-5.5C13.1 8.6 14 7.3 14 5.8 14 3.1 11.3 1 8 1z" opacity=".85"/>
+      </svg>
+      Vendor Landscape
+    </div>
+    <div class="nav-item" id="nav-9" onclick="switchTab(9)">
+      <svg class="nav-ico" viewBox="0 0 16 16" fill="currentColor">
+        <circle cx="8" cy="8" r="7" opacity=".15"/><circle cx="8" cy="8" r="5" opacity=".25"/>
+        <circle cx="8" cy="8" r="3" opacity=".4"/><circle cx="8" cy="8" r="1.2"/>
+      </svg>
+      Scoring Models
+    </div>
   </div>
   <div id="sb-foot">
     <div style="display:flex;align-items:center;font-size:10px;color:#4B5563;margin-bottom:4px;">
@@ -310,11 +433,7 @@ select option{background:#0D1018;color:#9CA3AF;}
   <div id="tab-0" class="tab-pane fade-in">
     <div class="kpi-grid" id="kpi-grid-ov"></div>
     <div class="charts-row">
-      <div class="chart-card">
-        <div class="chart-title">Venues by Region</div>
-        <div style="position:relative;height:200px;"><canvas id="chart-region"></canvas></div>
-      </div>
-      <div class="chart-card">
+      <div class="chart-card" style="max-width:500px;">
         <div class="chart-title">Target Tier Distribution</div>
         <div style="display:flex;gap:20px;align-items:center;">
           <div style="flex:0 0 150px;height:150px;position:relative;"><canvas id="chart-tier"></canvas></div>
@@ -350,6 +469,7 @@ select option{background:#0D1018;color:#9CA3AF;}
       <div style="font-size:12px;color:#4B5563;">AI-powered market prioritization based on venue pipeline quality, market fundamentals, and ROI potential</div>
     </div>
     <div id="rec-cards" style="max-width:920px;"></div>
+    <div id="rec-execution" style="max-width:920px;margin-top:28px;"></div>
   </div>
 
   <!-- TAB 2: Map Intelligence -->
@@ -483,6 +603,48 @@ select option{background:#0D1018;color:#9CA3AF;}
       </div>
       <div id="sea-pager" style="display:flex;justify-content:center;gap:8px;margin-top:14px;"></div>
     </div>
+  </div>
+
+  <!-- TAB 6: GTM Strategy -->
+  <div id="tab-6" class="tab-pane fade-in" style="display:none;">
+    <div style="margin-bottom:18px;">
+      <div style="font-size:19px;font-weight:600;color:#E2E8F0;margin-bottom:5px;">Go-To-Market Strategy</div>
+      <div style="font-size:12px;color:#4B5563;">Top 3 markets + sequence + 30/60/90 day plan</div>
+    </div>
+    <div id="gtm-cards" style="max-width:960px;"></div>
+    <div id="gtm-execution" style="max-width:960px;margin-top:28px;"></div>
+    <div id="gtm-raci" style="max-width:960px;margin-top:28px;"></div>
+  </div>
+
+  <!-- TAB 7: Architecture -->
+  <div id="tab-7" class="tab-pane fade-in" style="display:none;">
+    <div style="margin-bottom:18px;">
+      <div style="font-size:19px;font-weight:600;color:#E2E8F0;margin-bottom:5px;">System Architecture</div>
+      <div style="font-size:12px;color:#4B5563;">Two-stage pipeline: Orchestrator &rarr; Recommendation Engine</div>
+    </div>
+    <div id="arch-badges" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px;"></div>
+    <div id="arch-stage1" style="max-width:960px;margin-bottom:28px;"></div>
+    <div id="arch-stage2" style="max-width:960px;margin-bottom:28px;"></div>
+    <div id="arch-costs" style="max-width:960px;"></div>
+  </div>
+
+  <!-- TAB 8: Vendor Landscape -->
+  <div id="tab-8" class="tab-pane fade-in" style="display:none;">
+    <div style="margin-bottom:18px;">
+      <div style="font-size:19px;font-weight:600;color:#E2E8F0;margin-bottom:5px;">Vendor Landscape</div>
+      <div style="font-size:12px;color:#4B5563;">Competitive ticketing platform analysis &mdash; openness to Tixr partnership</div>
+    </div>
+    <div id="vendor-alert" style="max-width:960px;margin-bottom:20px;"></div>
+    <div id="vendor-tiers" style="max-width:960px;"></div>
+  </div>
+
+  <!-- TAB 9: Scoring Models -->
+  <div id="tab-9" class="tab-pane fade-in" style="display:none;">
+    <div style="margin-bottom:18px;">
+      <div style="font-size:19px;font-weight:600;color:#E2E8F0;margin-bottom:5px;">Scoring Models</div>
+      <div style="font-size:12px;color:#4B5563;">VWP + Premium Fit + Priority Score &mdash; how we rank every venue</div>
+    </div>
+    <div id="scoring-content" style="max-width:960px;"></div>
   </div>
 
 </div><!-- /main-wrap -->
@@ -678,7 +840,11 @@ var TAB_INFO=[
   ['Map Intelligence','Geographic visualization of global venue opportunities'],
   ['Venue Pipeline','Full searchable and filterable venue database'],
   ['Market Scorecard','Country-level market analysis and comparison'],
-  ['SEA Focus','Southeast Asia deep dive \u2014 Singapore, Thailand, Malaysia, Indonesia & more']
+  ['SEA Focus','Southeast Asia deep dive \u2014 Singapore, Thailand, Malaysia, Indonesia & more'],
+  ['Go-To-Market Strategy','Top 3 markets + sequence + 30/60/90 day plan'],
+  ['System Architecture','Two-stage pipeline: Orchestrator \u2192 Recommendation Engine'],
+  ['Vendor Landscape','Competitive ticketing platform analysis \u2014 openness to Tixr partnership'],
+  ['Scoring Models','VWP + Premium Fit + Priority Score \u2014 how we rank every venue']
 ];
 
 // ── Init header ──
@@ -704,8 +870,9 @@ function destroyChart(id){if(charts[id]){charts[id].destroy();delete charts[id];
 function makeChart(id,ctx,cfg){destroyChart(id);charts[id]=new Chart(ctx,cfg);return charts[id];}
 
 function switchTab(idx){
-  for(var i=0;i<6;i++){
+  for(var i=0;i<10;i++){
     var tp=document.getElementById('tab-'+i);
+    if(!tp)continue;
     if(i===idx){tp.style.display=(i===2)?'flex':'block';}else{tp.style.display='none';}
     var nav=document.getElementById('nav-'+i);
     if(nav){if(i===idx)nav.classList.add('active');else nav.classList.remove('active');}
@@ -726,6 +893,10 @@ function switchTab(idx){
   if(idx===4)renderMarkets();
   if(idx===5&&!seaInited){renderSEA();seaInited=true;}
   else if(idx===5&&seaInited){renderSEA();}
+  if(idx===6)renderGTM();
+  if(idx===7)renderArchitecture();
+  if(idx===8)renderVendors();
+  if(idx===9)renderScoring();
 }
 
 // ════════════════════════════════════════
@@ -853,13 +1024,17 @@ function applyScope(){
   // Re-render active tab
   ovInited=false; seaInited=false;
   var curTab=0;
-  for(var i=0;i<6;i++){if(document.getElementById('tab-'+i).style.display!=='none'){curTab=i;break;}}
+  for(var i=0;i<10;i++){var el=document.getElementById('tab-'+i);if(el&&el.style.display!=='none'){curTab=i;break;}}
   if(curTab===0){renderOverview();ovInited=true;}
   if(curTab===1)renderRecs();
   if(curTab===2&&mapInited){renderMapSidebar();refreshMap();}
   if(curTab===3)filterTable();
   if(curTab===4)renderMarkets();
   if(curTab===5){renderSEA();seaInited=true;}
+  if(curTab===6)renderGTM();
+  if(curTab===7)renderArchitecture();
+  if(curTab===8)renderVendors();
+  if(curTab===9)renderScoring();
 }
 
 // ════════════════════════════════════════
@@ -881,21 +1056,6 @@ function renderOverview(){
     return '<div class="kpi-card"><div class="kpi-val" style="color:'+it.c+';">'+it.v+'</div>'+
       '<div class="kpi-lbl">'+it.l+'</div><div class="kpi-sub">'+it.sub+'</div></div>';
   }).join('');
-
-  // Region chart
-  var aREG=getActiveREG();
-  var rKeys=Object.keys(aREG).sort(function(a,b){return aREG[b].n-aREG[a].n;});
-  destroyChart('region');
-  makeChart('region',document.getElementById('chart-region').getContext('2d'),{
-    type:'bar',
-    data:{labels:rKeys,datasets:[{data:rKeys.map(function(r){return aREG[r].n;}),
-      backgroundColor:rKeys.map(function(r){return (rColors[r]||'#6B7280')+'CC';}),
-      borderWidth:0,borderRadius:4}]},
-    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return ' '+c.raw.toLocaleString()+' venues';}}}},
-      scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#374151',font:{size:10}},border:{display:false}},
-        y:{grid:{display:false},ticks:{color:'#9CA3AF',font:{size:11}},border:{display:false}}}}
-  });
 
   // Tier donut
   destroyChart('tier');
@@ -975,6 +1135,50 @@ function renderRecs(){
     h+='</div></div>';
   });
   container.innerHTML=h;
+
+  // Execution plan in recommendations
+  var recExec=document.getElementById('rec-execution');
+  if(activeTop.length){
+    var c1=activeTop[0]?activeTop[0].co:'Market 1';
+    var c2=activeTop[1]?activeTop[1].co:'Market 2';
+    var c3=activeTop[2]?activeTop[2].co:'Market 3';
+    var eh='<div class="exec-plan">';
+    eh+='<div class="exec-title">30 / 60 / 90 Day Execution Plan</div>';
+    eh+='<div class="exec-grid">';
+    var plans=[
+      {days:'30',color:'#10B981',sub:'days',items:[
+        'Finalize '+c1+' venue target list (Tier 1)',
+        'Establish local banking + payment integration',
+        'Hire 1 BDR ('+c1+'-based, bilingual)',
+        'Begin partner outreach \u2014 top '+((activeTop[0]&&activeTop[0].t1)||8)+' Tier 1 venues'
+      ]},
+      {days:'60',color:'#F0A500',sub:'days',items:[
+        'Sign first 2-3 venue partners in '+c1,
+        'Launch pilot event on Tixr platform',
+        'Begin '+c2+' market assessment + outreach',
+        'Build local-language support playbook'
+      ]},
+      {days:'90',color:'#38BDF8',sub:'days',items:[
+        'Expand to 5+ '+c1+' venue partners',
+        'First '+c2+' venue signed',
+        c3+' market research complete',
+        'Present expansion metrics to board'
+      ]}
+    ];
+    plans.forEach(function(p){
+      eh+='<div class="exec-col">';
+      eh+='<div class="exec-col-head" style="color:'+p.color+';">'+p.days+'</div>';
+      eh+='<div class="exec-col-sub">'+p.sub+'</div>';
+      p.items.forEach(function(item){
+        eh+='<div class="exec-item"><span style="position:absolute;left:0;top:10px;width:8px;height:8px;border-radius:2px;border:1.5px solid '+p.color+';"></span>'+esc(item)+'</div>';
+      });
+      eh+='</div>';
+    });
+    eh+='</div></div>';
+    recExec.innerHTML=eh;
+  } else {
+    recExec.innerHTML='';
+  }
 }
 
 // ════════════════════════════════════════
