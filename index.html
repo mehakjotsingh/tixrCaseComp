@@ -164,6 +164,52 @@ select option{background:#0D1018;color:#9CA3AF;}
 
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
 .fade-in{animation:fadeIn 0.25s ease;}
+
+/* ── Country Focus ── */
+#map-focus-banner{position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:1200;display:none;
+  background:rgba(8,11,18,0.96);border:1px solid rgba(124,142,247,0.4);border-radius:24px;
+  padding:6px 14px 6px 10px;display:none;align-items:center;gap:8px;pointer-events:all;
+  box-shadow:0 2px 16px rgba(124,142,247,0.15);}
+#map-focus-banner.visible{display:flex;}
+.mfb-dot{width:8px;height:8px;border-radius:50%;background:#7C8EF7;flex-shrink:0;}
+.mfb-label{font-size:12px;font-weight:600;color:#E2E8F0;letter-spacing:0.01em;}
+.mfb-clear{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
+  color:#6B7280;font-size:10px;padding:2px 8px;border-radius:10px;cursor:pointer;
+  font-family:inherit;transition:all 0.15s;margin-left:4px;}
+.mfb-clear:hover{color:#E2E8F0;background:rgba(255,255,255,0.1);}
+
+/* Country focus search in sidebar */
+#map-co-search{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);
+  color:var(--tp);padding:5px 8px;border-radius:6px;font-size:11px;font-family:inherit;
+  outline:none;width:100%;margin-bottom:8px;box-sizing:border-box;}
+#map-co-search::placeholder{color:var(--td);}
+.map-co-pill{font-size:11px;padding:3px 9px;border-radius:4px;cursor:pointer;
+  border:1px solid rgba(255,255,255,0.07);background:rgba(255,255,255,0.03);
+  color:var(--ts);transition:all 0.12s;margin:2px 2px 2px 0;display:inline-block;user-select:none;}
+.map-co-pill:hover{border-color:rgba(124,142,247,0.5);color:#E2E8F0;background:rgba(124,142,247,0.08);}
+
+/* Country stats sidebar card */
+.cs-back{display:flex;align-items:center;gap:6px;cursor:pointer;font-size:11px;color:#6B7280;
+  padding:4px 0 10px;border-bottom:1px solid rgba(255,255,255,0.06);margin-bottom:10px;
+  transition:color 0.12s;}
+.cs-back:hover{color:#E2E8F0;}
+.cs-name{font-size:14px;font-weight:700;color:#E2E8F0;margin-bottom:2px;}
+.cs-region{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;margin-bottom:10px;}
+.cs-kpi-row{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:10px;}
+.cs-kpi{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);
+  border-radius:6px;padding:7px 9px;text-align:center;}
+.cs-kpi-val{font-size:15px;font-weight:700;font-family:var(--mono);}
+.cs-kpi-lbl{font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:var(--td);margin-top:1px;}
+.cs-sec{font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--td);
+  font-weight:600;margin:10px 0 5px;}
+.cs-tier-row{display:flex;align-items:center;gap:6px;margin-bottom:4px;}
+.cs-bar-bg{flex:1;height:3px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;}
+.cs-bar-fill{height:3px;border-radius:2px;}
+.cs-venue-row{display:flex;align-items:baseline;justify-content:space-between;
+  padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:11px;}
+.cs-venue-row:last-child{border-bottom:none;}
+.cs-venue-name{color:#C8CDD8;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:6px;}
+.cs-score{font-family:var(--mono);font-weight:700;font-size:11px;}
 </style>
 </head>
 <body>
@@ -311,6 +357,7 @@ select option{background:#0D1018;color:#9CA3AF;}
     <div id="map-sidebar"></div>
     <div style="flex:1;position:relative;height:100%;">
       <div id="lmap" style="height:100%;width:100%;"></div>
+      <!-- Score legend -->
       <div style="position:absolute;bottom:14px;left:10px;background:rgba(8,11,18,0.93);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:10px 13px;z-index:999;pointer-events:none;">
         <div style="font-size:9px;letter-spacing:0.16em;color:#374151;text-transform:uppercase;margin-bottom:7px;">Score Legend</div>
         <div style="font-size:11px;color:#4B5563;display:flex;flex-direction:column;gap:5px;">
@@ -320,12 +367,23 @@ select option{background:#0D1018;color:#9CA3AF;}
           <div style="display:flex;align-items:center;gap:7px;"><span style="width:8px;height:8px;border-radius:50%;background:#EF4444;display:inline-block;"></span>Score &lt;30</div>
         </div>
       </div>
-      <div style="position:absolute;top:10px;right:10px;background:rgba(8,11,18,0.93);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:8px 12px;z-index:999;">
+      <!-- Filter + Country Search panel -->
+      <div style="position:absolute;top:10px;right:10px;background:rgba(8,11,18,0.93);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:8px 12px;z-index:999;min-width:160px;">
         <div style="font-size:9px;letter-spacing:0.13em;color:#374151;text-transform:uppercase;margin-bottom:5px;">Filter Map</div>
-        <select id="map-tier" onchange="refreshMap()" class="fsel" style="font-size:11px;padding:4px 8px;">
+        <select id="map-tier" onchange="refreshMap()" class="fsel" style="font-size:11px;padding:4px 8px;width:100%;box-sizing:border-box;">
           <option value="">All Tiers</option><option value="1">Tier 1</option>
           <option value="2">Tier 2</option><option value="3">Tier 3</option><option value="12">Tier 1+2</option>
         </select>
+        <div style="font-size:9px;letter-spacing:0.13em;color:#374151;text-transform:uppercase;margin:8px 0 5px;">Country Focus</div>
+        <input id="map-right-search" type="text" placeholder="Search country..." oninput="filterMapCountrySearch()"
+          style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);color:#E2E8F0;padding:5px 8px;border-radius:6px;font-size:11px;font-family:inherit;outline:none;width:100%;box-sizing:border-box;">
+        <div id="map-right-results" style="margin-top:5px;max-height:160px;overflow-y:auto;display:none;"></div>
+      </div>
+      <!-- Focused country banner (centered top) -->
+      <div id="map-focus-banner">
+        <span class="mfb-dot"></span>
+        <span class="mfb-label" id="map-focus-label">Germany</span>
+        <button class="mfb-clear" onclick="clearMapFocus()">&#x2715; Clear Focus</button>
       </div>
     </div>
   </div>
@@ -483,7 +541,7 @@ var VD = [{"n":"Esplanade Concert Hall","c":"Singapore","co":"Singapore","r":"SE
 var MKT = {"Algeria":{"n":5,"r":"EMEA_Africa","ps":59.4,"rs":39.7,"ms":0.0,"t1":0,"t2":0,"tp":"","la":0,"lo":0},"Argentina":{"n":531,"r":"LATAM","ps":59.7,"rs":53.7,"ms":42.0,"t1":0,"t2":321,"tp":"Open Distribution (Viagogo partner)","la":-34.586,"lo":-59.276},"Australia":{"n":318,"r":"APAC","ps":73.5,"rs":63.9,"ms":57.2,"t1":30,"t2":288,"tp":"AXS","la":-33.298,"lo":142.405},"Austria":{"n":263,"r":"EMEA","ps":58.4,"rs":54.6,"ms":51.2,"t1":0,"t2":263,"tp":"","la":48.004,"lo":15.339},"Bahrain":{"n":4,"r":"EMEA_Gulf","ps":60.3,"rs":55.1,"ms":50.0,"t1":0,"t2":4,"tp":"","la":26.224,"lo":50.587},"Belgium":{"n":533,"r":"EMEA","ps":59.1,"rs":54.9,"ms":51.2,"t1":0,"t2":531,"tp":"Ticketmaster","la":50.9,"lo":4.358},"Brazil":{"n":1105,"r":"LATAM","ps":62.8,"rs":53.4,"ms":39.5,"t1":0,"t2":610,"tp":"","la":-19.957,"lo":-45.691},"Bulgaria":{"n":2,"r":"EMEA","ps":64.0,"rs":42.0,"ms":0.0,"t1":0,"t2":0,"tp":"","la":0,"lo":0},"Cambodia":{"n":22,"r":"SEA","ps":55.9,"rs":45.6,"ms":25.5,"t1":0,"t2":4,"tp":"","la":11.997,"lo":104.761},"Chile":{"n":139,"r":"LATAM","ps":61.5,"rs":53.6,"ms":42.9,"t1":0,"t2":109,"tp":"","la":-33.419,"lo":-71.66},"China":{"n":225,"r":"APAC","ps":64.6,"rs":55.8,"ms":45.0,"t1":0,"t2":221,"tp":"AXS","la":31.165,"lo":114.495},"Colombia":{"n":170,"r":"LATAM","ps":57.1,"rs":51.7,"ms":37.2,"t1":0,"t2":61,"tp":"Ticketmaster","la":6.037,"lo":-74.792},"Costa Rica":{"n":15,"r":"LATAM","ps":59.3,"rs":39.7,"ms":0.0,"t1":0,"t2":0,"tp":"","la":9.952,"lo":-84.278},"Cuba":{"n":2,"r":"EMEA","ps":64.0,"rs":42.0,"ms":0.0,"t1":0,"t2":0,"tp":"","la":0,"lo":0},"Czech Republic":{"n":496,"r":"EMEA","ps":57.5,"rs":38.8,"ms":0.0,"t1":0,"t2":1,"tp":"AXS","la":49.883,"lo":15.406},"Democratic Republic of the Congo":{"n":2,"r":"EMEA_Africa","ps":59.4,"rs":39.7,"ms":0.0,"t1":0,"t2":0,"tp":"","la":0,"lo":0},"Denmark":{"n":189,"r":"EMEA","ps":59.0,"rs":57.3,"ms":59.2,"t1":0,"t2":189,"tp":"","la":55.798,"lo":11.227},"Dominican Republic":{"n":11,"r":"LATAM","ps":61.1,"rs":40.6,"ms":0.0,"t1":0,"t2":0,"tp":"","la":19.096,"lo":-70.323},"Ecuador":{"n":69,"r":"LATAM","ps":62.7,"rs":41.3,"ms":0.0,"t1":0,"t2":0,"tp":"","la":-1.73,"lo":-79.205},"Egypt":{"n":57,"r":"EMEA_Africa","ps":55.4,"rs":37.7,"ms":0.0,"t1":0,"t2":0,"tp":"","la":30.072,"lo":31.259},"Ethiopia":{"n":2,"r":"EMEA_Africa","ps":59.4,"rs":39.7,"ms":0.0,"t1":0,"t2":0,"tp":"","la":0,"lo":0},"Finland":{"n":202,"r":"EMEA","ps":59.2,"rs":55.0,"ms":51.4,"t1":0,"t2":202,"tp":"Ticketmaster Sport","la":61.47,"lo":24.531},"France":{"n":2100,"r":"EMEA","ps":66.0,"rs":58.6,"ms":47.8,"t1":0,"t2":1652,"tp":"AXS (AEG)","la":45.535,"lo":2.798},"Gabon":{"n":2,"r":"EMEA_Africa","ps":59.4,"rs":39.7,"ms":0.0,"t1":0,"t2":0,"tp":"","la":0,"lo":0},"Germany":{"n":1996,"r":"EMEA","ps":68.7,"rs":61.6,"ms":53.3,"t1":50,"t2":1547,"tp":"AXS (premium)","la":51.144,"lo":10.372},"Ghana":{"n":2,"r":"EMEA_Africa","ps":59.4,"rs":39.7,"ms":0.0,"t1":0,"t2":0,"tp":"","la":0,"lo":0},"Greece":{"n":286,"r":"EMEA","ps":59.2,"rs":51.4,"ms":39.4,"t1":0,"t2":195,"tp":"Ticketmaster Sport","la":38.21,"lo":23.464},"Guatemala":{"n":28,"r":"LATAM","ps":65.4,"rs":42.7,"ms":0.0,"t1":0,"t2":0,"tp":"","la":14.792,"lo":-90.859},"Hungary":{"n":2,"r":"EMEA","ps":61.7,"rs":40.9,"ms":0.0,"t1":0,"t2":0,"tp":"","la":0,"lo":0},"India":{"n":399,"r":"APAC","ps":60.2,"rs":49.5,"ms":31.4,"t1":0,"t2":138,"tp":"Ticketmaster","la":21.635,"lo":79.293},"Indonesia":{"n":188,"r":"SEA","ps":62.1,"rs":52.1,"ms":35.3,"t1":0,"t2":92,"tp":"Loket.com","la":-4.494,"lo":112.067},"Ireland":{"n":234,"r":"EMEA","ps":55.6,"rs":55.6,"ms":59.1,"t1":0,"t2":234,"tp":"","la":53.296,"lo":-7.122},"Israel":{"n":147,"r":"EMEA_Gulf","ps":61.1,"rs":57.4,"ms":56.2,"t1":0,"t2":147,"tp":"","la":32.02,"lo":34.894},"Italy":{"n":1348,"r":"EMEA","ps":67.6,"rs":57.7,"ms":46.2,"t1":0,"t2":1348,"tp":"","la":43.589,"lo":11.546},"Japan":{"n":929,"r":"APAC","ps":67.5,"rs":59.3,"ms":52.0,"t1":6,"t2":923,"tp":"AXS","la":35.776,"lo":137.589},"Kenya":{"n":21,"r":"EMEA_Africa","ps":61.0,"rs":44.7,"ms":14.0,"t1":0,"t2":0,"tp":"","la":-1.305,"lo":36.689},"Kuwait":{"n":7,"r":"EMEA_Gulf","ps":63.4,"rs":58.3,"ms":55.2,"t1":0,"t2":7,"tp":"","la":29.285,"lo":47.948},"Libya":{"n":2,"r":"EMEA_Africa","ps":59.4,"rs":39.7,"ms":0.0,"t1":0,"t2":0,"tp":"","la":0,"lo":0},"Malaysia":{"n":59,"r":"SEA","ps":66.6,"rs":55.8,"ms":41.8,"t1":0,"t2":47,"tp":"Ticket2U","la":3.44,"lo":102.22},"Morocco":{"n":83,"r":"EMEA_Africa","ps":60.3,"rs":51.2,"ms":36.7,"t1":0,"t2":38,"tp":"","la":33.359,"lo":-6.998},"Myanmar":{"n":15,"r":"SEA","ps":58.8,"rs":46.6,"ms":24.1,"t1":0,"t2":5,"tp":"","la":18.794,"lo":95.401},"Netherlands":{"n":1083,"r":"EMEA","ps":69.4,"rs":62.2,"ms":55.5,"t1":18,"t2":910,"tp":"SeatGeek","la":51.785,"lo":4.601},"New Zealand":{"n":167,"r":"APAC","ps":58.7,"rs":54.9,"ms":51.8,"t1":0,"t2":167,"tp":"","la":-40.149,"lo":174.004},"Nigeria":{"n":30,"r":"EMEA_Africa","ps":63.3,"rs":49.6,"ms":26.5,"t1":0,"t2":16,"tp":"","la":7.684,"lo":6.613},"Norway":{"n":106,"r":"EMEA","ps":59.1,"rs":58.0,"ms":61.6,"t1":0,"t2":106,"tp":"","la":60.497,"lo":10.097},"Oman":{"n":6,"r":"EMEA_Gulf","ps":64.5,"rs":55.7,"ms":44.7,"t1":0,"t2":6,"tp":"","la":22.345,"lo":57.916},"Panama":{"n":17,"r":"LATAM","ps":63.6,"rs":41.8,"ms":0.0,"t1":0,"t2":0,"tp":"","la":8.935,"lo":-80.257},"Paraguay":{"n":2,"r":"LATAM","ps":59.4,"rs":39.7,"ms":0.0,"t1":0,"t2":0,"tp":"","la":0,"lo":0},"People's Republic of China":{"n":459,"r":"APAC","ps":55.2,"rs":37.6,"ms":0.0,"t1":0,"t2":0,"tp":"","la":28.893,"lo":115.1},"Peru":{"n":67,"r":"LATAM","ps":61.2,"rs":51.3,"ms":35.6,"t1":0,"t2":31,"tp":"","la":-11.941,"lo":-75.984},"Philippines":{"n":141,"r":"SEA","ps":61.5,"rs":51.2,"ms":35.0,"t1":0,"t2":35,"tp":"SM Tickets","la":12.65,"lo":122.094},"Poland":{"n":472,"r":"EMEA","ps":60.2,"rs":52.2,"ms":40.3,"t1":0,"t2":412,"tp":"","la":51.747,"lo":19.058},"Portugal":{"n":241,"r":"EMEA","ps":60.1,"rs":52.1,"ms":40.1,"t1":0,"t2":221,"tp":"","la":39.472,"lo":-9.072},"Qatar":{"n":15,"r":"EMEA_Gulf","ps":64.9,"rs":62.6,"ms":67.1,"t1":0,"t2":15,"tp":"Ticketmaster Sport","la":25.349,"lo":51.475},"Russia":{"n":9,"r":"EMEA","ps":59.9,"rs":40.0,"ms":0.0,"t1":0,"t2":0,"tp":"","la":0,"lo":0},"Saudi Arabia":{"n":27,"r":"EMEA_Gulf","ps":66.3,"rs":62.2,"ms":52.3,"t1":0,"t2":18,"tp":"","la":23.562,"lo":44.779},"Senegal":{"n":2,"r":"EMEA","ps":64.0,"rs":42.0,"ms":0.0,"t1":0,"t2":0,"tp":"","la":0,"lo":0},"Singapore":{"n":199,"r":"SEA","ps":64.3,"rs":72.0,"ms":67.3,"t1":43,"t2":25,"tp":"SISTIC","la":1.316,"lo":103.84},"South Africa":{"n":154,"r":"EMEA_Africa","ps":59.5,"rs":50.8,"ms":36.8,"t1":0,"t2":54,"tp":"","la":-30.592,"lo":23.98},"South Korea":{"n":66,"r":"APAC","ps":59.7,"rs":39.8,"ms":0.0,"t1":0,"t2":0,"tp":"","la":36.525,"lo":127.615},"Spain":{"n":1461,"r":"EMEA","ps":64.5,"rs":57.5,"ms":46.6,"t1":0,"t2":1137,"tp":"AXS","la":39.975,"lo":-2.432},"Sweden":{"n":314,"r":"EMEA","ps":59.7,"rs":56.6,"ms":55.7,"t1":0,"t2":312,"tp":"Ticketmaster Sport","la":58.907,"lo":16.161},"Switzerland":{"n":307,"r":"EMEA","ps":58.3,"rs":57.9,"ms":62.3,"t1":0,"t2":307,"tp":"","la":46.889,"lo":7.674},"Syria":{"n":2,"r":"EMEA","ps":59.4,"rs":39.7,"ms":0.0,"t1":0,"t2":0,"tp":"","la":0,"lo":0},"Taiwan":{"n":5,"r":"EMEA","ps":64.9,"rs":42.5,"ms":0.0,"t1":0,"t2":0,"tp":"","la":0,"lo":0},"Thailand":{"n":299,"r":"SEA","ps":64.0,"rs":54.1,"ms":40.4,"t1":0,"t2":289,"tp":"ThaiTicketMajor","la":13.989,"lo":101.049},"Tunisia":{"n":2,"r":"EMEA","ps":64.0,"rs":42.0,"ms":0.0,"t1":0,"t2":0,"tp":"","la":0,"lo":0},"Turkey":{"n":159,"r":"EMEA","ps":61.2,"rs":40.6,"ms":0.0,"t1":0,"t2":1,"tp":"","la":39.967,"lo":32.291},"Ukraine":{"n":2,"r":"EMEA","ps":59.4,"rs":39.7,"ms":0.0,"t1":0,"t2":0,"tp":"","la":0,"lo":0},"United Arab Emirates":{"n":60,"r":"EMEA_Gulf","ps":62.7,"rs":64.1,"ms":59.3,"t1":1,"t2":22,"tp":"","la":24.927,"lo":55.206},"Uruguay":{"n":61,"r":"LATAM","ps":61.4,"rs":40.7,"ms":0.0,"t1":0,"t2":1,"tp":"","la":-34.413,"lo":-56.385},"Venezuela":{"n":95,"r":"LATAM","ps":56.0,"rs":38.0,"ms":0.0,"t1":0,"t2":0,"tp":"","la":10.094,"lo":-67.407},"Vietnam":{"n":43,"r":"SEA","ps":61.1,"rs":40.6,"ms":0.0,"t1":0,"t2":0,"tp":"Ticketbox.vn","la":16.765,"lo":106.335},"Zambia":{"n":2,"r":"EMEA_Africa","ps":59.4,"rs":39.7,"ms":0.0,"t1":0,"t2":0,"tp":"","la":0,"lo":0}};
 var REG = {"APAC":{"n":2553,"co":8,"ps":63.9,"t1":36,"t2":1729},"EMEA":{"n":11850,"co":52,"ps":64.5,"t1":68,"t2":9587},"EMEA_Africa":{"n":374,"co":24,"ps":59.4,"t1":0,"t2":108},"EMEA_Gulf":{"n":264,"co":7,"ps":62.2,"t1":1,"t2":217},"LATAM":{"n":2306,"co":17,"ps":61.2,"t1":0,"t2":1127},"SEA":{"n":963,"co":8,"ps":63.1,"t1":43,"t2":495}};
 var KPI = {"total":18311,"coords":12931,"countries":100,"regions":6,"t1":148,"t2":13263,"t3":2737,"t4":2163,"avg_opp":55.5};
-var GEN_DATE = "Mar 23 2026 19:09";
+var GEN_DATE = "Mar 23 2026 19:29";
 
 // ── Helpers ──
 function tc(ti){return ti===1?'#10B981':ti===2?'#F0A500':ti===3?'#38BDF8':'#EF4444';}
@@ -637,6 +695,7 @@ var TAB_INFO=[
 
 // ── Tab switching ──
 var MAP=null,MCG=null,mapInited=false,ovInited=false,seaInited=false;
+var mapFocusCountry=null;
 var charts={};
 
 function destroyChart(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
@@ -655,7 +714,11 @@ function switchTab(idx){
   if(idx===1)renderRecs();
   if(idx===2){
     if(!mapInited){initMap();mapInited=true;}
-    else{setTimeout(function(){MAP.invalidateSize();},100);}
+    else{
+      setTimeout(function(){MAP.invalidateSize();},100);
+      refreshMap();
+      renderMapSidebar();
+    }
   }
   if(idx===3)filterTable();
   if(idx===4)renderMarkets();
@@ -919,7 +982,13 @@ function initMap(){
   MAP=L.map(document.getElementById('lmap'),{zoomControl:true,attributionControl:false}).setView([20,10],2);
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19,subdomains:'abcd'}).addTo(MAP);
   setTimeout(function(){MAP.invalidateSize();},200);
-  refreshMap();renderMapSidebar();
+  refreshMap();
+  renderMapSidebar();
+  // if a country was pre-set (navigated from another tab), fly to it
+  if(mapFocusCountry){
+    var m=MKT[mapFocusCountry];
+    if(m&&m.la&&m.lo)setTimeout(function(){MAP.flyTo([m.la,m.lo],5,{duration:1.2});},400);
+  }
 }
 
 function refreshMap(){
@@ -939,8 +1008,15 @@ function refreshMap(){
   aVD.forEach(function(v){
     if(!v.la||!v.lo)return;
     if(tf){if(tf==='12'&&v.ti!==1&&v.ti!==2)return;if(tf!=='12'&&v.ti!==parseInt(tf))return;}
+    var focused=mapFocusCountry&&v.co===mapFocusCountry;
+    var dimmed=mapFocusCountry&&v.co!==mapFocusCountry;
+    if(dimmed)return; // hide non-focused when a country is focused
     var r=Math.max(5,Math.min(16,v.cap?Math.sqrt(v.cap/2000)*8:5));
-    var mk=L.circleMarker([v.la,v.lo],{radius:r,fillColor:oc(v.rs),color:'rgba(0,0,0,0.4)',weight:1.5,fillOpacity:0.8});
+    var mk=L.circleMarker([v.la,v.lo],{
+      radius:r,fillColor:oc(v.rs),
+      color:focused?'rgba(255,255,255,0.6)':'rgba(0,0,0,0.4)',
+      weight:focused?2:1.5,fillOpacity:0.9
+    });
     mk._vscore=v.rs;
     var vidx=VD.indexOf(v);
     mk.on('click',function(){showDetail(vidx);});
@@ -950,10 +1026,22 @@ function refreshMap(){
     MCG.addLayer(mk);
   });
   MAP.addLayer(MCG);
+  // update focus banner
+  var banner=document.getElementById('map-focus-banner');
+  if(mapFocusCountry){
+    banner.classList.add('visible');
+    document.getElementById('map-focus-label').textContent=mapFocusCountry;
+  } else {
+    banner.classList.remove('visible');
+  }
 }
 
 function renderMapSidebar(){
   var sb=document.getElementById('map-sidebar');
+  if(mapFocusCountry){
+    renderCountryStatsSidebar(mapFocusCountry);
+    return;
+  }
   var aREG=getActiveREG();
   var h='<div style="font-size:9px;letter-spacing:0.16em;color:#374151;text-transform:uppercase;margin-bottom:8px;padding-left:2px;">Regions</div>';
   Object.keys(aREG).sort(function(a,b){return aREG[b].n-aREG[a].n;}).forEach(function(rk){
@@ -966,7 +1054,161 @@ function renderMapSidebar(){
     if(r.t1||r.t2)h+='<div style="font-size:10px;margin-top:2px;"><span style="color:#10B981;">'+r.t1+' T1</span> \u00b7 <span style="color:#F0A500;">'+r.t2+' T2</span></div>';
     h+='</div>';
   });
+  // Country search section
+  h+='<div style="font-size:9px;letter-spacing:0.16em;color:#374151;text-transform:uppercase;margin-top:14px;margin-bottom:8px;padding-left:2px;">Focus a Country</div>';
+  h+='<input id="map-co-search" type="text" placeholder="Search country..." oninput="renderMapCountryPills()" style="">';
+  h+='<div id="map-co-pills" style="max-height:220px;overflow-y:auto;"></div>';
   sb.innerHTML=h;
+  renderMapCountryPills();
+}
+
+function renderMapCountryPills(){
+  var el=document.getElementById('map-co-pills');
+  if(!el)return;
+  var q=(document.getElementById('map-co-search')||{value:''}).value.toLowerCase();
+  var cos=Object.keys(MKT).sort();
+  if(q)cos=cos.filter(function(c){return c.toLowerCase().indexOf(q)>=0;});
+  el.innerHTML=cos.map(function(co){
+    return '<span class="map-co-pill" onclick="focusMapCountry(\''+esc(co)+'\')">'+esc(co)+'</span>';
+  }).join('');
+}
+
+function renderCountryStatsSidebar(co){
+  var sb=document.getElementById('map-sidebar');
+  var st=buildCountryStats(co);
+  var mkt=MKT[co]||{};
+  var col=rColors[mkt.r]||'#7C8EF7';
+  var total=st.n;
+  var h='';
+  // Back button
+  h+='<div class="cs-back" onclick="clearMapFocus()">&#8592; All Countries</div>';
+  // Country header
+  h+='<div class="cs-name">'+esc(co)+'</div>';
+  h+='<span class="cs-region" style="background:'+col+'22;color:'+col+';border:1px solid '+col+'44;">'+esc(mkt.r||'--')+'</span>';
+  // KPI grid
+  h+='<div class="cs-kpi-row">';
+  h+='<div class="cs-kpi"><div class="cs-kpi-val" style="color:#E2E8F0;">'+fmt(total)+'</div><div class="cs-kpi-lbl">Venues</div></div>';
+  h+='<div class="cs-kpi"><div class="cs-kpi-val" style="color:#C8CDD8;">'+st.avg+'</div><div class="cs-kpi-lbl">Avg Score</div></div>';
+  h+='<div class="cs-kpi"><div class="cs-kpi-val" style="color:'+(mkt.ms>=60?'#10B981':mkt.ms>=40?'#F0A500':'#EF4444')+';">'+(mkt.ms||'--')+'</div><div class="cs-kpi-lbl">Mkt Score</div></div>';
+  h+='<div class="cs-kpi"><div class="cs-kpi-val" style="color:#10B981;">'+st.t1+'</div><div class="cs-kpi-lbl">Tier 1</div></div>';
+  h+='</div>';
+  // Tier breakdown bars
+  h+='<div class="cs-sec">Tier Breakdown</div>';
+  var tierData=[
+    {label:'Tier 1',n:st.t1,color:'#10B981'},
+    {label:'Tier 2',n:st.t2,color:'#F0A500'},
+    {label:'Tier 3',n:st.t3,color:'#38BDF8'},
+    {label:'Tier 4',n:st.t4,color:'#EF4444'}
+  ];
+  tierData.forEach(function(td){
+    var pct=total>0?Math.round(td.n/total*100):0;
+    h+='<div class="cs-tier-row">';
+    h+='<span style="font-size:10px;color:#4B5563;width:42px;flex-shrink:0;">'+td.label+'</span>';
+    h+='<div class="cs-bar-bg"><div class="cs-bar-fill" style="width:'+pct+'%;background:'+td.color+';"></div></div>';
+    h+='<span style="font-size:10px;color:'+td.color+';font-family:var(--mono);width:32px;text-align:right;flex-shrink:0;">'+td.n+'</span>';
+    h+='</div>';
+  });
+  // Top venue types
+  if(st.types&&st.types.length){
+    h+='<div class="cs-sec">Top Venue Types</div>';
+    st.types.forEach(function(tp){
+      var pct=total>0?Math.round(tp.n/total*100):0;
+      h+='<div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;">';
+      h+='<span style="font-size:10px;color:#4B5563;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+esc(tp.t)+'</span>';
+      h+='<span style="font-size:10px;font-family:var(--mono);color:#6B7280;">'+tp.n+'</span>';
+      h+='</div>';
+    });
+  }
+  // Top capacity venue
+  if(st.topCap&&st.topCap.n){
+    h+='<div class="cs-sec">Largest Venue</div>';
+    h+='<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:6px;padding:7px 8px;">';
+    h+='<div style="font-size:11px;color:#C8CDD8;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+esc(st.topCap.n)+'</div>';
+    h+='<div style="font-size:10px;color:#4B5563;margin-top:2px;">'+esc(st.topCap.c||'')+(st.topCap.cap?' \u00b7 '+fmt(st.topCap.cap)+' cap':'')+'</div>';
+    h+='</div>';
+  }
+  // Top 5 venues by score
+  h+='<div class="cs-sec">Top Venues by Score</div>';
+  st.topVenues.forEach(function(v,i){
+    h+='<div class="cs-venue-row">';
+    h+='<span style="font-size:10px;color:#374151;font-family:var(--mono);width:14px;flex-shrink:0;">'+(i+1)+'</span>';
+    h+='<span class="cs-venue-name">'+esc(v.n)+'</span>';
+    h+='<span class="cs-score" style="color:'+oc(v.rs)+';">'+v.rs+'</span>';
+    h+='</div>';
+  });
+  // Action buttons
+  h+='<div style="margin-top:12px;display:flex;flex-direction:column;gap:5px;">';
+  h+='<button onclick="goCountry(\''+esc(co)+'\')" style="background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.25);color:#38BDF8;padding:7px;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;text-align:center;">View in Pipeline \u2192</button>';
+  h+='<button onclick="goMapCountryMarket(\''+esc(co)+'\')" style="background:rgba(124,142,247,0.08);border:1px solid rgba(124,142,247,0.25);color:#7C8EF7;padding:7px;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;text-align:center;">Market Scorecard \u2192</button>';
+  h+='</div>';
+  sb.innerHTML=h;
+}
+
+function buildCountryStats(co){
+  var venues=getActiveVD().filter(function(v){return v.co===co;});
+  var t1=0,t2=0,t3=0,t4=0,scoreSum=0;
+  venues.forEach(function(v){
+    if(v.ti===1)t1++;else if(v.ti===2)t2++;else if(v.ti===3)t3++;else if(v.ti===4)t4++;
+    scoreSum+=(v.rs||0);
+  });
+  var avg=venues.length?Math.round(scoreSum/venues.length*10)/10:0;
+  var topCap=venues.reduce(function(best,v){return(v.cap||0)>(best.cap||0)?v:best;},{cap:0});
+  var topVenues=venues.slice().sort(function(a,b){return(b.rs||0)-(a.rs||0);}).slice(0,5);
+  var types={};
+  venues.forEach(function(v){if(v.t)types[v.t]=(types[v.t]||0)+1;});
+  var sortedTypes=Object.keys(types).sort(function(a,b){return types[b]-types[a];}).slice(0,4).map(function(t){return{t:t,n:types[t]};});
+  return{n:venues.length,t1:t1,t2:t2,t3:t3,t4:t4,avg:avg,topCap:topCap,topVenues:topVenues,types:sortedTypes};
+}
+
+function focusMapCountry(co){
+  mapFocusCountry=co;
+  // clear the right-panel search box
+  var rs=document.getElementById('map-right-search');
+  if(rs)rs.value='';
+  var rr=document.getElementById('map-right-results');
+  if(rr)rr.style.display='none';
+  refreshMap();
+  renderMapSidebar();
+  // fly to country centre
+  var m=MKT[co];
+  if(m&&m.la&&m.lo&&MAP){setTimeout(function(){MAP.flyTo([m.la,m.lo],5,{duration:1.2});},300);}
+}
+
+function clearMapFocus(){
+  mapFocusCountry=null;
+  refreshMap();
+  renderMapSidebar();
+  if(MAP)setTimeout(function(){MAP.setView([20,10],2,{animate:true,duration:1.0});},100);
+}
+
+function filterMapCountrySearch(){
+  var inp=document.getElementById('map-right-search');
+  var res=document.getElementById('map-right-results');
+  if(!inp||!res)return;
+  var q=inp.value.toLowerCase().trim();
+  if(!q){res.style.display='none';res.innerHTML='';return;}
+  var cos=Object.keys(MKT).sort().filter(function(c){return c.toLowerCase().indexOf(q)>=0;}).slice(0,12);
+  if(!cos.length){res.style.display='none';return;}
+  res.style.display='block';
+  res.innerHTML=cos.map(function(co){
+    return '<div onclick="focusMapCountry(\''+esc(co)+'\')" style="padding:5px 6px;cursor:pointer;font-size:11px;color:#C8CDD8;border-radius:4px;transition:background 0.1s;" onmouseover="this.style.background=\'rgba(124,142,247,0.1)\'" onmouseout="this.style.background=\'\'">'+esc(co)+'</div>';
+  }).join('');
+}
+
+function goMapCountryMarket(co){
+  switchTab(4);
+  setTimeout(function(){
+    var mg=document.getElementById('m-region');
+    if(mg)mg.value='';
+    renderMarkets();
+    // scroll to the specific country card
+    setTimeout(function(){
+      var cards=document.querySelectorAll('#mkt-grid .mcard');
+      for(var i=0;i<cards.length;i++){
+        if(cards[i].textContent.indexOf(co)>=0){cards[i].scrollIntoView({behavior:'smooth',block:'center'});cards[i].style.border='1px solid rgba(124,142,247,0.5)';setTimeout(function(c){c.style.border='';}.bind(null,cards[i]),2500);break;}
+      }
+    },200);
+  },100);
 }
 
 // ════════════════════════════════════════
@@ -1206,7 +1448,7 @@ function showDetail(vidx){
 function closeDetail(){document.getElementById('dpanel').classList.remove('open');document.getElementById('overlay').classList.remove('open');}
 function flyTo(la,lo){closeDetail();switchTab(2);setTimeout(function(){MAP.flyTo([la,lo],15,{duration:1.2});},350);}
 function goRegion(r){switchTab(3);document.getElementById('f-region').value=r;filterTable();}
-function goMapCountry(co){switchTab(2);var m=MKT[co];if(m&&m.la&&m.lo){setTimeout(function(){MAP.flyTo([m.la,m.lo],6,{duration:1.2});},300);}}
+function goMapCountry(co){mapFocusCountry=co;switchTab(2);}
 function goCountry(co){switchTab(3);document.getElementById('f-country').value=co;filterTable();}
 
 // ── Init dropdowns ──
