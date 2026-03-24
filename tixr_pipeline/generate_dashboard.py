@@ -509,6 +509,52 @@ select option{background:#0D1018;color:#9CA3AF;}
 
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
 .fade-in{animation:fadeIn 0.25s ease;}
+
+/* ── Country Focus ── */
+#map-focus-banner{position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:1200;display:none;
+  background:rgba(8,11,18,0.96);border:1px solid rgba(124,142,247,0.4);border-radius:24px;
+  padding:6px 14px 6px 10px;display:none;align-items:center;gap:8px;pointer-events:all;
+  box-shadow:0 2px 16px rgba(124,142,247,0.15);}
+#map-focus-banner.visible{display:flex;}
+.mfb-dot{width:8px;height:8px;border-radius:50%;background:#7C8EF7;flex-shrink:0;}
+.mfb-label{font-size:12px;font-weight:600;color:#E2E8F0;letter-spacing:0.01em;}
+.mfb-clear{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
+  color:#6B7280;font-size:10px;padding:2px 8px;border-radius:10px;cursor:pointer;
+  font-family:inherit;transition:all 0.15s;margin-left:4px;}
+.mfb-clear:hover{color:#E2E8F0;background:rgba(255,255,255,0.1);}
+
+/* Country focus search in sidebar */
+#map-co-search{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);
+  color:var(--tp);padding:5px 8px;border-radius:6px;font-size:11px;font-family:inherit;
+  outline:none;width:100%;margin-bottom:8px;box-sizing:border-box;}
+#map-co-search::placeholder{color:var(--td);}
+.map-co-pill{font-size:11px;padding:3px 9px;border-radius:4px;cursor:pointer;
+  border:1px solid rgba(255,255,255,0.07);background:rgba(255,255,255,0.03);
+  color:var(--ts);transition:all 0.12s;margin:2px 2px 2px 0;display:inline-block;user-select:none;}
+.map-co-pill:hover{border-color:rgba(124,142,247,0.5);color:#E2E8F0;background:rgba(124,142,247,0.08);}
+
+/* Country stats sidebar card */
+.cs-back{display:flex;align-items:center;gap:6px;cursor:pointer;font-size:11px;color:#6B7280;
+  padding:4px 0 10px;border-bottom:1px solid rgba(255,255,255,0.06);margin-bottom:10px;
+  transition:color 0.12s;}
+.cs-back:hover{color:#E2E8F0;}
+.cs-name{font-size:14px;font-weight:700;color:#E2E8F0;margin-bottom:2px;}
+.cs-region{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;margin-bottom:10px;}
+.cs-kpi-row{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:10px;}
+.cs-kpi{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);
+  border-radius:6px;padding:7px 9px;text-align:center;}
+.cs-kpi-val{font-size:15px;font-weight:700;font-family:var(--mono);}
+.cs-kpi-lbl{font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:var(--td);margin-top:1px;}
+.cs-sec{font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--td);
+  font-weight:600;margin:10px 0 5px;}
+.cs-tier-row{display:flex;align-items:center;gap:6px;margin-bottom:4px;}
+.cs-bar-bg{flex:1;height:3px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;}
+.cs-bar-fill{height:3px;border-radius:2px;}
+.cs-venue-row{display:flex;align-items:baseline;justify-content:space-between;
+  padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:11px;}
+.cs-venue-row:last-child{border-bottom:none;}
+.cs-venue-name{color:#C8CDD8;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:6px;}
+.cs-score{font-family:var(--mono);font-weight:700;font-size:11px;}
 </style>
 </head>
 <body>
@@ -656,6 +702,7 @@ select option{background:#0D1018;color:#9CA3AF;}
     <div id="map-sidebar"></div>
     <div style="flex:1;position:relative;height:100%;">
       <div id="lmap" style="height:100%;width:100%;"></div>
+      <!-- Score legend -->
       <div style="position:absolute;bottom:14px;left:10px;background:rgba(8,11,18,0.93);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:10px 13px;z-index:999;pointer-events:none;">
         <div style="font-size:9px;letter-spacing:0.16em;color:#374151;text-transform:uppercase;margin-bottom:7px;">Score Legend</div>
         <div style="font-size:11px;color:#4B5563;display:flex;flex-direction:column;gap:5px;">
@@ -665,12 +712,23 @@ select option{background:#0D1018;color:#9CA3AF;}
           <div style="display:flex;align-items:center;gap:7px;"><span style="width:8px;height:8px;border-radius:50%;background:#EF4444;display:inline-block;"></span>Score &lt;30</div>
         </div>
       </div>
-      <div style="position:absolute;top:10px;right:10px;background:rgba(8,11,18,0.93);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:8px 12px;z-index:999;">
+      <!-- Filter + Country Search panel -->
+      <div style="position:absolute;top:10px;right:10px;background:rgba(8,11,18,0.93);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:8px 12px;z-index:999;min-width:160px;">
         <div style="font-size:9px;letter-spacing:0.13em;color:#374151;text-transform:uppercase;margin-bottom:5px;">Filter Map</div>
-        <select id="map-tier" onchange="refreshMap()" class="fsel" style="font-size:11px;padding:4px 8px;">
+        <select id="map-tier" onchange="refreshMap()" class="fsel" style="font-size:11px;padding:4px 8px;width:100%;box-sizing:border-box;">
           <option value="">All Tiers</option><option value="1">Tier 1</option>
           <option value="2">Tier 2</option><option value="3">Tier 3</option><option value="12">Tier 1+2</option>
         </select>
+        <div style="font-size:9px;letter-spacing:0.13em;color:#374151;text-transform:uppercase;margin:8px 0 5px;">Country Focus</div>
+        <input id="map-right-search" type="text" placeholder="Search country..." oninput="filterMapCountrySearch()"
+          style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);color:#E2E8F0;padding:5px 8px;border-radius:6px;font-size:11px;font-family:inherit;outline:none;width:100%;box-sizing:border-box;">
+        <div id="map-right-results" style="margin-top:5px;max-height:160px;overflow-y:auto;display:none;"></div>
+      </div>
+      <!-- Focused country banner (centered top) -->
+      <div id="map-focus-banner">
+        <span class="mfb-dot"></span>
+        <span class="mfb-label" id="map-focus-label">Germany</span>
+        <button class="mfb-clear" onclick="clearMapFocus()">&#x2715; Clear Focus</button>
       </div>
     </div>
   </div>
@@ -828,6 +886,7 @@ var VD = /*__VENUES__*/[];
 var MKT = /*__MARKETS__*/{};
 var REG = /*__REGIONS__*/{};
 var KPI = /*__KPI__*/{};
+var CB = /*__CB__*/{};
 var GEN_DATE = "__DATE__";
 
 // ── Helpers ──
@@ -982,6 +1041,8 @@ var TAB_INFO=[
 
 // ── Tab switching ──
 var MAP=null,MCG=null,mapInited=false,ovInited=false,seaInited=false;
+var mapFocusCountry=null;
+var countryBoundaryLayer=null;
 var charts={};
 
 function destroyChart(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
@@ -1000,7 +1061,11 @@ function switchTab(idx){
   if(idx===1)renderRecs();
   if(idx===2){
     if(!mapInited){initMap();mapInited=true;}
-    else{setTimeout(function(){MAP.invalidateSize();},100);}
+    else{
+      setTimeout(function(){MAP.invalidateSize();},100);
+      refreshMap();
+      renderMapSidebar();
+    }
   }
   if(idx===3)filterTable();
   if(idx===4)renderMarkets();
@@ -1264,7 +1329,14 @@ function initMap(){
   MAP=L.map(document.getElementById('lmap'),{zoomControl:true,attributionControl:false}).setView([20,10],2);
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19,subdomains:'abcd'}).addTo(MAP);
   setTimeout(function(){MAP.invalidateSize();},200);
-  refreshMap();renderMapSidebar();
+  refreshMap();
+  renderMapSidebar();
+  // if a country was pre-set (navigated from another tab), draw boundary and fly to it
+  if(mapFocusCountry){
+    drawCountryBoundary(mapFocusCountry);
+    var m=MKT[mapFocusCountry];
+    if(m&&m.la&&m.lo)setTimeout(function(){MAP.flyTo([m.la,m.lo],5,{duration:1.2});},400);
+  }
 }
 
 function refreshMap(){
@@ -1284,8 +1356,15 @@ function refreshMap(){
   aVD.forEach(function(v){
     if(!v.la||!v.lo)return;
     if(tf){if(tf==='12'&&v.ti!==1&&v.ti!==2)return;if(tf!=='12'&&v.ti!==parseInt(tf))return;}
+    var focused=mapFocusCountry&&v.co===mapFocusCountry;
+    var dimmed=mapFocusCountry&&v.co!==mapFocusCountry;
+    if(dimmed)return; // hide non-focused when a country is focused
     var r=Math.max(5,Math.min(16,v.cap?Math.sqrt(v.cap/2000)*8:5));
-    var mk=L.circleMarker([v.la,v.lo],{radius:r,fillColor:oc(v.rs),color:'rgba(0,0,0,0.4)',weight:1.5,fillOpacity:0.8});
+    var mk=L.circleMarker([v.la,v.lo],{
+      radius:r,fillColor:oc(v.rs),
+      color:focused?'rgba(255,255,255,0.6)':'rgba(0,0,0,0.4)',
+      weight:focused?2:1.5,fillOpacity:0.9
+    });
     mk._vscore=v.rs;
     var vidx=VD.indexOf(v);
     mk.on('click',function(){showDetail(vidx);});
@@ -1295,10 +1374,22 @@ function refreshMap(){
     MCG.addLayer(mk);
   });
   MAP.addLayer(MCG);
+  // update focus banner
+  var banner=document.getElementById('map-focus-banner');
+  if(mapFocusCountry){
+    banner.classList.add('visible');
+    document.getElementById('map-focus-label').textContent=mapFocusCountry;
+  } else {
+    banner.classList.remove('visible');
+  }
 }
 
 function renderMapSidebar(){
   var sb=document.getElementById('map-sidebar');
+  if(mapFocusCountry){
+    renderCountryStatsSidebar(mapFocusCountry);
+    return;
+  }
   var aREG=getActiveREG();
   var h='<div style="font-size:9px;letter-spacing:0.16em;color:#374151;text-transform:uppercase;margin-bottom:8px;padding-left:2px;">Regions</div>';
   Object.keys(aREG).sort(function(a,b){return aREG[b].n-aREG[a].n;}).forEach(function(rk){
@@ -1311,7 +1402,169 @@ function renderMapSidebar(){
     if(r.t1||r.t2)h+='<div style="font-size:10px;margin-top:2px;"><span style="color:#10B981;">'+r.t1+' T1</span> \u00b7 <span style="color:#F0A500;">'+r.t2+' T2</span></div>';
     h+='</div>';
   });
+  // Country search section
+  h+='<div style="font-size:9px;letter-spacing:0.16em;color:#374151;text-transform:uppercase;margin-top:14px;margin-bottom:8px;padding-left:2px;">Focus a Country</div>';
+  h+='<input id="map-co-search" type="text" placeholder="Search country..." oninput="renderMapCountryPills()" style="">';
+  h+='<div id="map-co-pills" style="max-height:220px;overflow-y:auto;"></div>';
   sb.innerHTML=h;
+  renderMapCountryPills();
+}
+
+function renderMapCountryPills(){
+  var el=document.getElementById('map-co-pills');
+  if(!el)return;
+  var q=(document.getElementById('map-co-search')||{value:''}).value.toLowerCase();
+  var cos=Object.keys(MKT).sort();
+  if(q)cos=cos.filter(function(c){return c.toLowerCase().indexOf(q)>=0;});
+  el.innerHTML=cos.map(function(co){
+    return '<span class="map-co-pill" onclick="focusMapCountry(\''+esc(co)+'\')">'+esc(co)+'</span>';
+  }).join('');
+}
+
+function renderCountryStatsSidebar(co){
+  var sb=document.getElementById('map-sidebar');
+  var st=buildCountryStats(co);
+  var mkt=MKT[co]||{};
+  var col=rColors[mkt.r]||'#7C8EF7';
+  var total=st.n;
+  var h='';
+  // Back button
+  h+='<div class="cs-back" onclick="clearMapFocus()">&#8592; All Countries</div>';
+  // Country header
+  h+='<div class="cs-name">'+esc(co)+'</div>';
+  h+='<span class="cs-region" style="background:'+col+'22;color:'+col+';border:1px solid '+col+'44;">'+esc(mkt.r||'--')+'</span>';
+  // KPI grid
+  h+='<div class="cs-kpi-row">';
+  h+='<div class="cs-kpi"><div class="cs-kpi-val" style="color:#E2E8F0;">'+fmt(total)+'</div><div class="cs-kpi-lbl">Venues</div></div>';
+  h+='<div class="cs-kpi"><div class="cs-kpi-val" style="color:#C8CDD8;">'+st.avg+'</div><div class="cs-kpi-lbl">Avg Score</div></div>';
+  h+='<div class="cs-kpi"><div class="cs-kpi-val" style="color:'+(mkt.ms>=60?'#10B981':mkt.ms>=40?'#F0A500':'#EF4444')+';">'+(mkt.ms||'--')+'</div><div class="cs-kpi-lbl">Mkt Score</div></div>';
+  h+='<div class="cs-kpi"><div class="cs-kpi-val" style="color:#10B981;">'+st.t1+'</div><div class="cs-kpi-lbl">Tier 1</div></div>';
+  h+='</div>';
+  // Tier breakdown bars
+  h+='<div class="cs-sec">Tier Breakdown</div>';
+  var tierData=[
+    {label:'Tier 1',n:st.t1,color:'#10B981'},
+    {label:'Tier 2',n:st.t2,color:'#F0A500'},
+    {label:'Tier 3',n:st.t3,color:'#38BDF8'},
+    {label:'Tier 4',n:st.t4,color:'#EF4444'}
+  ];
+  tierData.forEach(function(td){
+    var pct=total>0?Math.round(td.n/total*100):0;
+    h+='<div class="cs-tier-row">';
+    h+='<span style="font-size:10px;color:#4B5563;width:42px;flex-shrink:0;">'+td.label+'</span>';
+    h+='<div class="cs-bar-bg"><div class="cs-bar-fill" style="width:'+pct+'%;background:'+td.color+';"></div></div>';
+    h+='<span style="font-size:10px;color:'+td.color+';font-family:var(--mono);width:32px;text-align:right;flex-shrink:0;">'+td.n+'</span>';
+    h+='</div>';
+  });
+  // Top venue types
+  if(st.types&&st.types.length){
+    h+='<div class="cs-sec">Top Venue Types</div>';
+    st.types.forEach(function(tp){
+      var pct=total>0?Math.round(tp.n/total*100):0;
+      h+='<div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;">';
+      h+='<span style="font-size:10px;color:#4B5563;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+esc(tp.t)+'</span>';
+      h+='<span style="font-size:10px;font-family:var(--mono);color:#6B7280;">'+tp.n+'</span>';
+      h+='</div>';
+    });
+  }
+  // Top capacity venue
+  if(st.topCap&&st.topCap.n){
+    h+='<div class="cs-sec">Largest Venue</div>';
+    h+='<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:6px;padding:7px 8px;">';
+    h+='<div style="font-size:11px;color:#C8CDD8;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+esc(st.topCap.n)+'</div>';
+    h+='<div style="font-size:10px;color:#4B5563;margin-top:2px;">'+esc(st.topCap.c||'')+(st.topCap.cap?' \u00b7 '+fmt(st.topCap.cap)+' cap':'')+'</div>';
+    h+='</div>';
+  }
+  // Top 5 venues by score
+  h+='<div class="cs-sec">Top Venues by Score</div>';
+  st.topVenues.forEach(function(v,i){
+    h+='<div class="cs-venue-row">';
+    h+='<span style="font-size:10px;color:#374151;font-family:var(--mono);width:14px;flex-shrink:0;">'+(i+1)+'</span>';
+    h+='<span class="cs-venue-name">'+esc(v.n)+'</span>';
+    h+='<span class="cs-score" style="color:'+oc(v.rs)+';">'+v.rs+'</span>';
+    h+='</div>';
+  });
+  // Action buttons
+  h+='<div style="margin-top:12px;display:flex;flex-direction:column;gap:5px;">';
+  h+='<button onclick="goCountry(\''+esc(co)+'\')" style="background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.25);color:#38BDF8;padding:7px;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;text-align:center;">View in Pipeline \u2192</button>';
+  h+='<button onclick="goMapCountryMarket(\''+esc(co)+'\')" style="background:rgba(124,142,247,0.08);border:1px solid rgba(124,142,247,0.25);color:#7C8EF7;padding:7px;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;text-align:center;">Market Scorecard \u2192</button>';
+  h+='</div>';
+  sb.innerHTML=h;
+}
+
+function buildCountryStats(co){
+  var venues=getActiveVD().filter(function(v){return v.co===co;});
+  var t1=0,t2=0,t3=0,t4=0,scoreSum=0;
+  venues.forEach(function(v){
+    if(v.ti===1)t1++;else if(v.ti===2)t2++;else if(v.ti===3)t3++;else if(v.ti===4)t4++;
+    scoreSum+=(v.rs||0);
+  });
+  var avg=venues.length?Math.round(scoreSum/venues.length*10)/10:0;
+  var topCap=venues.reduce(function(best,v){return(v.cap||0)>(best.cap||0)?v:best;},{cap:0});
+  var topVenues=venues.slice().sort(function(a,b){return(b.rs||0)-(a.rs||0);}).slice(0,5);
+  var types={};
+  venues.forEach(function(v){if(v.t)types[v.t]=(types[v.t]||0)+1;});
+  var sortedTypes=Object.keys(types).sort(function(a,b){return types[b]-types[a];}).slice(0,4).map(function(t){return{t:t,n:types[t]};});
+  return{n:venues.length,t1:t1,t2:t2,t3:t3,t4:t4,avg:avg,topCap:topCap,topVenues:topVenues,types:sortedTypes};
+}
+
+function drawCountryBoundary(co){
+  if(countryBoundaryLayer){MAP.removeLayer(countryBoundaryLayer);countryBoundaryLayer=null;}
+  if(!MAP||!co||!CB[co])return;
+  countryBoundaryLayer=L.geoJSON({type:'Feature',geometry:CB[co]},{
+    style:{color:'#7C8EF7',weight:2.5,opacity:0.9,fillColor:'#7C8EF7',fillOpacity:0.07,dashArray:'6 4'}
+  }).addTo(MAP);
+}
+
+function focusMapCountry(co){
+  mapFocusCountry=co;
+  var rs=document.getElementById('map-right-search');
+  if(rs)rs.value='';
+  var rr=document.getElementById('map-right-results');
+  if(rr)rr.style.display='none';
+  refreshMap();
+  renderMapSidebar();
+  drawCountryBoundary(co);
+  var m=MKT[co];
+  if(m&&m.la&&m.lo&&MAP){setTimeout(function(){MAP.flyTo([m.la,m.lo],5,{duration:1.2});},300);}
+}
+
+function clearMapFocus(){
+  mapFocusCountry=null;
+  if(countryBoundaryLayer&&MAP){MAP.removeLayer(countryBoundaryLayer);countryBoundaryLayer=null;}
+  refreshMap();
+  renderMapSidebar();
+  if(MAP)setTimeout(function(){MAP.setView([20,10],2,{animate:true,duration:1.0});},100);
+}
+
+function filterMapCountrySearch(){
+  var inp=document.getElementById('map-right-search');
+  var res=document.getElementById('map-right-results');
+  if(!inp||!res)return;
+  var q=inp.value.toLowerCase().trim();
+  if(!q){res.style.display='none';res.innerHTML='';return;}
+  var cos=Object.keys(MKT).sort().filter(function(c){return c.toLowerCase().indexOf(q)>=0;}).slice(0,12);
+  if(!cos.length){res.style.display='none';return;}
+  res.style.display='block';
+  res.innerHTML=cos.map(function(co){
+    return '<div onclick="focusMapCountry(\''+esc(co)+'\')" style="padding:5px 6px;cursor:pointer;font-size:11px;color:#C8CDD8;border-radius:4px;transition:background 0.1s;" onmouseover="this.style.background=\'rgba(124,142,247,0.1)\'" onmouseout="this.style.background=\'\'">'+esc(co)+'</div>';
+  }).join('');
+}
+
+function goMapCountryMarket(co){
+  switchTab(4);
+  setTimeout(function(){
+    var mg=document.getElementById('m-region');
+    if(mg)mg.value='';
+    renderMarkets();
+    // scroll to the specific country card
+    setTimeout(function(){
+      var cards=document.querySelectorAll('#mkt-grid .mcard');
+      for(var i=0;i<cards.length;i++){
+        if(cards[i].textContent.indexOf(co)>=0){cards[i].scrollIntoView({behavior:'smooth',block:'center'});cards[i].style.border='1px solid rgba(124,142,247,0.5)';setTimeout(function(c){c.style.border='';}.bind(null,cards[i]),2500);break;}
+      }
+    },200);
+  },100);
 }
 
 // ════════════════════════════════════════
@@ -1551,7 +1804,7 @@ function showDetail(vidx){
 function closeDetail(){document.getElementById('dpanel').classList.remove('open');document.getElementById('overlay').classList.remove('open');}
 function flyTo(la,lo){closeDetail();switchTab(2);setTimeout(function(){MAP.flyTo([la,lo],15,{duration:1.2});},350);}
 function goRegion(r){switchTab(3);document.getElementById('f-region').value=r;filterTable();}
-function goMapCountry(co){switchTab(2);var m=MKT[co];if(m&&m.la&&m.lo){setTimeout(function(){MAP.flyTo([m.la,m.lo],6,{duration:1.2});},300);}}
+function goMapCountry(co){mapFocusCountry=co;switchTab(2);}
 function goCountry(co){switchTab(3);document.getElementById('f-country').value=co;filterTable();}
 
 // ── Init dropdowns ──
@@ -1574,13 +1827,117 @@ renderOverview();ovInited=true;
 </html>'''
 
 
-def generate_html(venues_json, markets_json, regions_json, kpis_json, toprecs_json, generated_at):
+def prepare_country_boundaries(market_countries, output_dir):
+    """
+    Download simplified country boundary polygons at build time and embed them.
+    Uses Natural Earth 110m (low-res but small) GeoJSON. Results are cached locally.
+    """
+    import urllib.request
+
+    cache_path = os.path.join(output_dir, 'country_boundaries_cache.json')
+
+    # Load from local cache if all countries are present
+    if os.path.exists(cache_path):
+        with open(cache_path, encoding='utf-8') as f:
+            cached = json.load(f)
+        if all(c in cached for c in market_countries):
+            print(f"  Loaded {len(cached)} country boundaries from cache")
+            return cached
+    else:
+        cached = {}
+
+    # Low-resolution Natural Earth countries GeoJSON (~500 KB download)
+    url = ('https://raw.githubusercontent.com/nvkelso/natural-earth-vector/'
+           'master/geojson/ne_110m_admin_0_countries.geojson')
+    print("  Downloading country boundaries (one-time)...")
+    try:
+        req = urllib.request.Request(url, headers={'User-Agent': 'TixrDashboard/1.0'})
+        with urllib.request.urlopen(req, timeout=30) as r:
+            world = json.loads(r.read().decode('utf-8'))
+    except Exception as e:
+        print(f"  Warning: Could not download country boundaries: {e}")
+        return cached
+
+    # Name aliases: our dataset names → Natural Earth ADMIN names
+    aliases = {
+        "People's Republic of China": "China",
+        "South Korea": "Republic of Korea",
+        "North Korea": "Dem. Rep. Korea",
+        "Czech Republic": "Czechia",
+        "Republic of Ireland": "Ireland",
+        "Bosnia": "Bosnia and Herz.",
+        "UAE": "United Arab Emirates",
+        "UK": "United Kingdom",
+        "USA": "United States of America",
+        "Russia": "Russia",
+        "Taiwan": "Taiwan",
+        "Hong Kong": "Hong Kong S.A.R.",
+        "Macau": "Macao S.A.R",
+        "Vietnam": "Vietnam",
+        "Ivory Coast": "Côte d'Ivoire",
+        "Congo": "Congo",
+        "DR Congo": "Dem. Rep. Congo",
+    }
+
+    def round_coords(c, p=1):
+        """Recursively round all coordinate values to p decimal places."""
+        if isinstance(c[0], (int, float)):
+            return [round(c[0], p), round(c[1], p)]
+        return [round_coords(x, p) for x in c]
+
+    # Build lookup: admin_name_lower → feature
+    feat_lookup = {}
+    for feat in world.get('features', []):
+        admin = feat['properties'].get('ADMIN') or feat['properties'].get('NAME', '')
+        if admin:
+            feat_lookup[admin.lower()] = feat
+
+    result = dict(cached)
+    matched, missing = 0, []
+    for co in market_countries:
+        if co in result:
+            matched += 1
+            continue
+        # Try direct match, then alias, then partial
+        lookup_name = aliases.get(co, co)
+        feat = (feat_lookup.get(lookup_name.lower()) or
+                feat_lookup.get(co.lower()))
+        if not feat:
+            # Partial match fallback
+            co_l = co.lower()
+            for k, f in feat_lookup.items():
+                if co_l in k or k in co_l:
+                    feat = f
+                    break
+        if feat:
+            geom = feat['geometry']
+            result[co] = {'type': geom['type'],
+                          'coordinates': round_coords(geom['coordinates'], 1)}
+            matched += 1
+        else:
+            missing.append(co)
+
+    print(f"  Boundaries matched: {matched}/{len(market_countries)}"
+          + (f"  (no geometry for: {', '.join(missing[:5])})" if missing else ""))
+
+    # Cache for future runs
+    try:
+        with open(cache_path, 'w', encoding='utf-8') as f:
+            json.dump(result, f, separators=(',', ':'))
+    except Exception:
+        pass
+
+    return result
+
+
+def generate_html(venues_json, markets_json, regions_json, kpis_json, toprecs_json, cb_json, generated_at):
     """Build the complete HTML by replacing placeholders in the template."""
     html = HTML_TEMPLATE
     html = html.replace('/*__VENUES__*/[]', venues_json)
     html = html.replace('/*__MARKETS__*/{}', markets_json)
     html = html.replace('/*__REGIONS__*/{}', regions_json)
     html = html.replace('/*__KPI__*/{}', kpis_json)
+    html = html.replace('/*__CB__*/{}', cb_json)
     html = html.replace('__DATE__', generated_at)
     return html
 
@@ -1614,16 +1971,21 @@ def main():
     for i, rec in enumerate(top_recs):
         print("  #" + str(i+1) + ": " + rec['co'] + " (score: " + str(rec['avg']) + ", " + str(rec['n']) + " venues)")
 
+    print("Preparing country boundaries...")
+    market_countries = list(markets.keys())
+    boundaries = prepare_country_boundaries(market_countries, output_dir)
+
     venues_json = json.dumps(venues, separators=(',', ':'))
     markets_json = json.dumps(markets, separators=(',', ':'))
     regions_json = json.dumps(regions, separators=(',', ':'))
     kpis_json = json.dumps(kpis, separators=(',', ':'))
     toprecs_json = json.dumps(top_recs, separators=(',', ':'))
+    cb_json = json.dumps(boundaries, separators=(',', ':'))
 
     generated_at = datetime.now().strftime('%b %d %Y %H:%M')
 
     print("\nGenerating dashboard...")
-    html = generate_html(venues_json, markets_json, regions_json, kpis_json, toprecs_json, generated_at)
+    html = generate_html(venues_json, markets_json, regions_json, kpis_json, toprecs_json, cb_json, generated_at)
 
     out_path = os.path.join(output_dir, args.output)
     with open(out_path, 'w', encoding='utf-8') as f:
