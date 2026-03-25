@@ -217,12 +217,14 @@ def prepare_venues(df):
         rs = row.get('recommendation_score')
         rs = round(float(rs), 1) if pd.notna(rs) else ps
 
-        rt = safe_str(row.get('recommendation_tier'))
-        tier_num = 0
-        if 'Tier 1' in rt: tier_num = 1
-        elif 'Tier 2' in rt: tier_num = 2
-        elif 'Tier 3' in rt: tier_num = 3
-        elif 'Tier 4' in rt: tier_num = 4
+        if rs >= 70:
+            tier_num = 1
+        elif rs >= 50:
+            tier_num = 2
+        elif rs >= 30:
+            tier_num = 3
+        else:
+            tier_num = 4
 
         website = 1 if pd.notna(row.get('website')) and str(row.get('website', '')).startswith('http') else 0
 
@@ -270,13 +272,19 @@ def prepare_markets(df):
             continue
 
         avg_ps = grp['priority_score'].mean() if 'priority_score' in grp.columns else 0
-        avg_rs = grp['recommendation_score'].mean() if 'recommendation_score' in grp.columns else avg_ps
 
-        t1, t2 = 0, 0
-        if 'recommendation_tier' in grp.columns:
-            tiers = grp['recommendation_tier'].fillna('')
-            t1 = int(tiers.str.contains('Tier 1').sum())
-            t2 = int(tiers.str.contains('Tier 2').sum())
+        # Compute effective rec score per venue (same fallback as VD)
+        def _eff_rs(row):
+            v = row.get('recommendation_score')
+            return round(float(v), 1) if pd.notna(v) else (
+                round(float(row.get('priority_score', 0)), 1) if pd.notna(row.get('priority_score')) else 0
+            )
+        eff_scores = grp.apply(_eff_rs, axis=1)
+        avg_rs = eff_scores.mean()
+
+        # Recompute tiers from effective scores (not stale pipeline column)
+        t1 = int((eff_scores >= 70).sum())
+        t2 = int(((eff_scores >= 50) & (eff_scores < 70)).sum())
 
         top_plat = ''
         if 'ticketing_platform' in grp.columns:
@@ -300,10 +308,28 @@ def prepare_markets(df):
         lat_c = grp['latitude'].dropna().mean() if 'latitude' in grp.columns else 0
         lon_c = grp['longitude'].dropna().mean() if 'longitude' in grp.columns else 0
 
+        # Opportunity score (same formula as index.html)
+        caps = grp['capacity'].dropna()
+        caps = caps[caps > 0]
+        avg_cap = float(caps.mean()) if len(caps) > 0 else 1500
+        venue_annual = max(avg_cap, 1500) * 12 * 45 * 0.025
+        n_winnable = t1 + t2
+        annual_rev = n_winnable * venue_annual
+        if annual_rev > 0:
+            log_rev = math.log10(max(annual_rev, 1))
+            roi_factor = max(0, min((log_rev - 5.0) / 3.5, 1)) * 100
+        else:
+            roi_factor = 0
+        opp_score = (avg_rs * 0.25 + ms * 0.20 +
+                     min(t1 / 30, 1) * 100 * 0.20 +
+                     min(n_winnable / 200, 1) * 100 * 0.15 +
+                     roi_factor * 0.20)
+
         markets[country] = {
             'n': n, 'r': region,
             'ps': round(float(avg_ps), 1) if not pd.isna(avg_ps) else 0,
             'rs': round(float(avg_rs), 1) if not pd.isna(avg_rs) else 0,
+            'os': round(opp_score, 1),
             'ms': ms, 't1': t1, 't2': t2, 'tp': top_plat,
             'la': round(float(lat_c), 3) if not pd.isna(lat_c) else 0,
             'lo': round(float(lon_c), 3) if not pd.isna(lon_c) else 0,
@@ -320,11 +346,14 @@ def prepare_regions(df):
         if pd.isna(region) or not region:
             continue
         avg_ps = grp['priority_score'].mean() if 'priority_score' in grp.columns else 0
-        t1, t2 = 0, 0
-        if 'recommendation_tier' in grp.columns:
-            tiers = grp['recommendation_tier'].fillna('')
-            t1 = int(tiers.str.contains('Tier 1').sum())
-            t2 = int(tiers.str.contains('Tier 2').sum())
+        def _eff_rs_r(row):
+            v = row.get('recommendation_score')
+            return round(float(v), 1) if pd.notna(v) else (
+                round(float(row.get('priority_score', 0)), 1) if pd.notna(row.get('priority_score')) else 0
+            )
+        eff_scores = grp.apply(_eff_rs_r, axis=1)
+        t1 = int((eff_scores >= 70).sum())
+        t2 = int(((eff_scores >= 50) & (eff_scores < 70)).sum())
         co = grp['country'].nunique() if 'country' in grp.columns else 0
         regions[str(region)] = {
             'n': len(grp), 'co': int(co),
@@ -397,12 +426,11 @@ def prepare_top_recs(venues, markets):
         else:
             roi_factor = 0
 
-        # Final composite ranking aligned with ARCHITECTURE_new.md
-        rank_score = (avg_score * 0.35 +                       # avg recommendation_score (§7.7)
-                      avg_roi * 0.25 +                         # avg ROI index (§9.5)
+        rank_score = (avg_score * 0.25 +                       # avg recommendation_score (§7.7)
                       ms * 0.20 +                              # market fundamentals (§7.5)
-                      min(t1 / 20, 1) * 100 * 0.10 +          # T1 readiness (saturates at 20)
-                      min(n_winnable / 100, 1) * 100 * 0.10)  # pipeline depth (saturates at 100)
+                      min(t1 / 30, 1) * 100 * 0.20 +          # T1 readiness (saturates at 30)
+                      min(n_winnable / 200, 1) * 100 * 0.15 + # pipeline depth (saturates at 200)
+                      roi_factor * 0.20)                       # earning potential (log-scale annual rev)
 
         def fmt_money(val):
             if val >= 1_000_000:
@@ -652,7 +680,7 @@ select option{background:#0D1018;color:#9CA3AF;}
   <div style="display:flex;gap:7px;margin-bottom:16px;align-items:center;">
     <select id="m-region" class="fsel" onchange="renderMarkets()"><option value="">All Regions</option></select>
     <select id="m-sort" class="fsel" onchange="renderMarkets()">
-      <option value="rs">Sort: Avg Score</option><option value="n">Sort: Venue Count</option><option value="t12">Sort: Tier 1+2</option><option value="ms">Sort: Market Score</option>
+      <option value="os">Sort: Opp. Score</option><option value="n">Sort: Venue Count</option><option value="t12">Sort: Tier 1+2</option><option value="ms">Sort: Market Score</option>
     </select>
     <span id="mkt-count" style="margin-left:auto;font-size:10px;color:#374151;font-family:'Courier New',monospace;"></span>
   </div>
@@ -733,14 +761,14 @@ function switchTab(idx){
     h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;margin-bottom:18px;">';
     h+='<div><div style="font-size:22px;font-weight:700;color:#E2E8F0;">'+esc(rec.co)+'</div>';
     h+='<div style="font-size:12px;color:#4B5563;">'+esc(rec.r)+' \u00b7 '+fmt(rec.n)+' venues \u00b7 Market Score: '+rec.ms+'</div></div>';
-    h+='<div style="text-align:center;"><div style="font-size:38px;font-weight:800;color:'+oc(rec.avg)+';font-family:\'Courier New\',monospace;line-height:1;">'+rec.avg+'</div>';
-    h+='<div style="font-size:9px;color:#374151;text-transform:uppercase;letter-spacing:0.1em;margin-top:2px;">Avg Score</div></div></div>';
+    h+='<div style="text-align:center;"><div style="font-size:38px;font-weight:800;color:'+oc(rec.rank)+';font-family:\'Courier New\',monospace;line-height:1;">'+rec.rank+'</div>';
+    h+='<div style="font-size:9px;color:#374151;text-transform:uppercase;letter-spacing:0.1em;margin-top:2px;">Opportunity Score</div></div></div>';
     // stats
     h+='<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:18px;">';
     function st(l,v,c){return '<div class="rec-stat"><div class="rec-stat-val" style="color:'+c+';">'+v+'</div><div class="rec-stat-lbl">'+l+'</div></div>';}
     h+=st('Tier 1',rec.t1,'#10B981');
     h+=st('Tier 2',rec.t2,'#F0A500');
-    h+=st('Avg ROI',rec.roi,oc(rec.roi));
+    h+=st('Avg Score',rec.avg,oc(rec.avg));
     h+=st('Opportunity',rec.opp,'#10B981');
     h+=st('ROI',rec.roix+'x','#10B981');
     h+='</div>';
@@ -937,7 +965,7 @@ function renderMarkets(){
   if(rg)keys=keys.filter(function(k){return MKT[k].r===rg;});
   keys.sort(function(a,b){
     var A=MKT[a],B=MKT[b];
-    if(so==='rs')return B.rs-A.rs;
+    if(so==='os')return(B.os||0)-(A.os||0);
     if(so==='n')return B.n-A.n;
     if(so==='t12')return(B.t1+B.t2)-(A.t1+A.t2);
     if(so==='ms')return B.ms-A.ms;
@@ -955,7 +983,7 @@ function renderMarkets(){
       '<span style="font-size:14px;font-weight:600;color:#E2E8F0;">'+esc(co)+'</span>' +
       '<span style="font-size:9px;padding:2px 6px;border-radius:3px;background:rgba(255,255,255,0.05);color:'+rc+';">'+esc(m.r)+'</span></div>' +
       '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px;">' +
-      ms('Venues',m.n,'#E2E8F0')+ms('Avg Score',m.rs,oc(m.rs))+ms('Mkt Score',m.ms||'--',m.ms?oc(m.ms):'#374151')+'</div>' +
+      ms('Venues',m.n,'#E2E8F0')+ms('Opp. Score',m.os||'--',oc(m.os||0))+ms('Mkt Score',m.ms||'--',m.ms?oc(m.ms):'#374151')+'</div>' +
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;">' +
       ms('Tier 1',m.t1,'#10B981')+ms('Tier 2',m.t2,'#F0A500')+'</div>' +
       (m.tp?'<div style="font-size:10px;color:#374151;">Top platform: <span style="color:#6B7280;">'+esc(m.tp)+'</span></div>':'') +

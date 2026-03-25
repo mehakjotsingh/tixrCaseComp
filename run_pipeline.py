@@ -174,12 +174,12 @@ def compute_tixr_scores(df):
 
     df['data_completeness_pct'] = df.apply(data_completeness, axis=1)
 
-    # 4. Priority Score (composite)
+    # 4. Priority Score (composite) — GDP removed to avoid double-counting
+    #    (GDP already feeds into market_score in Stage 2)
     df['priority_score'] = (
-        0.35 * df['venue_win_probability'] * 100 +
-        0.35 * df['premium_fit_score'] +
-        0.15 * df['data_completeness_pct'] +
-        0.15 * df.get('gdp_per_capita_usd', pd.Series(0, index=df.index)).fillna(0).clip(0, 100000) / 1000
+        0.40 * df['venue_win_probability'] * 100 +
+        0.40 * df['premium_fit_score'] +
+        0.20 * df['data_completeness_pct']
     ).round(1)
 
     # Normalize priority to 0-100
