@@ -367,9 +367,7 @@ select option{background:#0D1018;color:#9CA3AF;}
 @media(max-width:900px){.mi-chart-row{grid-template-columns:1fr;}.mi-hero{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));}}
 
 /* ── Guided Tour ── */
-.tour-overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9998;pointer-events:none;}
-.tour-backdrop{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.55);z-index:9997;pointer-events:auto;transition:opacity 0.3s;}
-.tour-card{position:fixed;z-index:10000;background:linear-gradient(135deg,#1a1d23 0%,#14161a 100%);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:0;width:420px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.05);pointer-events:auto;animation:tourSlideIn 0.35s ease;}
+.tour-card{position:fixed;z-index:10000;background:linear-gradient(135deg,#1a1d23 0%,#14161a 100%);border:1px solid rgba(255,255,255,0.15);border-radius:14px;padding:0;width:420px;max-width:90vw;box-shadow:0 12px 40px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.05);pointer-events:auto;animation:tourSlideIn 0.35s ease;}
 @keyframes tourSlideIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
 .tour-card-accent{height:3px;border-radius:14px 14px 0 0;}
 .tour-card-body{padding:20px 22px 16px;}
@@ -390,7 +388,8 @@ select option{background:#0D1018;color:#9CA3AF;}
 .tour-btn-secondary{background:rgba(255,255,255,0.06);color:#9CA3AF;border:1px solid rgba(255,255,255,0.08);}.tour-btn-secondary:hover{background:rgba(255,255,255,0.1);color:#E2E8F0;}
 .tour-btn-close{position:absolute;top:12px;right:14px;background:none;border:none;color:#4B5563;cursor:pointer;font-size:16px;padding:4px;line-height:1;z-index:1;}.tour-btn-close:hover{color:#9CA3AF;}
 .tour-start-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid rgba(124,142,247,0.3);background:rgba(124,142,247,0.08);color:#7C8EF7;transition:all 0.15s;}.tour-start-btn:hover{background:rgba(124,142,247,0.15);border-color:rgba(124,142,247,0.5);}
-.tour-spot{position:fixed;z-index:9999;border-radius:10px;box-shadow:0 0 0 4000px rgba(0,0,0,0.55);pointer-events:none;transition:all 0.4s ease;}
+.tour-highlight-ring{position:absolute;border-radius:12px;pointer-events:none;z-index:9999;transition:all 0.4s ease;border:2px solid;animation:tourPulse 2s ease-in-out infinite;}
+@keyframes tourPulse{0%,100%{box-shadow:0 0 8px 2px currentColor;}50%{box-shadow:0 0 20px 6px currentColor;}}
 </style>
 </head>
 <body>
@@ -2498,8 +2497,8 @@ function stopTour(){
   tourIdx=-1;
   var old=document.getElementById('tour-container');
   if(old)old.remove();
-  var spot=document.getElementById('tour-spot');
-  if(spot)spot.remove();
+  var ring=document.querySelector('.tour-highlight-ring');
+  if(ring)ring.remove();
 }
 
 function tourNext(){
@@ -2521,11 +2520,7 @@ function renderTourStep(){
 
     var container=document.createElement('div');
     container.id='tour-container';
-
-    var bd=document.createElement('div');
-    bd.className='tour-backdrop';
-    bd.onclick=function(){};
-    container.appendChild(bd);
+    container.style.cssText='position:fixed;z-index:10000;pointer-events:none;';
 
     var card=document.createElement('div');
     card.className='tour-card';
@@ -2560,21 +2555,25 @@ function renderTourStep(){
 
     card.innerHTML=accent+body+footer;
 
+    // Highlight the target element with a glowing ring
     var targetEl=step.target?document.getElementById(step.target):null;
-    var spotEl=document.getElementById('tour-spot');
-    if(!spotEl){spotEl=document.createElement('div');spotEl.id='tour-spot';spotEl.className='tour-spot';document.body.appendChild(spotEl);}
+    var oldRing=document.querySelector('.tour-highlight-ring');
+    if(oldRing)oldRing.remove();
 
     var isLargeTarget=targetEl&&(targetEl.id.indexOf('tab-')===0||targetEl.offsetHeight>window.innerHeight*0.6);
 
     if(targetEl&&!isLargeTarget){
       var rect=targetEl.getBoundingClientRect();
-      spotEl.style.display='block';
-      spotEl.style.top=(rect.top-8)+'px';
-      spotEl.style.left=(rect.left-8)+'px';
-      spotEl.style.width=(rect.width+16)+'px';
-      spotEl.style.height=Math.min(rect.height+16,window.innerHeight*0.5)+'px';
+      var scrollTop=window.pageYOffset||document.documentElement.scrollTop;
+      var scrollLeft=window.pageXOffset||document.documentElement.scrollLeft;
 
-      var cardTop=rect.bottom+16;
+      var ring=document.createElement('div');
+      ring.className='tour-highlight-ring';
+      ring.style.cssText='position:absolute;top:'+(rect.top+scrollTop-6)+'px;left:'+(rect.left+scrollLeft-6)+'px;width:'+(rect.width+12)+'px;height:'+Math.min(rect.height+12,window.innerHeight*0.5)+'px;color:'+step.accent+';border-color:'+step.accent+';';
+      targetEl.style.position=targetEl.style.position||'relative';
+      document.body.appendChild(ring);
+
+      var cardTop=rect.bottom+14;
       var cardLeft=Math.max(16,Math.min(rect.left,window.innerWidth-440));
       if(cardTop+380>window.innerHeight){
         cardTop=Math.max(16,rect.top-380);
@@ -2582,7 +2581,6 @@ function renderTourStep(){
       card.style.top=cardTop+'px';
       card.style.left=cardLeft+'px';
     } else {
-      spotEl.style.display='none';
       card.style.bottom='24px';
       card.style.right='24px';
     }
