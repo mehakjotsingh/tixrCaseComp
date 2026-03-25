@@ -198,11 +198,11 @@ class RecommendationEngine:
 
         # Assign tiers
         def assign_tier(score):
-            if score >= 70:
+            if score >= 65:
                 return 'Tier 1 — Immediate Outreach'
-            elif score >= 50:
+            elif score >= 61:
                 return 'Tier 2 — High Priority'
-            elif score >= 30:
+            elif score >= 48:
                 return 'Tier 3 — Monitor'
             else:
                 return 'Tier 4 — Low Priority'

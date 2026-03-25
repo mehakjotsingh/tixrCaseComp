@@ -217,11 +217,11 @@ def prepare_venues(df):
         rs = row.get('recommendation_score')
         rs = round(float(rs), 1) if pd.notna(rs) else ps
 
-        if rs >= 70:
+        if rs >= 65:
             tier_num = 1
-        elif rs >= 50:
+        elif rs >= 61:
             tier_num = 2
-        elif rs >= 30:
+        elif rs >= 48:
             tier_num = 3
         else:
             tier_num = 4
@@ -282,9 +282,8 @@ def prepare_markets(df):
         eff_scores = grp.apply(_eff_rs, axis=1)
         avg_rs = eff_scores.mean()
 
-        # Recompute tiers from effective scores (not stale pipeline column)
-        t1 = int((eff_scores >= 70).sum())
-        t2 = int(((eff_scores >= 50) & (eff_scores < 70)).sum())
+        t1 = int((eff_scores >= 65).sum())
+        t2 = int(((eff_scores >= 61) & (eff_scores < 65)).sum())
 
         top_plat = ''
         if 'ticketing_platform' in grp.columns:
@@ -352,8 +351,8 @@ def prepare_regions(df):
                 round(float(row.get('priority_score', 0)), 1) if pd.notna(row.get('priority_score')) else 0
             )
         eff_scores = grp.apply(_eff_rs_r, axis=1)
-        t1 = int((eff_scores >= 70).sum())
-        t2 = int(((eff_scores >= 50) & (eff_scores < 70)).sum())
+        t1 = int((eff_scores >= 65).sum())
+        t2 = int(((eff_scores >= 61) & (eff_scores < 65)).sum())
         co = grp['country'].nunique() if 'country' in grp.columns else 0
         regions[str(region)] = {
             'n': len(grp), 'co': int(co),
@@ -449,7 +448,7 @@ def prepare_top_recs(venues, markets):
             why.append(str(t1) + " Tier 1 venues ready for immediate sales outreach")
         if t1 + t2 >= 10:
             why.append(str(t1 + t2) + " high-priority venues (Tier 1+2) in the pipeline")
-        if avg_score >= 60:
+        if avg_score >= 65:
             why.append("High average recommendation score (" + str(round(avg_score, 1)) + ") across " + str(n) + " venues")
         if avg_pf >= 55:
             why.append("Strong premium fit (" + str(round(avg_pf)) + "% avg) — venues align with Tixr's premium positioning")
@@ -616,9 +615,9 @@ select option{background:#0D1018;color:#9CA3AF;}
     <div style="position:absolute;bottom:14px;left:10px;background:rgba(8,11,18,0.93);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:10px 13px;z-index:999;pointer-events:none;">
       <div style="font-size:9px;letter-spacing:0.16em;color:#374151;text-transform:uppercase;margin-bottom:7px;">Score Legend</div>
       <div style="font-size:11px;color:#4B5563;display:flex;flex-direction:column;gap:5px;">
-        <div style="display:flex;align-items:center;gap:7px;"><span style="width:8px;height:8px;border-radius:50%;background:#10B981;display:inline-block;"></span>Score 60+ (Top Recommendation)</div>
-        <div style="display:flex;align-items:center;gap:7px;"><span style="width:8px;height:8px;border-radius:50%;background:#F0A500;display:inline-block;"></span>Score 50-59 (High Priority)</div>
-        <div style="display:flex;align-items:center;gap:7px;"><span style="width:8px;height:8px;border-radius:50%;background:#38BDF8;display:inline-block;"></span>Score 30-49 (Monitor)</div>
+        <div style="display:flex;align-items:center;gap:7px;"><span style="width:8px;height:8px;border-radius:50%;background:#10B981;display:inline-block;"></span>Score 65+ (Tier 1)</div>
+        <div style="display:flex;align-items:center;gap:7px;"><span style="width:8px;height:8px;border-radius:50%;background:#F0A500;display:inline-block;"></span>Score 61-64 (Tier 2)</div>
+        <div style="display:flex;align-items:center;gap:7px;"><span style="width:8px;height:8px;border-radius:50%;background:#38BDF8;display:inline-block;"></span>Score 48-60 (Tier 3)</div>
         <div style="display:flex;align-items:center;gap:7px;"><span style="width:8px;height:8px;border-radius:50%;background:#EF4444;display:inline-block;"></span>Score &lt;30 (Low Priority)</div>
       </div>
     </div>
@@ -707,10 +706,10 @@ function tl(ti){return ti===1?'Tier 1':ti===2?'Tier 2':ti===3?'Tier 3':ti===4?'T
 function tlf(ti){return ti===1?'Immediate Outreach':ti===2?'High Priority':ti===3?'Monitor':ti===4?'Low Priority':'Unscored';}
 function ec(e){return e<30?'#10B981':e<60?'#F0A500':'#EF4444';}
 function el(e){return e<30?'Low':e<60?'Med':'High';}
-function oc(s){return s>=60?'#10B981':s>=50?'#F0A500':s>=30?'#38BDF8':'#EF4444';}
+function oc(s){return s>=65?'#10B981':s>=61?'#F0A500':s>=48?'#38BDF8':'#EF4444';}
 function fmt(n){return n?n.toLocaleString():'--';}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
-function scBg(s){return s>=60?'rgba(16,185,129,':s>=50?'rgba(240,165,0,':s>=30?'rgba(56,189,248,':'rgba(239,68,68,';}
+function scBg(s){return s>=65?'rgba(16,185,129,':s>=61?'rgba(240,165,0,':s>=48?'rgba(56,189,248,':'rgba(239,68,68,';}
 
 // ── KPI bar ──
 (function(){
