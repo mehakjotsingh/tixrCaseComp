@@ -11,8 +11,20 @@
 5. [Agent 2: Ticketing Intelligence Agent — Fallback Hierarchy](#5-agent-2-ticketing-intelligence-agent--fallback-hierarchy)
 6. [Agent 3: Event Enrichment Agent (7 Sources)](#6-agent-3-event-enrichment-agent-7-sources)
 7. [Stage 2 — Recommendation Engine](#7-stage-2--recommendation-engine)
+   - 7b. [End-to-End Pipeline Flow](#7b-end-to-end-pipeline-flow)
+   - 7c. [Geocoding — 4-Tier Coordinate Approximation](#7c-geocoding--4-tier-coordinate-approximation)
+   - 7d. [Dashboard Generation](#7d-dashboard-generation)
 8. [Data Flow & Unified Schema](#8-data-flow--unified-schema)
 9. [Scoring Models](#9-scoring-models)
+   - 9.1 [Venue Win Probability (VWP)](#91-venue-win-probability-vwp)
+   - 9.2 [Premium Fit Score](#92-premium-fit-score-0100)
+   - 9.3 [Data Completeness Score](#93-data-completeness-score-0100)
+   - 9.4 [Priority Score](#94-priority-score-0100)
+   - 9.5 [Exclusivity Risk](#95-exclusivity-risk-0100)
+   - 9.6 [ROI Index (Per-Venue)](#96-roi-index-per-venue)
+   - 9.7 [Opportunity Score (Country-Level)](#97-opportunity-score-country-level-ranking)
+   - 9.8 [ROI Factor & Earning Potential](#98-roi-factor--earning-potential)
+   - 9.9 [Effective Score Fallback](#99-effective-score-fallback)
 10. [Known Issues — Prototype Run (v0.1)](#10-known-issues--prototype-run-v01)
 11. [Deployment & Scaling](#11-deployment--scaling)
 
@@ -964,15 +976,14 @@ The **Recommendation Engine** is a separate module (`recommendation_engine.py`) 
 │       │     • 20% activity_bonus (from event cadence)                 │
 │       │                                                               │
 │       └─→ [4] assign_tier()                                           │
-│             • Tier 1 — Immediate Outreach (≥70)                       │
-│             • Tier 2 — High Priority (≥50)                            │
-│             • Tier 3 — Monitor (≥30)                                  │
-│             • Tier 4 — Low Priority (<30)                             │
+│             • Tier 1 — Immediate Outreach (≥65)                       │
+│             • Tier 2 — High Priority (61–64)                          │
+│             • Tier 3 — Monitor (48–60)                                │
+│             • Tier 4 — Low Priority (<48)                             │
 │                                                                       │
 │  Output: tixr_recommendations.xlsx                                    │
-│    Sheets: All_Recommendations, Tier1_Immediate, Tier2_High_Priority, │
-│            Market_Intelligence, Region_Summary, Country_Breakdown,     │
-│            Manual_Review_Required, Decision_Log                        │
+│    Sheets: All_Recommendations, Country_Rankings, Tier1_Immediate,    │
+│            Tier2_High_Priority, Region_Summary                         │
 └───────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -1197,9 +1208,118 @@ recommendation_score = 0.50 × priority_score   (from Stage 1: VWP + Premium Fit
 
 ---
 
+## 7c. Geocoding — 4-Tier Coordinate Approximation
+
+Many venues in the pipeline lack coordinates (especially those from Wikidata OPTIONAL clauses or country-level CSV files). The `geocode_missing()` function in `generate_dashboard.py` fills missing lat/lon using a four-tier fallback hierarchy, then adds ±0.05° jitter (~5 km) to prevent marker stacking on the map.
+
+### Pre-processing
+
+1. Country names are normalized via `COUNTRY_ALIASES` (e.g., "Korea, Republic of" → "South Korea")
+2. Missing `country` is inferred from `city` via `CITY_FALLBACK` lookup (e.g., city="Singapore" → country="Singapore")
+
+### Coordinate Resolution Tiers
+
+```
+For each venue missing latitude/longitude:
+
+Tier 1: Empirical city centroid
+  └─ Key: (country, city) → mean(lat, lon) from venues in that city that already have coordinates
+  └─ Most accurate — uses actual venue cluster center
+
+Tier 2: Empirical country centroid
+  └─ Key: country → mean(lat, lon) from all venues in that country with coordinates
+  └─ Falls back when city has no other geocoded venues
+
+Tier 3: Static city fallback
+  └─ Hardcoded (lat, lon) for 40+ major cities (London, Berlin, Tokyo, etc.)
+  └─ Used when city exists in the table but no empirical data available
+
+Tier 4: Static country fallback
+  └─ Hardcoded (lat, lon) for 30+ countries
+  └─ Last resort when no city-level resolution is possible
+```
+
+### Jitter
+
+After resolution, ±0.05° random offset is added to both lat and lon to prevent markers from stacking on maps:
+```python
+df.at[idx, 'latitude'] = lat + random.uniform(-0.05, 0.05)
+df.at[idx, 'longitude'] = lon + random.uniform(-0.05, 0.05)
+```
+
+### Coverage
+
+In the current dataset (18,311 venues), geocoding fills coordinates for 99.9% of venues (18,288 of 18,311).
+
+---
+
+## 7d. Dashboard Generation
+
+**File:** `generate_dashboard.py`
+
+The dashboard generator consumes `tixr_recommendations.xlsx` (or `tixr_normalized_venues.xlsx`) and produces a **self-contained HTML file** with embedded data, maps, charts, and interactive filters. No server required — opens directly in a browser.
+
+### Pipeline
+
+```
+load_data(excel) → geocode_missing() → filter_countries()
+    → prepare_venues() → prepare_markets() → prepare_regions()
+    → compute_kpis() → generate_html() → write index.html
+```
+
+### Country Filtering
+
+US, Canada, and UK are excluded from the dashboard scope (Tixr already operates in these markets):
+```python
+exclude = ['United States', 'Canada', 'United Kingdom']
+df = df[~df['country'].isin(exclude)]
+```
+
+### Data Preparation Functions
+
+| Function | Output | Description |
+|----------|--------|-------------|
+| `prepare_venues()` | `VD` JSON array | Per-venue objects with name, city, country, region, type, capacity, scores, tier, ROI, coordinates |
+| `prepare_markets()` | `MKT` JSON dict | Per-country aggregates: venue count, avg scores, tier counts, opportunity score, top platform |
+| `prepare_regions()` | `REG` JSON dict | Per-region aggregates: venue count, country count, avg priority, tier counts |
+| `compute_kpis()` | `KPI` JSON dict | Global metrics: total venues, tier counts, avg score, country/region counts, coordinate coverage |
+
+### Dashboard Tabs (11)
+
+| # | Tab | Content |
+|---|-----|---------|
+| 0 | Overview | KPI grid, tier distribution, region breakdown |
+| 1 | Recommendations | Top 3 market cards with why/risks, 30/60/90 execution plan |
+| 2 | Map Intelligence | Leaflet.js world map with venue markers, cluster groups, tier filtering, country focus |
+| 3 | Venue Pipeline | Filterable table of all venues with scores, sorted by recommendation score |
+| 4 | Market Scorecard | Ranked market table with opportunity scores, tier counts, top platforms |
+| 5 | SEA Deep Dive | Southeast Asia-specific venue analysis |
+| 6 | GTM Strategy | Market cards, venue targets table, key risks, venue-specific 30/60/90 swim lanes, 90-day targets, RACI matrix |
+| 7 | Architecture | Visual pipeline flow diagram: data sources → agents → scoring → outputs |
+| 8 | Vendor Analysis | Ticketing platform distribution across markets |
+| 9 | Scoring Models | Interactive scoring model reference: VWP → Premium Fit → Priority → Market → Recommendation → ROI → Opportunity |
+| 10 | Market Intelligence | World Bank indicator radar charts and country comparison |
+
+### Client-Side Scoring
+
+The dashboard mirrors key scoring formulas in JavaScript for dynamic recalculation when the user changes the data scope:
+
+- `computeTopRecs(aVD)` — Recomputes the Opportunity Score and top 3 recommendations from the current filtered venue set
+- `oc(score)` / `scBg(score)` — Tier color assignment: ≥65 green, ≥61 amber, ≥48 blue, <48 red
+
+### Guided Tour
+
+A built-in 12-step walkthrough (`TOUR_STEPS` array) provides a scripted presentation mode with:
+- Tab auto-switching per step
+- Highlight ring around target elements
+- Navigation (prev/next/finish)
+- Step counter and progress dots
+
+---
+
 ## 8. Data Flow & Unified Schema
 
-### Complete field inventory (36 columns in final output):
+### Complete field inventory (45 columns in final output):
 
 | # | Column | Type | Source Agent(s) | Tixr Use |
 |---|--------|------|----------------|----------|
@@ -1245,6 +1365,13 @@ recommendation_score = 0.50 × priority_score   (from Stage 1: VWP + Premium Fit
 | 40 | `needs_manual_review` | bool | Ticketing Intel (Stage 1) | True when all 4 fallback steps return no signal |
 | 41 | `fallback_step_resolved` | int | Ticketing Intel (Stage 1) | Step number (1–5) at which exclusivity was determined |
 | 42 | `review_reason` | string | Export layer (Stage 2) | Populated only for Tier 1 rows where needs_manual_review = True; value: "No exclusivity signal detected" |
+| 43 | `exclusivity_risk` | int | Dashboard (computed) | 0–100 inverse of VWP; higher = more locked in (see §9.4) |
+| 44 | `win_probability` | float | Dashboard (computed) | `max(0, (100 - exclusivity_risk)) / 100`; convenience field for ROI |
+| 45 | `roi_index` | float | Dashboard (computed) | `recommendation_score × win_probability × (premium_fit / 100)` (see §9.5) |
+| 46 | `opportunity_score` | float | Dashboard / Excel (computed) | Country-level composite ranking score (see §9.6) |
+| 47 | `annual_revenue_est` | float | Dashboard (computed) | Estimated annual Tixr revenue for the market (see §9.7) |
+| 48 | `roi_multiple` | float | Dashboard (computed) | `annual_revenue / max(total_investment, 1)` |
+| 49 | `capacity_tier` | string | Pipeline (computed) | Mega (>20K) / Major (5K–20K) / Mid (1K–5K) / Small (200–1K) / Boutique (<200) |
 
 ---
 
@@ -1260,8 +1387,11 @@ Estimates the likelihood that Tixr can **realistically win** a venue (i.e., the 
 | Strong | Other | 0.15 | Difficult — but non-TM/AXS deals are weaker |
 | Medium | Any | 0.40 | Possible — contract may be expiring or negotiable |
 | Weak | Any | 0.70 | Good opportunity — loose partnership |
-| None / Unknown | Has a platform | 0.30 | Unknown risk — platform detected but strength unclear |
-| None / Unknown | No platform detected | 0.65 | **Prime opportunity** — no known exclusivity |
+| None / empty | Has a platform detected | 0.30 | Unknown risk — platform detected but strength unclear |
+| None / empty | No platform detected | 0.65 | **Prime opportunity** — no known exclusivity |
+| Fallback (unresolved) | — | 0.60 | Neutral default — insufficient data to determine |
+
+**Implementation note:** `run_pipeline.py` uses the table above. `agents/orchestrator.py` uses a slightly different mapping (base score 50 for premium fit, "none" strength → 0.90) which reflects the agent's raw output before pipeline normalization. The `run_pipeline.py` values are authoritative for the final dataset.
 
 ### 9.2 Premium Fit Score (0–100)
 
@@ -1281,7 +1411,21 @@ Scores how well a venue matches Tixr's premium positioning:
 | Has operator data | +5 | Known business contact |
 | **Max** | **100** | |
 
-### 9.3 Priority Score (0–100)
+### 9.3 Data Completeness Score (0–100)
+
+Measures what percentage of key actionable fields are present for a venue:
+
+```
+key_fields = [venue_name, city, country, capacity, website,
+              latitude, longitude, venue_type, address,
+              booking_url, venue_operator]
+
+data_completeness_pct = (filled_fields / 11) × 100
+```
+
+A venue with all 11 fields filled scores 100. A venue with only name, city, and country scores 27.3.
+
+### 9.4 Priority Score (0–100)
 
 The **final composite score** used to rank venues for the sales team at the end of Stage 1:
 
@@ -1300,6 +1444,106 @@ priority_score = (raw_priority / max_raw_priority) × 100  # normalized to 0-100
 | **20%** | Data Completeness | Better data = more actionable lead for sales |
 
 **Note:** GDP per capita was removed from this formula. It previously contributed 15% (`0.15 × gdp_per_capita / 1000`), but this created double-counting: GDP also drives 25% of `market_score`, which feeds 30% of `recommendation_score`. Removing it here concentrates economic weighting in Stage 2 where it belongs — market attractiveness is a market-level signal, not a venue-level signal. The removed weight was redistributed equally to VWP and Premium Fit.
+
+### 9.5 Exclusivity Risk (0–100)
+
+Inverse of VWP, used for display in the dashboard and ROI computation:
+
+```
+exclusivity_risk = round((1.0 - venue_win_probability) × 100)
+```
+
+| VWP | Exclusivity Risk | Meaning |
+|-----|-----------------|---------|
+| 0.05 | 95 | Extremely high lock-in |
+| 0.30 | 70 | Significant risk |
+| 0.65 | 35 | Moderate — opportunity exists |
+| 0.70 | 30 | Low risk — weak exclusive |
+
+**Fallback (no VWP):** If `venue_win_probability` is missing, a label-based fallback applies: Strong → 90, Medium → 55, Weak → 30, Unknown → 35.
+
+### 9.6 ROI Index (Per-Venue)
+
+Estimates expected return per venue, combining recommendation score, win probability, and premium fit:
+
+```
+win_probability = max(0, (100 - exclusivity_risk)) / 100
+roi_index = recommendation_score × win_probability × (premium_fit_score / 100)
+```
+
+Higher ROI Index = higher expected payoff per dollar of sales effort. A Tier 2 venue with high ROI may be more valuable than a Tier 1 venue with low ROI.
+
+**Example:** A venue with RS = 72.7, exclusivity_risk = 35 (VWP 0.65), premium_fit = 90:
+- `win_prob = (100 - 35) / 100 = 0.65`
+- `roi_index = 72.7 × 0.65 × 0.90 = 42.5`
+
+### 9.7 Opportunity Score (Country-Level Ranking)
+
+The **Opportunity Score** is the primary metric for ranking countries/markets. It blends five dimensions:
+
+```
+opportunity_score = 0.25 × avg_recommendation_score
+                  + 0.20 × market_score
+                  + 0.20 × min(tier1_count / 30, 1) × 100
+                  + 0.15 × min(winnable_count / 200, 1) × 100
+                  + 0.20 × roi_factor
+```
+
+| Weight | Component | Normalizer | Why |
+|--------|-----------|-----------|-----|
+| **25%** | Avg recommendation score | Raw (0–100) | Quality of the venue pipeline |
+| **20%** | Market score | Raw (0–100) | Country-level economic + digital fundamentals |
+| **20%** | Tier 1 readiness | Capped at 30 T1 venues = 100 | Immediate outreach capacity |
+| **15%** | Pipeline depth (T1+T2) | Capped at 200 winnable venues = 100 | Scale of actionable pipeline |
+| **20%** | ROI factor | Log-scale annual revenue (see §9.7) | Earning potential |
+
+Where `winnable_count = tier1_count + tier2_count`.
+
+**Design rationale:** The Opportunity Score intentionally blends breadth (pipeline depth) with quality (avg score, market fundamentals) and revenue potential (ROI factor). A market needs strength across all dimensions to rank high — a market with many venues but weak fundamentals won't rank as well as a compact market with high readiness.
+
+### 9.8 ROI Factor & Earning Potential
+
+The ROI Factor is a log-scale normalized revenue estimate used in the Opportunity Score:
+
+```
+avg_capacity     = mean(capacity) for venues with capacity > 0, default 1,500
+venue_annual     = max(avg_capacity, 1500) × 12 × 45 × 0.025
+annual_revenue   = winnable_count × venue_annual
+log_revenue      = log₁₀(max(annual_revenue, 1))
+roi_factor       = clamp((log_revenue - 5.0) / 3.5, 0, 1) × 100
+```
+
+**Revenue model assumptions:**
+- `12` = average events per venue per year
+- `45` = average ticket price (USD)
+- `0.025` = Tixr's platform fee (2.5%)
+
+| Annual Revenue | log₁₀ | ROI Factor |
+|---------------|-------|-----------|
+| $100K | 5.0 | 0 |
+| $1M | 6.0 | 28.6 |
+| $10M | 7.0 | 57.1 |
+| $100M | 8.0 | 85.7 |
+| $316M+ | 8.5+ | 100 |
+
+**ROI Multiple** (displayed alongside): `roi_multiple = annual_revenue / max(total_investment, 1)` where `total_investment = $50,000 + (winnable_count × $8,000)`.
+
+### 9.9 Effective Score Fallback
+
+When `recommendation_score` is `NaN` (e.g., World Bank data unavailable for a country), the system falls back to `priority_score` to avoid discarding venues from the pipeline:
+
+```
+effective_score = recommendation_score if not NaN
+                else priority_score if not NaN
+                else 0
+```
+
+This fallback is applied in three places:
+1. **Venue tier assignment** in `generate_dashboard.py` (`prepare_venues`)
+2. **Market aggregation** in `generate_dashboard.py` (`prepare_markets`)
+3. **Region aggregation** in `generate_dashboard.py` (`prepare_regions`)
+
+The fallback ensures that venues in countries without World Bank data are still tiered and counted correctly using their Stage 1 priority scores.
 
 ---
 
