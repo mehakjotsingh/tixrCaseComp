@@ -729,10 +729,13 @@ select option{background:#0D1018;color:#9CA3AF;}
   <div id="tab-6" class="tab-pane fade-in" style="display:none;">
     <div style="margin-bottom:18px;">
       <div style="font-size:19px;font-weight:600;color:#E2E8F0;margin-bottom:5px;">Go-To-Market Strategy</div>
-      <div style="font-size:12px;color:#4B5563;">Top 3 markets + sequence + 30/60/90 day plan</div>
+      <div style="font-size:12px;color:#4B5563;">Top 3 markets with venue-specific targets, key risks, and 30/60/90 day execution plan</div>
     </div>
     <div id="gtm-cards" style="max-width:960px;"></div>
+    <div id="gtm-venues" style="max-width:960px;margin-top:28px;"></div>
+    <div id="gtm-risks" style="max-width:960px;margin-top:28px;"></div>
     <div id="gtm-execution" style="max-width:960px;margin-top:28px;"></div>
+    <div id="gtm-targets" style="max-width:960px;margin-top:28px;"></div>
     <div id="gtm-raci" style="max-width:960px;margin-top:28px;"></div>
   </div>
 
@@ -1986,23 +1989,185 @@ function renderGTM(){
   });
   gc.innerHTML=h;
 
-  // Execution plan
-  var c1=top3[0]?top3[0].co:'Market 1',c2=top3[1]?top3[1].co:'Market 2',c3=top3[2]?top3[2].co:'Market 3';
-  var plans=[
-    {days:'30',color:'#10B981',items:['Finalize '+c1+' venue target list (Tier 1)','Establish local banking + payment integration','Hire 1 BDR ('+c1+'-based, bilingual)','Begin partner outreach \u2014 top '+((top3[0]&&top3[0].t1)||8)+' Tier 1 venues']},
-    {days:'60',color:'#F0A500',items:['Sign first 2\u20133 venue partners in '+c1,'Launch pilot event on Tixr platform','Begin '+c2+' market assessment + outreach','Build local-language support playbook']},
-    {days:'90',color:'#38BDF8',items:['Expand to 5+ '+c1+' venue partners','First '+c2+' venue signed',c3+' market research complete','Present expansion metrics to board']}
+  // ── Top Venue Targets Table ──
+  var vh='<div style="background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:22px;">';
+  vh+='<div style="font-size:16px;font-weight:700;color:#E2E8F0;margin-bottom:4px;">Top Venue Targets</div>';
+  vh+='<div style="font-size:11px;color:#4B5563;margin-bottom:14px;">BuyButtonChecker (95% accuracy) verified. Platform-confirmed locked venues excluded from direct BD and routed to promoter-level strategy.</div>';
+  vh+='<div style="overflow-x:auto;"><table class="raci-table" style="min-width:780px;"><thead><tr><th style="text-align:left;">Venue</th><th>Market</th><th style="text-align:right;">Cap</th><th style="text-align:right;">RS</th><th style="text-align:right;">ROI</th><th>Platform</th><th>Lead Event Type</th></tr></thead><tbody>';
+  var venues=[
+    ['Swiss Life Hall','Hannover, DE','4,460','72.7','37.1x','Open','#10B981','Concerts, DreamHack crossover'],
+    ['Europahalle','Karlsruhe, DE','4,809','72.7','37.1x','Open','#10B981','DEL ice hockey, concerts'],
+    ['Mittelhessen-Arena','Germany, DE','5,000','72.1','38.9x','Open','#10B981','Sports, regional concerts'],
+    ['Uber Eats Music Hall','Berlin, DE','4,500','70.4','31.7x','Open','#10B981','Indie concerts, comedy'],
+    ['Festhalle Frankfurt','Frankfurt, DE','13,500','71.6','34.4x','Open','#10B981','Arena concerts, trade shows'],
+    ['Uber Arena','Berlin, DE','17,000','71.6','34.4x','AXS (premium only)','#EF4444','GA wedge: floor/GA events'],
+    ['Ziggo Dome','Amsterdam, NL','17,000','75.1','36.0x','Open','#10B981','Major concerts, awards'],
+    ['Thialf','Heerenveen, NL','12,500','73.1','35.1x','Open','#10B981','Speed skating, concerts'],
+    ['Rotterdam Ahoy','Rotterdam, NL','15,000','70.8','29.7x','Open','#10B981','Arena concerts, esports'],
+    ['AFAS Live','Amsterdam, NL','6,000','70.8','29.7x','Open','#10B981','Mid-size concerts, electronic'],
+    ['Carr\u00e9 Theatre','Amsterdam, NL','1,752','71.4','34.3x','Open','#10B981','Musicals, premium concerts'],
+    ['Geelong Arena','Geelong, AU','2,000','74.3','40.1x','Open','#10B981','Regional concerts, basketball'],
+    ['Sydney Showground','Sydney, AU','10,000','73.1','37.3x','Open (promoter-level)','#10B981','Festivals, gaming expos'],
+    ['Palais Theatre','St Kilda, AU','2,896','72.0','34.6x','Open (via promoter)','#10B981','Indie rock, comedy, heritage'],
+    ['Newcastle Ent. Centre','Newcastle, AU','7,528','70.8','31.9x','Open','#10B981','Regional touring, concerts'],
+    ['Crown Live Theatre','Perth, AU','1,250','\u2014','\u2014','No partner (Nov 2026 relaunch)','#10B981','Theatre residencies, concerts']
   ];
-  var eh='<div class="exec-plan"><div class="exec-title">30 / 60 / 90 Day Execution Plan</div><div class="exec-grid">';
-  plans.forEach(function(p){
-    eh+='<div class="exec-col"><div class="exec-col-head" style="color:'+p.color+';">'+p.days+'</div><div class="exec-col-sub">days</div>';
-    p.items.forEach(function(item){eh+='<div class="exec-item"><span style="position:absolute;left:0;top:10px;width:8px;height:8px;border-radius:2px;border:1.5px solid '+p.color+';"></span>'+esc(item)+'</div>';});
+  venues.forEach(function(v){
+    vh+='<tr><td style="font-weight:600;">'+v[0]+'</td><td>'+v[1]+'</td><td style="text-align:right;">'+v[2]+'</td>';
+    vh+='<td style="text-align:right;color:#10B981;font-weight:600;">'+v[3]+'</td>';
+    vh+='<td style="text-align:right;color:#10B981;">'+v[4]+'</td>';
+    vh+='<td style="color:'+v[6]+';font-weight:600;">'+v[5]+'</td>';
+    vh+='<td style="font-size:11px;color:#9CA3AF;">'+v[7]+'</td></tr>';
+  });
+  vh+='</tbody></table></div></div>';
+  document.getElementById('gtm-venues').innerHTML=vh;
+
+  // ── Key Risks Per Market ──
+  var rsk='<div style="background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:22px;">';
+  rsk+='<div style="font-size:16px;font-weight:700;color:#E2E8F0;margin-bottom:14px;">Key Risks Per Market</div>';
+  rsk+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">';
+
+  var riskData=[
+    {co:'Netherlands',col:'#10B981',items:[
+      'Melkweg and Paradiso locked to Ticketmaster/Paylogic \u2014 approach via promoters, not venues directly',
+      'ADE 2026 conference contract held by Weeztix \u2014 brand presence must come through independent festival night promoter deals',
+      'Pipeline of 820 T1+T2 venues requires self-serve onboarding \u2014 Partner Program essential for long-tail capture',
+      'iDEAL payment integration is a hard requirement \u2014 absence materially drops Dutch checkout conversion'
+    ]},
+    {co:'Germany',col:'#F0A500',items:[
+      'CTS Eventim dominates \u2014 enterprise RFP cycles at large arenas run 6\u201318 months; prioritize 200+ mid-market arenas (2,250\u20135,000 cap) where Eventim is less active',
+      'SEPA, Klarna, and Sofort payment integrations are commercial blockers \u2014 must be live before first event goes on sale',
+      'Expanded pipeline (611 T1+T2) requires partner-led / self-serve onboarding \u2014 direct sales alone won\u2019t scale; begin partner program by Day 45'
+    ]},
+    {co:'Australia',col:'#38BDF8',items:[
+      'Ticketek (TEG) holds exclusive contracts at Rod Laver, John Cain, Hamer Hall \u2014 approach via independent promoters who own ticketing decisions',
+      'Crown Theatre Perth locked to Ticketmaster; Crown Live Theatre relaunch (Nov 2026) is highest-urgency greenfield \u2014 proposal must be in before Aug 2026',
+      'Geographic distance requires regional ops lead in Melbourne/Sydney \u2014 hire by Day 20; BPAY/POLi/Afterpay required for checkout'
+    ]}
+  ];
+  riskData.forEach(function(m){
+    rsk+='<div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);border-radius:8px;padding:14px;">';
+    rsk+='<div style="font-size:13px;font-weight:700;color:'+m.col+';margin-bottom:10px;">'+m.co+'</div>';
+    m.items.forEach(function(it){
+      rsk+='<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;font-size:11px;color:#D1D5DB;line-height:1.5;">';
+      rsk+='<span style="color:#EF4444;font-size:10px;margin-top:3px;flex-shrink:0;">\u26A0</span>'+it+'</div>';
+    });
+    rsk+='</div>';
+  });
+  rsk+='</div></div>';
+  document.getElementById('gtm-risks').innerHTML=rsk;
+
+  // ── Venue-Specific 30/60/90 Execution Pipeline ──
+  var eh='<div class="exec-plan"><div class="exec-title">30 / 60 / 90 Day Execution Plan</div>';
+
+  // Horizontal arrow pipeline header
+  eh+='<div style="display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:24px;">';
+  [{d:'30',l:'Ground-Truth',c:'#10B981',ic:'\uD83D\uDD0D'},{d:'60',l:'First Contracts',c:'#F0A500',ic:'\uD83D\uDD0F'},{d:'90',l:'Live Events & Scale',c:'#38BDF8',ic:'\uD83D\uDE80'}].forEach(function(p,i){
+    if(i>0) eh+='<svg width="48" height="24" style="flex-shrink:0;"><path d="M0 12h36M30 6l8 6-8 6" stroke="'+p.c+'" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    eh+='<div style="background:'+p.c+'12;border:2px solid '+p.c+'40;border-radius:12px;padding:10px 22px;text-align:center;min-width:180px;">';
+    eh+='<div style="font-size:20px;margin-bottom:2px;">'+p.ic+'</div>';
+    eh+='<div style="font-size:24px;font-weight:800;color:'+p.c+';font-family:var(--mono);line-height:1;">'+p.d+'</div>';
+    eh+='<div style="font-size:9px;color:#6B7280;text-transform:uppercase;letter-spacing:0.1em;">days</div>';
+    eh+='<div style="font-size:11px;font-weight:600;color:#E2E8F0;margin-top:3px;">'+p.l+'</div></div>';
+  });
+  eh+='</div>';
+
+  // Per-market swim lanes
+  var lanes=[
+    {co:'Netherlands',flag:'\uD83C\uDDF3\uD83C\uDDF1',col:'#10B981',
+     p1:[{v:'Ziggo Dome',s:'75.1',t:'BD outreach'},{v:'AFAS Live',s:'70.8',t:'Pitch'},{v:'MartiniPlaza',s:'71.9',t:'Pitch'}],
+     p1k:['iDEAL integration','10\u201315 ADE promoter IDs'],
+     p2:[{v:'AFAS Live',s:'70.8',t:'Sign'},{v:'Carr\u00e9 Theatre',s:'71.4',t:'Pitch'},{v:'Thialf',s:'73.1',t:'Pitch'}],
+     p2k:['iDEAL live in checkout','ADE 2026 brief submitted'],
+     p3:[{v:'AFAS Live',s:'70.8',t:'First event'},{v:'ADE 2026',s:'',t:'2 festival nights'}],
+     p3k:['Partner Program launched','820-venue pipeline activated'],
+     kpi:{bd:'10',sign:'2',live:'1',anchor:'AFAS + ADE'}},
+    {co:'Germany',flag:'\uD83C\uDDE9\uD83C\uDDEA',col:'#F0A500',
+     p1:[{v:'Swiss Life Hall',s:'72.7',t:'BD outreach'},{v:'Europahalle',s:'72.7',t:'BD outreach'},{v:'Uber Eats Music Hall',s:'70.4',t:'BD'}],
+     p1k:['BuyButtonChecker on 297 T1','SEPA/Klarna roadmap','DreamHack intro Day 10'],
+     p2:[{v:'Swiss Life Hall',s:'72.7',t:'Term sheet'},{v:'Friedrich-Ebert-Halle',s:'72.7',t:'Sweep'},{v:'Bremerhaven Stadthalle',s:'72.7',t:'Sweep'}],
+     p2k:['SEPA live in checkout','Country Manager search'],
+     p3:[{v:'Swiss Life Hall',s:'72.7',t:'First event'},{v:'Uber Eats Music Hall',s:'70.4',t:'First event'}],
+     p3k:['10 active accounts','Case study published','Legal entity confirmed'],
+     kpi:{bd:'15',sign:'3',live:'1',anchor:'DreamHack + Swiss Life'}},
+    {co:'Australia',flag:'\uD83C\uDDE6\uD83C\uDDFA',col:'#38BDF8',
+     p1:[{v:'Newcastle Ent. Centre',s:'70.8',t:'Prioritize'},{v:'Geelong Arena',s:'74.3',t:'Prioritize'},{v:'Crown Live Theatre',s:'\u2014',t:'Contact Crown'}],
+     p1k:['NZ warm intros','Hire BD contractor Day 20','BPAY/Afterpay roadmap'],
+     p2:[{v:'Newcastle / Geelong',s:'',t:'Sign first'},{v:'Palais Theatre',s:'72.0',t:'Approach'},{v:'Crown Live Theatre',s:'',t:'Submit proposal'}],
+     p2k:['3 NBL clubs approached'],
+     p3:[{v:'Geelong Arena',s:'74.3',t:'First event'},{v:'Crown Live Theatre',s:'',t:'Follow-up confirmed'}],
+     p3k:['5 signed agreements','T1 triage \u2192 top 30 for Q3','APAC expansion brief drafted'],
+     kpi:{bd:'12',sign:'5',live:'3',anchor:'Crown Live pre-launch'}}
+  ];
+
+  lanes.forEach(function(mk){
+    eh+='<div style="background:rgba(255,255,255,0.02);border:1px solid '+mk.col+'25;border-radius:10px;padding:16px 18px;margin-bottom:12px;">';
+    // Market header row
+    eh+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">';
+    eh+='<div style="display:flex;align-items:center;gap:10px;">';
+    eh+='<span style="font-size:22px;">'+mk.flag+'</span>';
+    eh+='<span style="font-size:15px;font-weight:700;color:'+mk.col+';">'+mk.co+'</span></div>';
+    // KPI badges
+    eh+='<div style="display:flex;gap:8px;">';
+    [{l:'BD Convos',v:mk.kpi.bd},{l:'Signed',v:mk.kpi.sign},{l:'Live Events',v:mk.kpi.live}].forEach(function(k){
+      eh+='<div style="background:'+mk.col+'15;border:1px solid '+mk.col+'30;border-radius:6px;padding:4px 10px;text-align:center;">';
+      eh+='<div style="font-size:16px;font-weight:800;color:'+mk.col+';font-family:var(--mono);line-height:1;">'+k.v+'</div>';
+      eh+='<div style="font-size:8px;color:#6B7280;text-transform:uppercase;letter-spacing:0.06em;">'+k.l+'</div></div>';
+    });
+    eh+='<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:6px;padding:4px 10px;text-align:center;max-width:120px;">';
+    eh+='<div style="font-size:9px;font-weight:600;color:#E2E8F0;line-height:1.3;">'+mk.kpi.anchor+'</div>';
+    eh+='<div style="font-size:8px;color:#6B7280;text-transform:uppercase;letter-spacing:0.06em;">Anchor</div></div>';
+    eh+='</div></div>';
+
+    // 3-column phase swim lane
+    eh+='<div style="display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:0;align-items:start;">';
+    var phases=[{venues:mk.p1,keys:mk.p1k,c:'#10B981'},{venues:mk.p2,keys:mk.p2k,c:'#F0A500'},{venues:mk.p3,keys:mk.p3k,c:'#38BDF8'}];
+    phases.forEach(function(ph,pi){
+      if(pi>0){
+        eh+='<div style="display:flex;align-items:center;padding-top:20px;"><svg width="32" height="20"><path d="M0 10h22M17 5l7 5-7 5" stroke="'+ph.c+'80" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>';
+      }
+      eh+='<div>';
+      // Venue chips
+      ph.venues.forEach(function(vn){
+        eh+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;background:'+ph.c+'0A;border:1px solid '+ph.c+'20;border-radius:6px;padding:5px 9px;">';
+        eh+='<div style="flex:1;min-width:0;">';
+        eh+='<div style="font-size:11px;font-weight:600;color:#E2E8F0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+vn.v+'</div>';
+        eh+='<div style="font-size:9px;color:#6B7280;">'+vn.t+'</div></div>';
+        if(vn.s) eh+='<div style="font-size:11px;font-weight:700;color:'+ph.c+';font-family:var(--mono);flex-shrink:0;">'+vn.s+'</div>';
+        eh+='</div>';
+      });
+      // Key milestones
+      ph.keys.forEach(function(k){
+        eh+='<div style="font-size:9.5px;color:#9CA3AF;padding:2px 0 2px 8px;display:flex;align-items:center;gap:5px;">';
+        eh+='<span style="color:'+ph.c+';font-size:8px;">\u2713</span>'+k+'</div>';
+      });
+      eh+='</div>';
+    });
+    eh+='</div></div>';
+  });
+
+  // 90-Day Targets row (compact)
+  eh+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px;">';
+  [{co:'Netherlands',col:'#10B981',bd:'10',sign:'2',live:'1',pay:'iDEAL',lock:'Melkweg, Paradiso'},{co:'Germany',col:'#F0A500',bd:'15',sign:'3',live:'1',pay:'SEPA, Klarna, Sofort',lock:'Uber/Barclays Arena'},{co:'Australia',col:'#38BDF8',bd:'12',sign:'5',live:'3',pay:'BPAY, POLi, Afterpay',lock:'Rod Laver, Hamer Hall'}].forEach(function(t){
+    eh+='<div style="background:'+t.col+'08;border:1px solid '+t.col+'20;border-radius:8px;padding:12px;text-align:center;">';
+    eh+='<div style="font-size:11px;font-weight:700;color:'+t.col+';margin-bottom:8px;">'+t.co+' \u2014 90-Day Target</div>';
+    eh+='<div style="display:flex;justify-content:center;gap:12px;margin-bottom:8px;">';
+    [{l:'BD',v:t.bd},{l:'Signed',v:t.sign},{l:'Live',v:t.live}].forEach(function(k){
+      eh+='<div><div style="font-size:18px;font-weight:800;color:'+t.col+';font-family:var(--mono);">'+k.v+'</div>';
+      eh+='<div style="font-size:8px;color:#6B7280;text-transform:uppercase;">'+k.l+'</div></div>';
+    });
+    eh+='</div>';
+    eh+='<div style="font-size:9px;color:#9CA3AF;"><strong style="color:#E2E8F0;">Pay:</strong> '+t.pay+'</div>';
+    eh+='<div style="font-size:9px;color:#EF4444;margin-top:2px;"><strong>\u26A0</strong> Avoid: '+t.lock+'</div>';
     eh+='</div>';
   });
-  eh+='</div></div>';
-  document.getElementById('gtm-execution').innerHTML=eh;
+  eh+='</div>';
 
-  // RACI matrix
+  eh+='</div>';
+  document.getElementById('gtm-execution').innerHTML=eh;
+  document.getElementById('gtm-targets').innerHTML='';
+
+  // ── RACI Matrix ──
   var rh='<div style="background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:22px;">';
   rh+='<div style="font-size:16px;font-weight:700;color:#E2E8F0;margin-bottom:16px;">RACI Matrix</div>';
   rh+='<table class="raci-table"><thead><tr><th style="text-align:left;">Task</th><th>VP Intl</th><th>BDR Lead</th><th>Product</th><th>Legal</th><th>Marketing</th></tr></thead><tbody>';
@@ -2399,84 +2564,91 @@ renderOverview();ovInited=true;
 // ════════════════════════════════════════════════════════════
 var TOUR_STEPS=[
 
+// Step 1 — Problem
 {tab:0,title:'The Problem',
 accent:'#EF4444',
 text:'A Tixr sales rep entering any new market today has <strong>no structured way</strong> to know which venues are winnable, which are locked into Live Nation, and which to call first.',
-highlight:'We built <em>Tixr Scout</em> to solve exactly that, not just for one market but globally across EMEA, Latin America, Southeast Asia, and APAC. Let me walk you through the full system.',
+highlight:'We built <em>Tixr Scout</em> to solve exactly that \u2014 not just for one market but globally across EMEA, Latin America, Southeast Asia, and APAC. Let me walk you through the full system.',
 target:'kpi-grid-ov'},
 
+// Step 2 — Overview
 {tab:0,title:'The Overview',
 accent:'#10B981',
-text:'At the top level, Tixr Scout has analyzed <strong>18,311 venues across 98 markets</strong> globally. We structured the pipeline into four tiers to make sure a rep is never overwhelmed and always knows exactly where to focus.',
-highlight:'<em>970</em> venues sit in Tier 1 for immediate outreach. <em>2,434</em> sit in Tier 2 as high priority targets. <em>12,779</em> are in Tier 3 for monitoring, and <em>2,128</em> are Tier 4 low priority. That means our actionable pipeline, Tier 1 and 2 combined, is <em>3,404 venues</em>. Roughly 18% of the total dataset. We made that cut deliberately. When everything is a priority, nothing is.',
+text:'At the top level, Tixr Scout has analyzed <strong>18,311 venues across 98 markets</strong> globally. We structured the pipeline into four tiers so a rep is never overwhelmed and always knows where to focus.',
+highlight:'<em>970</em> Tier 1 for immediate outreach. <em>2,434</em> Tier 2 high priority. <em>12,779</em> Tier 3 monitoring. <em>2,128</em> Tier 4 low priority. The actionable pipeline (Tier 1+2) is <em>3,404 venues</em> \u2014 roughly 18% of the dataset. We made that cut deliberately. When everything is a priority, nothing is.',
 target:'kpi-grid-ov'},
 
-{tab:7,title:'Step 1 \u2014 Venue Discovery',
+// Step 3a — How It Works: Venue Discovery (Architecture tab)
+{tab:7,title:'How It Works \u2014 Venue Discovery',
 accent:'#38BDF8',
-text:'We built a Venue Discovery Agent that pulls from <strong>seven data sources</strong> including Wikidata, OpenStreetMap, Bandsintown, and MusicBrainz to build a clean, normalized pipeline of venues across every target market.',
-highlight:'And this is not a static dataset. We run a <em>daily cron job</em> that refreshes the data every single day. This is live intelligence, not a snapshot.',
+text:'We built a <strong>Venue Discovery Agent</strong> that pulls from seven data sources \u2014 Wikidata, OpenStreetMap, Bandsintown, MusicBrainz and more \u2014 to build a clean, normalized pipeline of venues across every target market.',
+highlight:'This is not a static dataset. We run a <em>daily cron job</em> that refreshes the data every single day. This is live intelligence, not a snapshot.',
 target:'arch-content'},
 
+// Step 3b — Our Pipeline: Scoring Models (Scoring tab) + VWP
+{tab:9,title:'Our Pipeline \u2014 Scoring & Win Probability',
+accent:'#EF4444',
+text:'Every venue flows through a <strong>four-stage pipeline</strong>: Venue Discovery \u2192 Live Enrichment \u2192 Exclusivity Scoring \u2192 Prioritization. Each stage adds signals that feed into the final recommendation score.',
+highlight:'At the core is the <em>Venue Win Probability (VWP)</em> \u2014 a score from 0.05 to 0.70 answering: can Tixr realistically win this venue? A <em>strong exclusive</em> (Ticketmaster/AXS) scores 0.05. <em>No detected platform</em> scores 0.70. VWP carries <strong>40% weight</strong> in the Priority Score, making it the single most influential factor in deciding which venues a rep calls first.',
+target:'scoring-content'},
+
+// Step 4 — Market Intelligence
 {tab:10,title:'Market Intelligence',
 accent:'#F0A500',
-text:'But before we go venue by venue, we need to know <strong>which markets are worth entering</strong>. That is where the Market Intelligence and Market Scorecard come in.',
-highlight:'Every country in our pipeline is scored across five dimensions that directly map to Tixr\u2019s expansion readiness criteria. <em>GDP per capita</em> tells us whether consumers can afford premium ticketed experiences. <em>Internet penetration</em> tells us whether digital ticketing infrastructure will work. <em>Mobile subscription rates</em> tell us how the transaction will happen. <em>Tourism arrivals</em> tell us whether this market draws international acts and audiences. And <em>venue count</em> tells us the depth of the opportunity.',
+text:'Before we go venue by venue, we need to know <strong>which markets are worth entering</strong>. That is where Market Intelligence comes in.',
+highlight:'Every country is scored across five dimensions: <em>GDP per capita</em> (can consumers afford premium experiences?), <em>internet penetration</em> (will digital ticketing work?), <em>mobile subscriptions</em> (how will the transaction happen?), <em>tourism arrivals</em> (international acts & audiences?), and <em>venue count</em> (depth of opportunity).',
 target:'tab-10'},
 
-{tab:4,title:'Market Scorecard \u2014 73 Ranked Markets',
+// Step 5 — Market Scorecard (World Map)
+{tab:2,title:'Market Scorecard \u2014 Global View',
 accent:'#F0A500',
-text:'What this produces is a <strong>ranked global view of market quality</strong> across 73 fully scored markets. The top of the pipeline is dominated by large, dense, digitally mature markets.',
-highlight:'<em>Netherlands</em> leads with an Opportunity Score of 80.8 across 1,083 venues. <em>Germany</em> follows at 78.5 with nearly 2,000 venues. <em>Australia</em> sits at 77.2 and <em>Japan</em> at 76.0. The Opportunity Score blends average recommendation quality, market fundamentals, Tier 1 readiness, pipeline depth, and earning potential \u2014 so a market needs strength across all dimensions to rank high.',
-target:'mkt-grid'},
+text:'This is the <strong>global map of our entire pipeline</strong> \u2014 18,311 venues across 73 fully scored markets. Each dot is a venue, color-coded by tier.',
+highlight:'<em>Netherlands</em> leads with an Opportunity Score of 80.8 across 1,083 venues. <em>Germany</em> follows at 78.5 with nearly 2,000 venues. <em>Australia</em> sits at 77.2 and <em>Japan</em> at 76.0. The Opportunity Score blends recommendation quality, market fundamentals, Tier 1 readiness, pipeline depth, and earning potential \u2014 so a market needs strength across all dimensions to rank high.',
+target:'lmap'},
 
+// Step 6 — Top 3 Market Recommendations
 {tab:1,title:'Top 3 Market Recommendations',
 accent:'#10B981',
 text:'Our system surfaces <strong>three priority markets</strong> based on the intersection of market fundamentals, venue pipeline depth, ROI potential, and competitive displaceability.',
 highlight:'The top three are <em>Netherlands</em> at 80.8, <em>Germany</em> at 78.5, and <em>Australia</em> at 77.2. Netherlands gives us the densest actionable pipeline per capita. Germany gives us continental scale. Australia gives us an English-speaking, digitally mature beachhead in APAC.',
 target:'rec-cards'},
 
+// Step 7 — #1 Netherlands
 {tab:1,title:'#1 Netherlands \u2014 Pipeline Density',
 accent:'#10B981',
 text:'Netherlands is our top recommendation. It has <strong>the highest Opportunity Score in the entire pipeline at 80.8</strong>. With 1,083 venues, 83 Tier 1 and 737 Tier 2, the actionable pipeline here is extraordinary \u2014 over 75% of all venues are in the top two tiers.',
 highlight:'The market is compact, wealthy, and digitally mature with a market score of 55.5. The incumbent is <em>SeatGeek</em>, but the sheer volume of Tier 2 venues means massive white space. A small focused team can cover the country and generate outsized returns.',
 target:'rec-cards'},
 
+// Step 8 — #2 Germany
 {tab:1,title:'#2 Germany \u2014 Scale & Revenue',
 accent:'#F0A500',
 text:'Germany is the <strong>largest live events market in continental Europe</strong>, with 1,996 venues and an Opportunity Score of 78.5. It has the highest Tier 1 count of any market at 297 venues ready for immediate outreach, plus 314 Tier 2 targets.',
 highlight:'Consumers here are sophisticated and spend on premium experiences. The venue ecosystem spans every major city with a deeply embedded festival and club culture. The primary risk is <em>AXS</em> holding the premium position, but the breadth of independent and mid-tier venues means significant white space.',
 target:'rec-cards'},
 
+// Step 9 — #3 Australia
 {tab:1,title:'#3 Australia \u2014 APAC Beachhead',
 accent:'#A78BFA',
 text:'Australia comes third with an Opportunity Score of 77.2. It <strong>punches well above its size</strong> \u2014 318 venues with the highest average recommendation score (63.9) and market score (57.2) of all three top markets. 116 Tier 1 and 156 Tier 2 venues are ready to go.',
 highlight:'The market is English-speaking, digitally mature, and has a strong appetite for international touring acts. Every playbook, support process, and sales motion built in the Netherlands and Germany <em>transfers here almost directly</em>. It is the most capital-efficient path into APAC.',
 target:'rec-cards'},
 
-{tab:2,title:'Step 2 \u2014 Live Enrichment',
-accent:'#38BDF8',
-text:'Now let me show you how the system actually works at the venue level. Every venue in our global pipeline is enriched with <strong>two signals</strong> beyond the basics.',
-highlight:'<em>Upcoming events cadence</em> tells us how active this venue is and whether it is currently booking. <em>Ticketing vendor signals</em> tell us who they are currently working with. Together these two signals tell a rep exactly what conversation to walk into before they pick up the phone.',
-target:'tab-2'},
-
-{tab:9,title:'Step 3 \u2014 Exclusivity Scoring',
-accent:'#EF4444',
-text:'This is the core of what makes Tixr Scout useful. For every venue we built a model that estimates the likelihood it is <strong>not locked into a Live Nation exclusivity agreement</strong>. We assign a score, a confidence level, and a plain-English explanation of the evidence behind it.',
-highlight:'A venue scores low exclusivity risk when their last three major events used <em>independent ticketing infrastructure</em>, their operator has no documented partnership with Live Nation, and their programming skews toward <em>independent promoters</em>. That is not a guess. It is a defensible inference built from real signals \u2014 and we are ready to defend any score on this list.',
-target:'scoring-content'},
-
-{tab:3,title:'Step 4 \u2014 Target Prioritization',
+// Step 10 — Target Prioritization & Data Scope
+{tab:3,title:'Target Prioritization & Data Scope',
 accent:'#F0A500',
-text:'This is what a rep opens on <strong>Monday morning</strong>. We filter by region, country, exclusivity likelihood, venue type, capacity range, activity level, and premium fit score. The list immediately narrows to the highest-value targets a rep should be calling first.',
-highlight:'No noise, just signal. A rep in Berlin and a rep in Singapore are both working from the <em>same system, the same scoring logic, and the same pipeline</em> \u2014 all refreshed overnight.',
+text:'This is what a rep opens on <strong>Monday morning</strong>. Filter by region, country, exclusivity likelihood, venue type, capacity range, activity level, and premium fit score. The list narrows to the highest-value targets a rep should be calling first.',
+highlight:'Change the data scope and the entire dashboard recalculates \u2014 recommendations, tier distributions, market rankings, everything. A rep in Berlin and a rep in Singapore are both working from the <em>same system, the same scoring logic, and the same pipeline</em> \u2014 all refreshed overnight.',
 target:'tab-3'},
 
-{tab:6,title:'Execution \u2014 30 / 60 / 90 Day Plan',
+// Step 11 — Execution 30/60/90
+{tab:6,title:'Execution \u2014 30 / 60 / 90 Day Pipeline',
 accent:'#10B981',
-text:'<strong>First 30 days:</strong> Finalize the Netherlands Tier 1 target list, establish local banking and payment integration, hire one bilingual business development rep on the ground in the Netherlands, and begin outreach to the top 83 Tier 1 venues.',
-highlight:'<em>By day 60:</em> Signed first 2\u20133 venue partners in Netherlands, launched a pilot event on Tixr, begun Germany market assessment and outreach, built a local-language support playbook. <em>By day 90:</em> Expanded to 5+ Netherlands venue partners, signed first Germany venue, completed Australia market research, presenting expansion metrics to the board.',
-target:'gtm-cards'},
+text:'Each market has a <strong>swim lane</strong> with named venue targets, RS scores, and 90-day KPI targets. Follow the arrows from ground-truth through first contracts to live events.',
+highlight:'<em>Day 30:</em> Ziggo Dome (RS 75.1), Swiss Life Hall (RS 72.7), Newcastle Ent. Centre (RS 70.8) all in active BD. <em>Day 60:</em> First signed contracts at AFAS Live and Geelong Arena, Crown Live Theatre proposal submitted. <em>Day 90:</em> Live events in all three markets \u2014 10 active Germany accounts, ADE 2026 presence confirmed, 5 signed AU deals.',
+target:'gtm-execution'},
 
+// Step 12 — Closing
 {tab:7,title:'Closing \u2014 The Full Pipeline',
 accent:'#7C8EF7',
 text:'Tixr Scout is a <strong>full global intelligence pipeline</strong>. Discovery, enrichment, exclusivity scoring, and prioritization \u2014 all grounded in a market-level scorecard across 73 countries, a daily-refreshed venue pipeline, and a concrete three-market recommendation with a day-by-day execution plan behind it.',

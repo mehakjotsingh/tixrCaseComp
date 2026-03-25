@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tixr Global Expansion — Venue-Specific 30/60/90 Day Memo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', Arial, sans-serif;
+    background: #f0f0f0;
+    color: #1a1a1a;
+    font-size: 9pt;
+    line-height: 1.45;
+  }
+
+  .page {
+    width: 816px;
+    min-height: 1056px;
+    background: #ffffff;
+    margin: 24px auto;
+    padding: 0;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+    page-break-after: always;
+    position: relative;
+    padding-bottom: 40px;
+  }
+
+  /* ── HEADER ── */
+  .page-header {
+    background: #1a6b6b;
+    padding: 22px 36px 16px 36px;
+  }
+  .page-header h1 {
+    font-size: 22pt;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.04em;
+    line-height: 1.1;
+  }
+  .page-header .subtitle-bar {
+    margin-top: 6px;
+    font-size: 8pt;
+    color: #c8e8e8;
+    letter-spacing: 0.12em;
+    font-weight: 400;
+    text-transform: uppercase;
+  }
+
+  /* ── BODY ── */
+  .page-body {
+    padding: 22px 36px 20px 36px;
+  }
+
+  /* ── SECTION HEADING ── */
+  .section-heading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 18px;
+    margin-bottom: 8px;
+    border-bottom: 2px solid #1a6b6b;
+    padding-bottom: 4px;
+  }
+  .section-heading .num {
+    font-size: 13pt;
+    font-weight: 700;
+    color: #1a6b6b;
+    min-width: 18px;
+  }
+  .section-heading .title {
+    font-size: 9.5pt;
+    font-weight: 700;
+    color: #1a6b6b;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+  }
+
+  /* ── MARKET PILL ── */
+  .market-pill {
+    display: inline-block;
+    background: #1a6b6b;
+    color: #ffffff;
+    font-size: 7.5pt;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 3px 11px;
+    border-radius: 3px;
+    margin: 8px 0 5px 0;
+  }
+
+  /* ── DAY PHASE PILL ── */
+  .day-pill {
+    display: inline-block;
+    background: #1a6b6b;
+    color: #ffffff;
+    font-size: 7.5pt;
+    font-weight: 700;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    padding: 3px 11px;
+    border-radius: 3px;
+    margin: 9px 0 5px 0;
+  }
+
+  /* ── SUBHEADING ── */
+  .sub-label {
+    font-size: 8.5pt;
+    font-weight: 700;
+    color: #1a6b6b;
+    margin-top: 6px;
+    margin-bottom: 2px;
+    letter-spacing: 0.03em;
+  }
+
+  /* ── BULLET LIST ── */
+  ul {
+    margin: 0 0 2px 0;
+    padding-left: 16px;
+  }
+  ul li {
+    margin-bottom: 3px;
+    font-size: 8.5pt;
+    color: #1a1a1a;
+    line-height: 1.45;
+  }
+  ul li sup {
+    font-size: 6pt;
+    color: #1a6b6b;
+    font-weight: 600;
+  }
+
+  /* ── BODY TEXT ── */
+  .body-text {
+    font-size: 8.5pt;
+    color: #333;
+    margin-bottom: 4px;
+    line-height: 1.5;
+  }
+
+  /* ── DATA TABLE ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0 4px 0;
+    font-size: 7.8pt;
+  }
+  thead tr { background: #1a6b6b; color: #ffffff; }
+  thead th {
+    padding: 5px 6px;
+    text-align: left;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    font-size: 7.5pt;
+  }
+  tbody tr:nth-child(even) { background: #f4fafa; }
+  tbody tr:nth-child(odd)  { background: #ffffff; }
+  tbody td {
+    padding: 4px 6px;
+    border-bottom: 1px solid #e0eded;
+    vertical-align: top;
+  }
+  tbody td.bold { font-weight: 600; }
+  tbody td.teal { color: #1a6b6b; font-weight: 600; }
+  tbody td.red  { color: #b33a00; font-weight: 600; }
+
+  /* ── FOOTER ── */
+  .page-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #1a6b6b;
+    color: #c8e8e8;
+    font-size: 7pt;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    padding: 5px 36px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* ── FOOTNOTES ── */
+  .footnotes {
+    margin-top: 12px;
+    padding-top: 7px;
+    border-top: 1px solid #c5dcdc;
+  }
+  .footnotes p {
+    font-size: 6.8pt;
+    color: #444;
+    line-height: 1.5;
+    margin-bottom: 2px;
+  }
+  .footnotes p a { color: #1a6b6b; text-decoration: none; }
+  .footnotes p sup { font-size: 6pt; color: #1a6b6b; font-weight: 700; }
+
+  .lock { color: #b33a00; font-weight: 600; }
+  .open { color: #1a6b6b; font-weight: 600; }
+
+  /* ── STAT CALLOUT ROW ── */
+  .stat-row {
+    display: flex;
+    gap: 10px;
+    margin: 8px 0 6px 0;
+  }
+  .stat-box {
+    flex: 1;
+    background: #f0f9f9;
+    border-left: 3px solid #1a6b6b;
+    padding: 6px 10px;
+    border-radius: 2px;
+  }
+  .stat-box .stat-val {
+    font-size: 13pt;
+    font-weight: 700;
+    color: #1a6b6b;
+    line-height: 1.1;
+  }
+  .stat-box .stat-lbl {
+    font-size: 7pt;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-top: 1px;
+  }
+
+  @media print {
+    body { background: white; }
+    .page { margin: 0; box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- PAGE 1 -->
+<div class="page">
+  <div class="page-header">
+    <h1>TIXR GLOBAL EXPANSION</h1>
+    <div class="subtitle-bar">Executive Memo &nbsp;|&nbsp; March 2026 &nbsp;|&nbsp; Confidential</div>
+  </div>
+
+  <div class="page-body">
+
+    <!-- SECTION 1 -->
+    <div class="section-heading">
+      <span class="num">1</span>
+      <span class="title">Recommended Markets — Updated Model Output (March 2026)</span>
+    </div>
+
+    <!-- Stat callouts -->
+    <div class="stat-row">
+      <div class="stat-box">
+        <div class="stat-val">297</div>
+        <div class="stat-lbl">Germany T1 Venues</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val">83</div>
+        <div class="stat-lbl">Netherlands T1 Venues</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val">116</div>
+        <div class="stat-lbl">Australia T1 Venues</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val">1,703</div>
+        <div class="stat-lbl">Combined T1+T2 Pipeline</div>
+      </div>
+    </div>
+
+    <p class="body-text">The Venue Intelligence System re-scored venues across all three markets in March 2026. Pipeline depth increased significantly since initial run — Germany T1 expanded from 50 to 297 venues, Netherlands T1 from 19 to 83, and Australia T1 from 30 to 116. RS and ROI ranges are consistent with prior run, confirming model stability.<sup>1</sup></p>
+
+    <span class="market-pill">Market 1 — Germany &nbsp;(#1 Ranked · 297 Tier 1 Venues · 611 T1+T2 Pipeline)</span>
+    <ul>
+      <li>RS range 65.0–72.7; ROI range 21.5x–38.9x — top performers concentrated in mid-market arenas (2,250–5,000 cap)<sup>1</sup></li>
+      <li>Top RS cluster (72.7, ROI 37.1x): Europahalle (Karlsruhe), Saturn Arena (Ingolstadt), Swiss Life Hall (Hannover), Eissporthalle Iserlohn, Lipperlandhalle (Lemgo), Bremerhaven Stadthalle, Friedrich-Ebert-Halle (Ludwigshafen) — all no confirmed platform<sup>1</sup></li>
+      <li>Highest ROI tier (72.1, ROI 38.9x): Mittelhessen-Arena, Ice Stadium Heilbronn, Hercules Hall, Merkur Arena — all no confirmed platform<sup>1</sup></li>
+      <li>Uber Arena (Berlin, 17K) and Barclays Arena (Hamburg, 15K) — <span class="lock">AXS-locked for premium/suite only</span>; GA tickets remain an open wedge<sup>2</sup></li>
+      <li>Berghain (Berlin, 1,500 cap) confirmed on <span class="lock">DICE</span> for select events; all other Berlin venues (Uber Eats Music Hall 4,500, Konzerthaus 1,500) — <span class="open">no confirmed platform</span><sup>1</sup></li>
+    </ul>
+
+    <span class="market-pill">Market 2 — Netherlands &nbsp;(#3 Ranked · 83 Tier 1 Venues · 820 T1+T2 Pipeline)</span>
+    <ul>
+      <li>RS range 65.3–75.1; ROI range 19.6x–36.0x — Ziggo Dome leads at RS 75.1, ROI 36.0x, 17,000 cap, <span class="open">no confirmed platform</span><sup>1</sup></li>
+      <li>Second tier (RS 73.1): Ziggo Dome (arena type), Thialf (Heerenveen, 12,500) — both no confirmed platform<sup>1</sup></li>
+      <li>RS 71.9 cluster: Maaspoort ('s-Hertogenbosch), MartiniPlaza (Groningen 4,500), Omnisport Apeldoorn (5,000), Melkweg (1,500), Paradiso Amsterdam (1,500) — model shows no exclusive; independently confirmed Melkweg/Paradiso on Ticketmaster/Paylogic<sup>3,4</sup></li>
+      <li>Rotterdam Ahoy (15,000), AFAS Live (6,000) at RS 70.8 — <span class="open">no confirmed platform</span>; highest volume open targets outside Amsterdam<sup>1</sup></li>
+      <li>ADE 2026 (Oct 21–25): conference ticketing locked to Weeztix<sup>5</sup>; individual ADE festival night tickets sold independently — 5–10 deal opportunities with Amsterdam promoters</li>
+    </ul>
+
+    <span class="market-pill">Market 3 — Australia &nbsp;(#2 Ranked · 116 Tier 1 Venues · 272 T1+T2 Pipeline)</span>
+    <ul>
+      <li>RS range 65.4–74.3; ROI range 21.6x–40.1x — top RS 74.3 at Sydney Ice Arena (1K), Hamer Hall (2,466), Geelong Arena (2K); all no confirmed platform in model<sup>1</sup></li>
+      <li>RS 73.1 tier: Rod Laver Arena (14,820), John Cain Arena (10,300), Sydney Showground (10,000), Margaret Court Arena (7,500) — independently confirmed Rod Laver/John Cain/Hamer Hall <span class="lock">Ticketek-locked</span><sup>6,7</sup></li>
+      <li>RS 72.0 theatre cluster (8 venues): Palais Theatre (2,896), Regent Theatre (2,143), Capitol Theatre (2,094), Palace Theatre (1,855), Princess Theatre (1,452), Her Majesty's, Theatre Royal Sydney — all <span class="open">no confirmed exclusive</span><sup>1</sup></li>
+      <li>Crown Perth (8,000) at RS 70.8 — independently confirmed <span class="lock">Ticketmaster-locked</span><sup>8</sup>; Crown Live Theatre Perth (1,250 cap) relaunching Nov 2026 with no announced ticketing partner — highest-urgency greenfield opp</li>
+      <li>Newcastle Entertainment Centre (7,528, RS 70.8), Geelong Arena (2,000, ROI 40.1x) — fastest-close regional beachheads, no confirmed exclusives<sup>1</sup></li>
+    </ul>
+
+    <!-- SECTION 2 -->
+    <div class="section-heading">
+      <span class="num">2</span>
+      <span class="title">What Our Data Shows — Updated Venue-Level Findings</span>
+    </div>
+
+    <p class="body-text">BuyButtonChecker (95% accuracy) run against updated T1 lists. Platform-confirmed locked venues are excluded from direct BD pipeline and routed to promoter-level strategy. Open venues below are prioritized by RS × ROI composite.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Venue</th>
+          <th>Market</th>
+          <th>Cap</th>
+          <th>RS</th>
+          <th>ROI</th>
+          <th>Platform</th>
+          <th>Lead Event Type</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="bold">Swiss Life Hall</td><td>Hannover, DE</td><td>4,460</td><td class="teal">72.7</td><td>37.1x</td><td class="teal">Open</td><td>Concerts, DreamHack crossover</td></tr>
+        <tr><td class="bold">Europahalle</td><td>Karlsruhe, DE</td><td>4,809</td><td class="teal">72.7</td><td>37.1x</td><td class="teal">Open</td><td>DEL ice hockey, concerts</td></tr>
+        <tr><td class="bold">Mittelhessen-Arena</td><td>Germany, DE</td><td>5,000</td><td class="teal">72.1</td><td>38.9x</td><td class="teal">Open</td><td>Sports, regional concerts</td></tr>
+        <tr><td class="bold">Uber Eats Music Hall</td><td>Berlin, DE</td><td>4,500</td><td class="teal">70.4</td><td>31.7x</td><td class="teal">Open</td><td>Indie concerts, comedy</td></tr>
+        <tr><td class="bold">Festhalle Frankfurt</td><td>Frankfurt, DE</td><td>13,500</td><td class="teal">71.6</td><td>34.4x</td><td class="teal">Open</td><td>Arena concerts, trade shows</td></tr>
+        <tr><td class="bold">Uber Arena</td><td>Berlin, DE</td><td>17,000</td><td class="teal">71.6</td><td>34.4x</td><td class="red">AXS (premium only)</td><td>GA wedge: floor/GA events</td></tr>
+        <tr><td class="bold">Ziggo Dome</td><td>Amsterdam, NL</td><td>17,000</td><td class="teal">75.1</td><td>36.0x</td><td class="teal">Open</td><td>Major concerts, awards</td></tr>
+        <tr><td class="bold">Thialf</td><td>Heerenveen, NL</td><td>12,500</td><td class="teal">73.1</td><td>35.1x</td><td class="teal">Open</td><td>Speed skating, concerts</td></tr>
+        <tr><td class="bold">Rotterdam Ahoy</td><td>Rotterdam, NL</td><td>15,000</td><td class="teal">70.8</td><td>29.7x</td><td class="teal">Open</td><td>Arena concerts, esports</td></tr>
+        <tr><td class="bold">AFAS Live</td><td>Amsterdam, NL</td><td>6,000</td><td class="teal">70.8</td><td>29.7x</td><td class="teal">Open</td><td>Mid-size concerts, electronic</td></tr>
+        <tr><td class="bold">Carré Theatre</td><td>Amsterdam, NL</td><td>1,752</td><td class="teal">71.4</td><td>34.3x</td><td class="teal">Open</td><td>Musicals, premium concerts</td></tr>
+        <tr><td class="bold">Geelong Arena</td><td>Geelong, AU</td><td>2,000</td><td class="teal">74.3</td><td>40.1x</td><td class="teal">Open</td><td>Regional concerts, basketball</td></tr>
+        <tr><td class="bold">Sydney Showground</td><td>Sydney, AU</td><td>10,000</td><td class="teal">73.1</td><td>37.3x</td><td class="teal">Open (promoter-level)</td><td>Festivals, gaming expos</td></tr>
+        <tr><td class="bold">Palais Theatre</td><td>St Kilda, AU</td><td>2,896</td><td class="teal">72.0</td><td>34.6x</td><td class="teal">Open (via promoter)</td><td>Indie rock, comedy, heritage</td></tr>
+        <tr><td class="bold">Newcastle Ent. Centre</td><td>Newcastle, AU</td><td>7,528</td><td class="teal">70.8</td><td>31.9x</td><td class="teal">Open</td><td>Regional touring, concerts</td></tr>
+        <tr><td class="bold">Crown Live Theatre</td><td>Perth, AU</td><td>1,250</td><td>—</td><td>—</td><td class="teal">No partner (Nov 2026 relaunch)</td><td>Theatre residencies, concerts</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Footnotes Page 1 -->
+    <div class="footnotes">
+      <p><sup>1</sup> Venue Intelligence System — updated March 2026 scrape &nbsp;|&nbsp; Internal model dataset &nbsp;|&nbsp; <a href="https://mehakjotsingh.github.io/tixrCaseComp/">mehakjotsingh.github.io/tixrCaseComp</a></p>
+      <p><sup>2</sup> AXS partners with Uber Arena &amp; Barclays Arena (premium/suite only) — <a href="https://aegworldwide.com/press-center/press-releases/axs-partners-two-leading-arenas-germany">aegworldwide.com, Oct 2024</a></p>
+      <p><sup>3</sup> Paradiso ticket sales via Paylogic — <a href="https://www.paradiso.nl/en/info/about-us/kaartverkoop">paradiso.nl</a></p>
+      <p><sup>4</sup> Melkweg visitor info — <a href="https://www.melkweg.nl/en/info/">melkweg.nl</a></p>
+      <p><sup>5</sup> ADE 2026 ticketing FAQ — <a href="https://www.amsterdam-dance-event.nl/en/faq-and-contact/">amsterdam-dance-event.nl</a></p>
+      <p><sup>6</sup> Melbourne Park official partner: Ticketek — <a href="https://rodlaverarena.com.au/plan-your-visit/faqs/">rodlaverarena.com.au</a></p>
+      <p><sup>7</sup> Hamer Hall via Ticketek — <a href="https://premier.ticketek.com.au/shows/Show.aspx?sh=XJEBKOUM26">ticketek.com.au</a></p>
+      <p><sup>8</sup> Crown Theatre Perth via Ticketmaster — <a href="https://www.crownperth.com.au/entertainment/crown-theatre">crownperth.com.au</a></p>
+    </div>
+
+  </div>
+  <div class="page-footer">
+    <span>Tixr Global Expansion &nbsp;|&nbsp; Confidential</span>
+    <span>Page 1 of 2</span>
+  </div>
+</div>
+
+
+<!-- PAGE 2 -->
+<div class="page">
+  <div class="page-header">
+    <h1>TIXR GLOBAL EXPANSION</h1>
+    <div class="subtitle-bar">Executive Memo &nbsp;|&nbsp; March 2026 &nbsp;|&nbsp; Confidential</div>
+  </div>
+
+  <div class="page-body">
+
+    <!-- SECTION 3 -->
+    <div class="section-heading">
+      <span class="num">3</span>
+      <span class="title">Key Risks Per Market</span>
+    </div>
+
+    <span class="sub-label">Germany</span>
+    <ul>
+      <li>CTS Eventim dominates German ticketing — enterprise RFP cycles at large arenas run 6–18 months; prioritize the 200+ mid-market arenas (2,250–5,000 cap, RS 70.7–72.7) where Eventim's sales team is less active and no confirmed exclusives exist<sup>1</sup></li>
+      <li>SEPA, Klarna, and Sofort payment integrations are commercial blockers — must be live in checkout before first German event goes on sale</li>
+      <li>Expanded pipeline (611 T1+T2 venues) requires partner-led / self-serve onboarding model — direct enterprise sales alone will not scale; begin partner program framework by Day 45</li>
+    </ul>
+
+    <span class="sub-label">Netherlands</span>
+    <ul>
+      <li>Melkweg and Paradiso locked to Ticketmaster/Paylogic<sup>3,4</sup> — approach via promoters booking these venues; do not pitch venue directly</li>
+      <li>ADE 2026 conference contract held by Weeztix<sup>5</sup> — ADE brand presence must come through independent festival night promoter deals, not the umbrella organization</li>
+      <li>Pipeline of 820 T1+T2 venues requires self-serve onboarding — the Netherlands Partner Program (self-serve layer) is essential to capturing long-tail pipeline beyond the 10 enterprise targets</li>
+      <li>iDEAL payment integration is a hard requirement — absence materially drops Dutch checkout conversion</li>
+    </ul>
+
+    <span class="sub-label">Australia</span>
+    <ul>
+      <li>Ticketek (TEG) holds exclusive or preferred contracts at Rod Laver, John Cain, Hamer Hall<sup>6,7</sup> — and likely additional Melbourne Park venues; all must be approached via independent promoters who book events and own ticketing decisions</li>
+      <li>Crown Theatre Perth locked to Ticketmaster<sup>8</sup>; Crown Live Theatre relaunch (Nov 2026) is the single most time-sensitive greenfield deal — proposal must be submitted before Aug 2026 or risk incumbent re-sign</li>
+      <li>Geographic distance from Santa Monica HQ requires a regional ops lead in Melbourne or Sydney — hire by Day 20; BPAY/POLi/Afterpay integration required for consumer checkout</li>
+    </ul>
+
+    <!-- SECTION 4 -->
+    <div class="section-heading">
+      <span class="num">4</span>
+      <span class="title">30 / 60 / 90 Day Plan — Venue-Specific</span>
+    </div>
+
+    <span class="day-pill">Days 1–30 &nbsp;|&nbsp; Ground-Truth &amp; Warm Introductions</span>
+    <span class="sub-label">Germany</span>
+    <ul>
+      <li>Run BuyButtonChecker against all 297 T1 Germany venues; surface the estimated 250+ with no confirmed platform — triage into enterprise (cap >8K), mid-market (2,250–8K), and indie segments<sup>1</sup></li>
+      <li>Initiate BD outreach to <strong>Swiss Life Hall</strong> (Hannover, 4,460 cap, RS 72.7) and <strong>Europahalle</strong> (Karlsruhe, 4,809 cap, RS 72.7) by Day 15 — highest RS with no confirmed platform; DEL/BBL sports + concerts angle<sup>1</sup></li>
+      <li>Activate DreamHack Hannover relationship — request warm intro to Deutsche Messe promoter network and Swiss Life Hall management by Day 10<sup>9</sup></li>
+      <li>Initiate BD conversation at <strong>Uber Eats Music Hall</strong> (Berlin, 4,500 cap) — no confirmed platform, Berlin concert market highest visibility for brand building<sup>1</sup></li>
+      <li>Confirm SEPA / Klarna / Sofort on engineering roadmap; initiate Germany GmbH legal review by Day 15</li>
+    </ul>
+    <span class="sub-label">Netherlands</span>
+    <ul>
+      <li>Initiate outreach to <strong>Ziggo Dome</strong> BD team (Amsterdam, 17,000 cap, RS 75.1, ROI 36.0x) — top-ranked Dutch venue, no confirmed exclusive<sup>1</sup></li>
+      <li>Identify 10–15 ADE 2026 festival promoters running independently-ticketed events — approach via Resident Advisor / Amsterdam club circuit and existing Ibiza client referrals<sup>5</sup></li>
+      <li>Pitch <strong>AFAS Live</strong> (Amsterdam, 6,000 cap, RS 70.8) and <strong>MartiniPlaza</strong> (Groningen, 4,500 cap, RS 71.9) simultaneously; confirm iDEAL integration timeline<sup>1</sup></li>
+    </ul>
+    <span class="sub-label">Australia</span>
+    <ul>
+      <li>Request 5 NZ-to-AU warm introductions from existing NZ Tixr partners; target Melbourne and Sydney independent promoter community (Destroy All Lines, Secret Sounds, Chugg)<sup>10</sup></li>
+      <li>Run TicketekConnector against all 116 AU T1 venues to identify contract expiry candidates — prioritize <strong>Newcastle Entertainment Centre</strong> (7,528 cap, RS 70.8) and <strong>Geelong Arena</strong> (2,000 cap, ROI 40.1x)<sup>1</sup></li>
+      <li>Contact Crown Perth Head of Entertainment re: <strong>Crown Live Theatre</strong> Nov 2026 relaunch — pre-empt incumbent re-sign; submit proposal by Day 60 at latest<sup>8</sup></li>
+      <li>Hire Melbourne/Sydney BD contractor by Day 20; confirm BPAY / POLi / Afterpay integration roadmap</li>
+    </ul>
+
+    <span class="day-pill">Days 31–60 &nbsp;|&nbsp; First Contracts</span>
+    <span class="sub-label">Germany</span>
+    <ul>
+      <li>Convert <strong>Swiss Life Hall</strong> and <strong>Uber Eats Music Hall</strong> to active commercial conversations; draft pilot term sheet for one venue by Day 45</li>
+      <li>Sweep mid-market arena cluster: <strong>Friedrich-Ebert-Halle</strong> (Ludwigshafen, 2,250 cap), <strong>Bremerhaven Stadthalle</strong> (4,200), <strong>Eissporthalle Iserlohn</strong> (4,997), <strong>Lipperlandhalle</strong> (Lemgo, 5,000) — same pitch deck, DEL ice hockey + regional concerts angle, all RS 72.7 with no confirmed platform<sup>1</sup></li>
+      <li>Confirm SEPA payment live in test checkout; begin Germany Country Manager search; draft partner program framework for long-tail 300+ venue pipeline</li>
+    </ul>
+    <span class="sub-label">Netherlands</span>
+    <ul>
+      <li>Target 2 signed agreements: <strong>AFAS Live</strong> + one ADE festival night promoter deal (minimum 5 ADE promoter pitches submitted)</li>
+      <li>Pitch <strong>Carré Theatre</strong> (Amsterdam, 1,752 cap, RS 71.4, ROI 34.3x) and <strong>Thialf</strong> (Heerenveen, 12,500 cap, RS 73.1) — speed skating events at Thialf are a high-profile anchor for Dutch sports market entry<sup>1</sup></li>
+      <li>Confirm iDEAL live in checkout; submit ADE 2026 partnership brief to umbrella organization for 2027 pipeline positioning</li>
+    </ul>
+    <span class="sub-label">Australia</span>
+    <ul>
+      <li>Close first signed agreement: <strong>Newcastle Entertainment Centre</strong> or <strong>Geelong Arena</strong> — fastest-close regionals, no incumbents, proven contract template from NZ<sup>1</sup></li>
+      <li>Approach <strong>Palais Theatre</strong> (St Kilda, 2,896 cap, RS 72.0) via independent promoters who book the venue and own the ticketing decision<sup>1,10</sup></li>
+      <li>Submit Crown Live Theatre Perth proposal; confirm meeting with Crown Perth Entertainment team before Day 60<sup>8</sup></li>
+      <li>Approach 3 NBL clubs (season Oct–Mar) outside Melbourne/Sydney — clubs own ticketing independent of venue deals</li>
+    </ul>
+
+    <span class="day-pill">Days 61–90 &nbsp;|&nbsp; First Live Events &amp; Scale</span>
+    <span class="sub-label">Germany</span>
+    <ul>
+      <li>First German event live — target <strong>Swiss Life Hall</strong> or <strong>Uber Eats Music Hall</strong>; leverage DreamHack promoter network for event supply<sup>9</sup></li>
+      <li>10 total active Germany accounts; publish case study (conversion rates, upsell attach %) for use in NL and AU pitches</li>
+      <li>Confirm legal entity structure; initiate Country Manager hire; re-run model on Day 90 with updated BuyButtonChecker ground-truth data</li>
+    </ul>
+    <span class="sub-label">Netherlands</span>
+    <ul>
+      <li>First Dutch event live — target <strong>AFAS Live</strong> or <strong>MartiniPlaza</strong> mid-size concert (1,000–3,000 GA)</li>
+      <li>ADE 2026 presence confirmed: minimum 2 ADE festival night deals secured — 400K+ attendees create brand awareness for 2027 pipeline<sup>5</sup></li>
+      <li>Launch Netherlands Partner Program self-serve onboarding — essential for capturing 820-venue long-tail pipeline beyond enterprise targets<sup>1</sup></li>
+    </ul>
+    <span class="sub-label">Australia</span>
+    <ul>
+      <li>First Australian event live — target <strong>Geelong Arena</strong> or <strong>Newcastle Entertainment Centre</strong> regional concert</li>
+      <li>5 total signed AU agreements; Crown Live Theatre Perth proposal submitted and follow-up meeting confirmed<sup>8</sup></li>
+      <li>Begin 116-venue T1 pipeline triage using Setlist.fm historical cadence data — surface top 30 highest-activity venues for Q3 2026 push<sup>1</sup></li>
+      <li>Draft APAC expansion brief: Australia as bridge to India / SE Asia via Zamna India pipeline<sup>10</sup></li>
+    </ul>
+
+    <!-- 90-Day Targets Table -->
+    <table style="margin-top:10px;">
+      <thead>
+        <tr>
+          <th>Metric</th>
+          <th>Germany</th>
+          <th>Netherlands</th>
+          <th>Australia</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="bold">T1 Venues in Pipeline</td><td>297</td><td>83</td><td>116</td></tr>
+        <tr><td class="bold">Active BD Conversations</td><td>15</td><td>10</td><td>12</td></tr>
+        <tr><td class="bold">Signed Agreements</td><td>3</td><td>2</td><td>5</td></tr>
+        <tr><td class="bold">Live Events</td><td>1</td><td>1</td><td>3</td></tr>
+        <tr><td class="bold">Strategic Anchor</td><td>DreamHack / Swiss Life Hall</td><td>AFAS Live + ADE festival nights</td><td>Crown Live Theatre pre-launch</td></tr>
+        <tr><td class="bold">Payments Required</td><td>SEPA, Klarna, Sofort</td><td>iDEAL</td><td>BPAY, POLi, Afterpay</td></tr>
+        <tr><td class="bold">Biggest Lock to Avoid</td><td>Uber/Barclays Arena (AXS)</td><td>Melkweg, Paradiso (TM/Paylogic)</td><td>Rod Laver, Hamer Hall (Ticketek)</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Footnotes Page 2 -->
+    <div class="footnotes">
+      <p><sup>9</sup> DreamHack returns to Germany — <a href="https://eslfaceitgroup.com/blog/2022/04/dreamhack-returns-to-germany-through-freaks-4u-gaming-and-deutsche-messe/">eslfaceitgroup.com</a> &nbsp;|&nbsp; DreamHack Hannover, Deutsche Messe partnership confirmed</p>
+      <p><sup>10</sup> Tixr CEO Year-End Letter 2024 — Tixr.com &nbsp;|&nbsp; NZ market operations confirmed 2024; Zamna India pipeline noted &nbsp;|&nbsp; Palais Theatre listings — <a href="https://www.livenation.com.au/palais-theatre-tickets-vdp162191">livenation.com.au</a></p>
+    </div>
+
+  </div>
+  <div class="page-footer">
+    <span>Tixr Global Expansion &nbsp;|&nbsp; Confidential</span>
+    <span>Page 2 of 2</span>
+  </div>
+</div>
+
+</body>
+</html>
