@@ -1127,12 +1127,14 @@ recommendation_score = 0.50 × priority_score   (from Stage 1: VWP + Premium Fit
 
 **Tier Assignment:**
 
-| Score Range | Tier | Action |
-|-------------|------|--------|
-| ≥ 70 | **Tier 1 — Immediate Outreach** | Sales rep contacts this week |
-| 50–69 | **Tier 2 — High Priority** | Queue for next sprint |
-| 30–49 | **Tier 3 — Monitor** | Track for market changes |
-| < 30 | **Tier 4 — Low Priority** | Revisit quarterly |
+| Score Range | Tier | Action | Target % |
+|-------------|------|--------|----------|
+| ≥ 65 | **Tier 1 — Immediate Outreach** | Sales rep contacts this week | ~5% |
+| 61–64 | **Tier 2 — High Priority** | Queue for next sprint | ~13% |
+| 48–60 | **Tier 3 — Monitor** | Track for market changes | ~70% |
+| < 48 | **Tier 4 — Low Priority** | Revisit quarterly | ~12% |
+
+**Design constraint:** Tier 1 + Tier 2 ≈ 20% of venues (top performers for focused sales effort). Tier 3 + Tier 4 ≈ 80% (pipeline / monitor).
 
 ### 7.8 Decision Log Entries
 
